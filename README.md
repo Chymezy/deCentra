@@ -135,13 +135,13 @@ We welcome developers, designers, and activists! See [CONTRIBUTING.md](./CONTRIB
 ---
 
 ## License
-[MIT License](./LICENSE)
+[Apache License 2.0](./LICENSE)
 
 ---
 
 ## Contact & Links
-- **DoraHacks:** [Link]
-- **GitHub:** [Link]
+- **DoraHacks:** [Link](https://dorahacks.io/buidl/28565/ "deCentra DoraHacks")
+- **GitHub:** [Link](https://github.com/Chymezy/deCentra "deCentra GitHub")
 - **Email:** your@email.com
 
 ---

@@ -1,18 +1,18 @@
 {
   "canisters": {
-    "deCentra_backend": {
-      "main": "src/deCentra_backend/main.mo",
+    "backend": {
+      "main": "src/backend/main.mo",
       "type": "motoko"
     },
-    "deCentra_frontend": {
+    "frontend": {
       "dependencies": [
-        "deCentra_backend"
+        "backend"
       ],
       "source": [
-        "src/deCentra_frontend/dist"
+        "src/frontend/dist"
       ],
       "type": "assets",
-      "workspace": "deCentra_frontend"
+      "workspace": "frontend"
     },
     "internet_identity": {
       "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
@@ -32,6 +32,6 @@
       "packtool": ""
     }
   },
-  "output_env_file": ".env",
+  "output_env_file": "src/frontend/.env",
   "version": 1
 }
