@@ -13,7 +13,7 @@
   },
   "type": "module",
   "workspaces": [
-    "src/deCentra_frontend"
+    "src/frontend"
   ],
   "devDependencies": {
     "@types/estree": "^1.0.8"
