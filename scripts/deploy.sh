@@ -45,20 +45,20 @@ dfx deploy --network "$NETWORK"
 # --- Frontend Build & Deployment ---
 echo "Building Next.js frontend..."
 # Ensure frontend dependencies are installed
-(cd src/frontend && npm install)
+(cd src/deCentra_frontend && npm install)
 # Build the Next.js application
-(cd src/frontend && npm run build)
+(cd src/deCentra_frontend && npm run build)
 
 echo "Deploying frontend assets to $NETWORK..."
 # The 'frontend' canister is of type 'assets' and serves the Next.js build output
 # DFX automatically picks up the 'source' directory from dfx.json (e.g., 'src/frontend/dist')
-dfx deploy frontend --network "$NETWORK"
+dfx deploy deCentra_frontend --network "$NETWORK"
 
 # --- Post-deployment Information ---
 echo "Deployment completed successfully!"
 
 if [ "$NETWORK" == "local" ]; then
-    FRONTEND_CANISTER_ID=$(dfx canister id frontend)
+    FRONTEND_CANISTER_ID=$(dfx canister id deCentra_frontend)
     echo "You can access the frontend at: http://localhost:4943/?canisterId=$FRONTEND_CANISTER_ID"
 else
     echo "Deployment to $NETWORK completed. Check your DFX dashboard for canister IDs."
