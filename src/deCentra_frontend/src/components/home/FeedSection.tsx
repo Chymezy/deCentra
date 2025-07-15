@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { deCentra_backend } from '../../../../declarations/deCentra_backend';
+import { BackendService } from '../../backendService';
 import type { FeedPost as CanisterFeedPost } from '../../../../declarations/deCentra_backend/deCentra_backend.did';
 import type { Comment as CanisterComment } from '../../../../declarations/deCentra_backend/deCentra_backend.did';
 
@@ -25,7 +25,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
 
   // Check if backend is available
   useEffect(() => {
-    if (!deCentra_backend) {
+    if (!BackendService) {
       setBackendError('Backend connection not available. Please check your deployment.');
       setLoading(false);
     }
@@ -33,7 +33,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
 
   // Fetch posts from backend
   const fetchFeed = async () => {
-    if (!deCentra_backend) {
+    if (!BackendService) {
       setBackendError('Backend connection not available');
       setLoading(false);
       return;
@@ -42,7 +42,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
     setLoading(true);
     try {
       // Fetch first 20 posts (pagination can be added later)
-      const feed = await deCentra_backend.getFeed(0n, 20n);
+      const feed = await BackendService.getFeed(0n, 20n);
       setPosts(feed);
       setBackendError(null);
     } catch (error) {
@@ -56,14 +56,14 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
   // Create post via backend
   const createPost = async () => {
     if (!isAuthenticated || !newPost.trim()) return;
-    if (!deCentra_backend) {
+    if (!BackendService) {
       alert('Backend connection not available');
       return;
     }
 
     setIsCreating(true);
     try {
-      const result = await deCentra_backend.createPost(newPost);
+      const result = await BackendService.createPost(newPost);
       if ('ok' in result) {
         setNewPost('');
         fetchFeed();
@@ -84,13 +84,13 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
       alert('Please login to like posts');
       return;
     }
-    if (!deCentra_backend) {
+    if (!BackendService) {
       alert('Backend connection not available');
       return;
     }
 
     try {
-      const result = await deCentra_backend.likePost(postId);
+      const result = await BackendService.likePost(postId);
       if ('ok' in result) {
         fetchFeed(); // Refresh feed
       } else {
@@ -106,7 +106,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
   const fetchComments = async (postId: bigint) => {
     setCommentLoading((prev) => ({ ...prev, [postId.toString()]: true }));
     try {
-      const postComments = await deCentra_backend.getComments(postId);
+      const postComments = await BackendService.getComments(postId);
       setComments((prev) => ({ ...prev, [postId.toString()]: postComments }));
     } catch {
       setComments((prev) => ({ ...prev, [postId.toString()]: [] }));
@@ -125,7 +125,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
     if (!text) return;
     setCommentSubmitting((prev) => ({ ...prev, [postId.toString()]: true }));
     try {
-      const result = await deCentra_backend.addComment(postId, text);
+      const result = await BackendService.addComment(postId, text);
       if ('ok' in result) {
         setNewComments((prev) => ({ ...prev, [postId.toString()]: '' }));
         fetchComments(postId);
@@ -150,7 +150,7 @@ export default function FeedSection({ isAuthenticated, principal, login }: FeedS
   };
 
   useEffect(() => {
-    if (deCentra_backend) {
+    if (BackendService) {
       fetchFeed();
     }
   }, []);
