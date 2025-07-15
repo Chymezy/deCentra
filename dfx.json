@@ -1,0 +1,37 @@
+{
+  "canisters": {
+    "deCentra_backend": {
+      "main": "src/deCentra_backend/main.mo",
+      "type": "motoko"
+    },
+    "deCentra_frontend": {
+      "dependencies": [
+        "deCentra_backend"
+      ],
+      "source": [
+        "src/deCentra_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "deCentra_frontend"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
