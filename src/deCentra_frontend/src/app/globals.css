@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Brand Colors */
+  --color-deep-indigo: #4B0082;
+  --color-electric-blue: #0F62FE;
+  --color-vibrant-orange: #FF6F00;
+  --color-charcoal-black: #1A1A1A;
+  
+  /* Font Families */
+  --font-heading: 'Inter', 'Poppins', system-ui, sans-serif;
+  --font-body: 'Roboto', 'Open Sans', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+/* Custom utility classes */
+.btn-primary {
+  @apply bg-vibrant-orange text-white px-8 py-4 rounded-xl font-heading font-bold text-lg transition-all duration-300;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 20px rgba(255, 111, 0, 0.3);
+}
+
+.btn-secondary {
+  @apply border-2 border-white/30 text-white px-8 py-4 rounded-xl font-heading font-semibold text-lg transition-all duration-300;
+}
+
+.btn-secondary:hover {
+  @apply bg-white/10;
+}
