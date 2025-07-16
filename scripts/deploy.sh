@@ -52,7 +52,7 @@ echo "Building Next.js frontend..."
 echo "Deploying frontend assets to $NETWORK..."
 # The 'frontend' canister is of type 'assets' and serves the Next.js build output
 # DFX automatically picks up the 'source' directory from dfx.json (e.g., 'src/frontend/dist')
-# dfx deploy frontend --network "$NETWORK"
+dfx deploy frontend --network "$NETWORK"
 
 # --- Post-deployment Information ---
 echo "Deployment completed successfully!"

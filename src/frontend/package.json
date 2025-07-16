@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "dfx generate backend",
+    "prebuild": "dfx generate",
     "setup": "npm i && dfx canister create backend && dfx generate backend && dfx deploy"
   },
   "dependencies": {
