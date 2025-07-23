@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/components/AuthContext';
-import { deCentra_backend } from '../../../../declarations/deCentra_backend';
-import type { Profile } from '../../../../declarations/deCentra_backend/deCentra_backend.did';
+import { backend } from '../../../../declarations/backend';
+import type { Profile } from '../../../../declarations/backend/backend.did';
 import { Principal } from '@dfinity/principal';
 
 export default function ProfilePage() {
@@ -25,11 +25,11 @@ export default function ProfilePage() {
   }, [isAuthenticated, principal]);
 
   const fetchProfile = async () => {
-    if (!deCentra_backend || !principal) return;
+    if (!backend || !principal) return;
     // Use Principal.fromText for correct type
     const principalId = Principal.fromText(principal);
     try {
-      const userProfileResult = await deCentra_backend.getProfile(principalId);
+      const userProfileResult = await backend.getProfile(principalId);
       if (userProfileResult && userProfileResult.length > 0) {
         const userProfile = userProfileResult[0];
         if (userProfile) {
@@ -45,7 +45,7 @@ export default function ProfilePage() {
   };
 
   const handleUpdateProfile = async () => {
-    if (!isAuthenticated || !deCentra_backend) {
+    if (!isAuthenticated || !backend) {
       alert('Please connect with Internet Identity first');
       return;
     }
@@ -57,7 +57,7 @@ export default function ProfilePage() {
 
     setIsUpdating(true);
     try {
-      const result = await deCentra_backend.updateProfile(username, bio, avatar);
+      const result = await backend.updateProfile(username, bio, avatar);
       if ('ok' in result) {
         alert('Profile updated successfully!');
         setProfile(result.ok);
@@ -73,7 +73,7 @@ export default function ProfilePage() {
   };
 
   const handleCreateProfile = async () => {
-    if (!isAuthenticated || !deCentra_backend) {
+    if (!isAuthenticated || !backend) {
       alert('Please connect with Internet Identity first');
       return;
     }
@@ -85,7 +85,7 @@ export default function ProfilePage() {
 
     setIsUpdating(true);
     try {
-      const result = await deCentra_backend.createProfile(username, bio, avatar);
+      const result = await backend.createProfile(username, bio, avatar);
       if ('ok' in result) {
         alert('Profile created successfully!');
         setProfile(result.ok);

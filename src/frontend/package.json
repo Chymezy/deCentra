@@ -1,5 +1,5 @@
 {
-  "name": "deCentra_frontend",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "dfx generate deCentra_backend",
-    "setup": "npm i && dfx canister create deCentra_backend && dfx generate deCentra_backend && dfx deploy"
+    "prebuild": "dfx generate",
+    "setup": "npm i && dfx canister create backend && dfx generate backend && dfx deploy"
   },
   "dependencies": {
     "@dfinity/agent": "^2.4.1",
