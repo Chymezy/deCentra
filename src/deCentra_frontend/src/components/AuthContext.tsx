@@ -1,6 +1,13 @@
-"use client";
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { AuthClient } from "@dfinity/auth-client";
+'use client';
+import { AuthClient } from '@dfinity/auth-client';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface User {
   name?: string;
@@ -16,7 +23,9 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -64,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         onError: (error) => {
           console.error('Login error:', error);
           alert('Login failed: ' + error);
-        }
+        },
       });
     } catch (error) {
       console.error('Login setup error:', error);
@@ -85,7 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, principal, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, principal, loading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -94,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}
