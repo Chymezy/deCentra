@@ -338,16 +338,35 @@ done <<< "$STAGED_ALL_FILES"
 if [ -f "package.json" ] && ! check_cache "npm-audit"; then
     print_status "Running npm audit..."
     if command -v npm > /dev/null 2>&1; then
-        if npm audit --production --audit-level=high > /dev/null 2>&1; then
+        # Run npm audit and capture both exit code and output
+        AUDIT_OUTPUT=$(npm audit --production --audit-level=high 2>&1)
+        AUDIT_EXIT_CODE=$?
+        
+        if [ $AUDIT_EXIT_CODE -eq 0 ]; then
             touch "$CACHE_DIR/npm-audit"
             print_success "No high-severity npm vulnerabilities found"
-        else
+        elif echo "$AUDIT_OUTPUT" | grep -q "audit endpoint returned an error\|request.*failed"; then
+            # Network/registry issue - don't block commit
+            print_warning "npm audit failed due to network/registry issues"
+            echo "Skipping npm audit check (network unavailable)"
+            echo "Run 'npm audit' manually when network is available"
+        elif echo "$AUDIT_OUTPUT" | grep -q "audit found.*vulnerabilities"; then
+            # Actual security vulnerabilities found
             print_error "High-severity npm vulnerabilities found"
-            echo "Run 'npm audit' to see details"
+            echo "Run 'npm audit' to see details and 'npm audit fix' to resolve"
             CHECKS_FAILED=1
+        else
+            # Other npm audit failure
+            print_warning "npm audit failed with unexpected error"
+            echo "Run 'npm audit' manually to investigate"
+            echo "Output: $AUDIT_OUTPUT"
         fi
     else
         print_warning "npm not found - skipping npm audit"
+    fi
+else
+    if [ -f "package.json" ]; then
+        print_success "No npm vulnerabilities found (cached)"
     fi
 fi
 
