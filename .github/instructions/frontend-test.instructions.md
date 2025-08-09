@@ -1,6 +1,14 @@
 ---
-applyTo: "**/src/frontend/**"
+applyTo: "**/*.test.ts,**/*.test.tsx"
 ---
+
+# Frontend Testing Instructions for Social Network
+
+## Social Component Testing
+[Authentication flows, social interactions, accessibility testing]
+
+## Vitest Configuration
+[Testing patterns for React components with social features]
 
 ### Writing Tests for Frontend Components
 
