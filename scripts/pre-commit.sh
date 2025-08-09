@@ -39,7 +39,28 @@ WARNINGS=""
 
 # Cache directory for expensive checks
 CACHE_DIR=".git/cert-check-cache"
-mkdir -p "$CACHE_DIR"
+
+# Secure cache directory creation
+create_secure_cache() {
+    if [ ! -d "$CACHE_DIR" ]; then
+        if ! mkdir -p "$CACHE_DIR"; then
+            print_error "Failed to create cache directory"
+            return 1
+        fi
+        # Set restrictive permissions
+        chmod 700 "$CACHE_DIR"
+    fi
+    
+    # Verify permissions
+    local perms
+    perms=$(stat -c %a "$CACHE_DIR" 2>/dev/null || stat -f %A "$CACHE_DIR" 2>/dev/null)
+    if [ "$perms" != "700" ]; then
+        print_warning "Cache directory has insecure permissions: $perms"
+        chmod 700 "$CACHE_DIR"
+    fi
+}
+
+create_secure_cache
 
 # Function to check cache validity
 check_cache() {
@@ -59,10 +80,22 @@ check_cache() {
     return 1  # Cache is invalid or missing
 }
 
-# Get staged files by type
-STAGED_RS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.rs$' || true)
-STAGED_MO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.mo$' || true)
-STAGED_TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$' || true)
+# Better error handling with explicit checks
+get_staged_files() {
+    local pattern="$1"
+    local files
+    
+    if ! files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null); then
+        print_error "Failed to get staged files from git"
+        return 1
+    fi
+    
+    echo "$files" | grep -E "$pattern" || true
+}
+
+STAGED_RS_FILES=$(get_staged_files '\.rs$') || exit 1
+STAGED_MO_FILES=$(get_staged_files '\.mo$') || exit 1
+STAGED_TS_FILES=$(get_staged_files '\.(ts|tsx)$') || exit 1
 STAGED_ALL_FILES=$(git diff --cached --name-only --diff-filter=ACM || true)
 
 print_status "Staged files analysis:"
@@ -324,7 +357,22 @@ fi
 # Check for large files
 MAX_FILE_SIZE=$((1024 * 1024)) # 1MB
 while IFS= read -r file; do
-    if [ -f "$file" ] && [ -n "$file" ]; then
+    # Add path validation to prevent directory traversal
+    validate_file_path() {
+        local file="$1"
+        # Check for directory traversal attempts
+        if echo "$file" | grep -E '\.\./|/\.\.' > /dev/null; then
+            return 1
+        fi
+        # Ensure file is within project directory
+        if ! realpath "$file" | grep -q "^$(pwd)"; then
+            return 1
+        fi
+        return 0
+    }
+
+    if [ -f "$file" ] && [ -n "$file" ] && validate_file_path "$file"; then
+        # Safe to process file
         size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null || echo 0)
         if [ "$size" -gt "$MAX_FILE_SIZE" ]; then
             print_error "File $file is too large ($(($size/1024))KB)"
@@ -335,11 +383,37 @@ while IFS= read -r file; do
 done <<< "$STAGED_ALL_FILES"
 
 # NPM audit (if package.json exists and not cached)
+MAX_AUDIT_SIZE=$((1024 * 1024))  # 1MB limit
+AUDIT_TIMEOUT=30  # 30 seconds
+
+run_npm_audit() {
+    local output_file
+    output_file=$(mktemp)
+    
+    if timeout $AUDIT_TIMEOUT npm audit --production --audit-level=high > "$output_file" 2>&1; then
+        local size
+        size=$(stat -c%s "$output_file" 2>/dev/null || stat -f%z "$output_file" 2>/dev/null)
+        
+        if [ "$size" -gt "$MAX_AUDIT_SIZE" ]; then
+            print_error "npm audit output too large ($size bytes)"
+            rm -f "$output_file"
+            return 1
+        fi
+        
+        cat "$output_file"
+        rm -f "$output_file"
+        return 0
+    else
+        rm -f "$output_file"
+        return 1
+    fi
+}
+
 if [ -f "package.json" ] && ! check_cache "npm-audit"; then
     print_status "Running npm audit..."
     if command -v npm > /dev/null 2>&1; then
         # Run npm audit and capture both exit code and output
-        AUDIT_OUTPUT=$(npm audit --production --audit-level=high 2>&1)
+        AUDIT_OUTPUT=$(run_npm_audit 2>&1)
         AUDIT_EXIT_CODE=$?
         
         if [ $AUDIT_EXIT_CODE -eq 0 ]; then
