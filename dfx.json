@@ -1,8 +1,9 @@
 {
   "canisters": {
     "backend": {
-      "main": "src/backend/main.mo",
-      "type": "motoko"
+      "type": "rust",
+      "package": "backend",
+      "candid": "src/declarations/backend.did"
     },
     "frontend": {
       "dependencies": [

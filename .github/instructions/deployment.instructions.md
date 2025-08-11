@@ -19,7 +19,7 @@ dfx deploy --network local
 dfx deploy --network local --mode reinstall
 
 # Deploy specific canister
-dfx deploy deCentra_backend --network local
+dfx deploy backend --network local
 ```
 
 ### Environment-Specific Configurations
@@ -60,17 +60,17 @@ fi
 
 # Build and deploy backend canister
 echo "📦 Building backend canister..."
-dfx build deCentra_backend
+dfx build backend
 
 echo "🔧 Deploying backend canister..."
-dfx deploy deCentra_backend --network local
+dfx deploy backend --network local
 
 # Get canister ID for frontend
-CANISTER_ID=$(dfx canister id deCentra_backend --network local)
+CANISTER_ID=$(dfx canister id backend --network local)
 echo "Backend canister deployed with ID: $CANISTER_ID"
 
 # Set environment variables for frontend
-export VITE_CANISTER_ID_DECENTRA_BACKEND=$CANISTER_ID
+export VITE_CANISTER_ID_backend=$CANISTER_ID
 export VITE_DFX_NETWORK=local
 
 # Build and start frontend
@@ -105,13 +105,13 @@ fi
 
 # Deploy with sufficient cycles
 echo "📦 Deploying backend with cycles..."
-dfx deploy deCentra_backend --network testnet --with-cycles 1000000000000
+dfx deploy backend --network testnet --with-cycles 1000000000000
 
-CANISTER_ID=$(dfx canister id deCentra_backend --network testnet)
+CANISTER_ID=$(dfx canister id backend --network testnet)
 echo "✅ Backend deployed to testnet with ID: $CANISTER_ID"
 
 # Update frontend configuration
-export VITE_CANISTER_ID_DECENTRA_BACKEND=$CANISTER_ID
+export VITE_CANISTER_ID_backend=$CANISTER_ID
 export VITE_DFX_NETWORK=testnet
 
 echo "🎨 Building production frontend..."
@@ -169,13 +169,13 @@ echo "💰 Wallet balance: $BALANCE"
 
 # Deploy with production cycles allocation
 echo "📦 Deploying to mainnet with production cycles..."
-dfx deploy deCentra_backend --network ic --with-cycles 5000000000000
+dfx deploy backend --network ic --with-cycles 5000000000000
 
-CANISTER_ID=$(dfx canister id deCentra_backend --network ic)
+CANISTER_ID=$(dfx canister id backend --network ic)
 echo "✅ Backend deployed to mainnet with ID: $CANISTER_ID"
 
 # Build production frontend
-export VITE_CANISTER_ID_DECENTRA_BACKEND=$CANISTER_ID
+export VITE_CANISTER_ID_backend=$CANISTER_ID
 export VITE_DFX_NETWORK=ic
 
 echo "🎨 Building production frontend..."
@@ -197,11 +197,11 @@ echo "📧 Sending deployment notification..."
 {
   "version": 1,
   "canisters": {
-    "deCentra_backend": {
+    "backend": {
       "type": "rust",
-      "package": "deCentra_backend",
-      "candid": "src/deCentra_backend/deCentra_backend.did",
-      "build": ["cargo build --target wasm32-unknown-unknown --release --package deCentra_backend"]
+      "package": "backend",
+      "candid": "src/backend/backend.did",
+      "build": ["cargo build --target wasm32-unknown-unknown --release --package backend"]
     }
   },
   "defaults": {
@@ -238,7 +238,7 @@ echo "📧 Sending deployment notification..."
 set -e
 
 NETWORK=${1:-local}
-CANISTER_NAME="deCentra_backend"
+CANISTER_NAME="backend"
 
 echo "🔄 Upgrading $CANISTER_NAME on $NETWORK network..."
 
@@ -321,7 +321,7 @@ jobs:
       
       - name: Run backend tests
         run: |
-          cargo test --package deCentra_backend
+          cargo test --package backend
           cargo clippy --all-targets --all-features -- -D warnings
       
       - name: Run frontend tests
@@ -331,12 +331,12 @@ jobs:
       
       - name: Build canister
         run: |
-          dfx build deCentra_backend
+          dfx build backend
       
       - name: Deploy to local (test)
         run: |
-          dfx deploy deCentra_backend --network local
-          dfx canister call deCentra_backend get_version
+          dfx deploy backend --network local
+          dfx canister call backend get_version
       
       - name: Stop dfx
         run: dfx stop
@@ -367,8 +367,8 @@ jobs:
       
       - name: Deploy to testnet
         run: |
-          dfx deploy deCentra_backend --network testnet --with-cycles 1000000000000
-          echo "CANISTER_ID=$(dfx canister id deCentra_backend --network testnet)" >> $GITHUB_ENV
+          dfx deploy backend --network testnet --with-cycles 1000000000000
+          echo "CANISTER_ID=$(dfx canister id backend --network testnet)" >> $GITHUB_ENV
       
       - name: Update deployment status
         uses: actions/github-script@v6
@@ -416,7 +416,7 @@ npm audit --audit-level moderate
 
 # Check canister size
 echo "📏 Checking canister size..."
-WASM_SIZE=$(wc -c < target/wasm32-unknown-unknown/release/deCentra_backend.wasm)
+WASM_SIZE=$(wc -c < target/wasm32-unknown-unknown/release/backend.wasm)
 MAX_SIZE=2097152  # 2MB limit
 
 if [ $WASM_SIZE -gt $MAX_SIZE ]; then
@@ -434,13 +434,13 @@ echo "✅ Security checks passed!"
 # filepath: scripts/health-check.sh
 
 NETWORK=${1:-local}
-CANISTER_ID=$(dfx canister id deCentra_backend --network $NETWORK)
+CANISTER_ID=$(dfx canister id backend --network $NETWORK)
 
 echo "🏥 Running health checks for deCentra on $NETWORK..."
 
 # Check canister status
 echo "📊 Checking canister status..."
-STATUS=$(dfx canister status deCentra_backend --network $NETWORK)
+STATUS=$(dfx canister status backend --network $NETWORK)
 echo "$STATUS"
 
 # Check if canister is running
@@ -455,12 +455,12 @@ fi
 echo "🧪 Testing basic functionality..."
 
 # Test version endpoint
-VERSION=$(dfx canister call deCentra_backend get_version --network $NETWORK)
+VERSION=$(dfx canister call backend get_version --network $NETWORK)
 echo "Version: $VERSION"
 
 # Test authentication (should fail for anonymous)
 echo "🔐 Testing authentication..."
-AUTH_TEST=$(dfx canister call deCentra_backend get_user_profile --network $NETWORK 2>&1 || true)
+AUTH_TEST=$(dfx canister call backend get_user_profile --network $NETWORK 2>&1 || true)
 if echo "$AUTH_TEST" | grep -q "Authentication required"; then
     echo "✅ Authentication working correctly"
 else
@@ -517,13 +517,13 @@ esac
 
 # Get canister IDs
 if [ -f ".dfx/local/canister_ids.json" ] && [ "$NETWORK" = "local" ]; then
-    export VITE_CANISTER_ID_DECENTRA_BACKEND=$(jq -r '.deCentra_backend.local' .dfx/local/canister_ids.json)
+    export VITE_CANISTER_ID_backend=$(jq -r '.backend.local' .dfx/local/canister_ids.json)
 elif [ -f "canister_ids.json" ]; then
-    export VITE_CANISTER_ID_DECENTRA_BACKEND=$(jq -r ".deCentra_backend.$NETWORK" canister_ids.json)
+    export VITE_CANISTER_ID_backend=$(jq -r ".backend.$NETWORK" canister_ids.json)
 fi
 
 echo "✅ Environment configured for $NETWORK"
-echo "🔗 Backend Canister ID: $VITE_CANISTER_ID_DECENTRA_BACKEND"
+echo "🔗 Backend Canister ID: $VITE_CANISTER_ID_backend"
 echo "🌐 Network: $VITE_DFX_NETWORK"
 echo "🏠 Host: $VITE_HOST"
 ```
@@ -554,20 +554,20 @@ if [ ! -f "$BACKUP_FILE" ]; then
 fi
 
 # Get current canister info
-CANISTER_ID=$(dfx canister id deCentra_backend --network $NETWORK)
+CANISTER_ID=$(dfx canister id backend --network $NETWORK)
 echo "📋 Rolling back canister: $CANISTER_ID"
 
 # Create emergency backup before rollback
 echo "💾 Creating emergency backup before rollback..."
-dfx canister call deCentra_backend export_state --network $NETWORK > "emergency_backup_$(date +%Y%m%d_%H%M%S).json"
+dfx canister call backend export_state --network $NETWORK > "emergency_backup_$(date +%Y%m%d_%H%M%S).json"
 
 # Restore from backup
 echo "⬅️  Restoring from backup: $BACKUP_FILE"
-dfx canister call deCentra_backend import_state --network $NETWORK "$(cat $BACKUP_FILE)"
+dfx canister call backend import_state --network $NETWORK "$(cat $BACKUP_FILE)"
 
 # Verify rollback
 echo "✅ Verifying rollback..."
-dfx canister call deCentra_backend get_version --network $NETWORK
+dfx canister call backend get_version --network $NETWORK
 
 echo "🎉 Rollback completed successfully!"
 echo "⚠️  Emergency backup saved in case of issues"
