@@ -78,12 +78,71 @@ applyTo: "**"
 - **Prioritize** security and user privacy in all decisions
 - **Follow** the feature-driven development workflow
 
-### Critical Security Requirements
-- Validate all user input with size limits (MAX_POST_CONTENT, MAX_USERNAME)
-- Implement authentication checks for all state-changing operations
-- Use proper authorization (users can only modify their own data)
-- Add resource limits to prevent DoS attacks
-- Sanitize content to prevent XSS and injection attacks
+## AI Assistant Error Prevention Protocol
+
+### **MANDATORY PRE-CODE-GENERATION CHECKS**
+
+Before generating ANY Rust code, you MUST:
+
+1. **Security Verification**: Ensure no `.unwrap()`, `.expect()`, or `panic!` patterns
+2. **Error Handling Verification**: Confirm all functions return `Result<T, E>` 
+3. **Input Validation Verification**: Check all user inputs have size limits and validation
+4. **Authentication Verification**: Ensure all state-changing operations check caller identity
+5. **Type Safety Verification**: Use strong typing with newtype patterns for domain IDs
+
+### **ZERO-TOLERANCE ERROR PATTERNS**
+
+**NEVER generate code containing:**
+- `.unwrap()` or `.expect()` calls
+- `panic!()`, `unreachable!()`, `todo!()`, or `unimplemented!()`
+- Unchecked arithmetic operations (`+`, `-`, `*`, `/`)
+- Anonymous caller acceptance without validation
+- Raw strings for domain IDs (UserId, PostId, etc.)
+- Format strings without inlined arguments
+- Deprecated clippy lint names
+
+### **MANDATORY CODE PATTERNS**
+
+**ALWAYS generate code with:**
+- `Result<T, String>` return types for fallible operations
+- `saturating_add()`, `saturating_sub()`, `saturating_mul()` for arithmetic
+- Explicit type annotations for numeric variables
+- Authentication checks using `authenticate_user()?`
+- Strong typing with `#[derive(CandidType, Deserialize)]` newtypes
+- Modern format strings: `format!("{variable}")` not `format!("{}", variable)`
+
+### **CANISTER-SPECIFIC SECURITY REQUIREMENTS**
+
+For Internet Computer canisters, remember:
+- **Panics = Service Outage**: Any panic traps the entire canister
+- **DoS Prevention**: Validate all input sizes and batch operations
+- **Cycle Management**: Monitor instruction counter for expensive operations
+- **State Consistency**: Use proper upgrade handling with version migration
+- **Anonymous Protection**: Never accept anonymous principals for state changes
+
+---
+
+## Critical Security Requirements
+
+### Backend (Rust + ic-cdk)
+- **NEVER use .unwrap(), .expect(), or panic! in production** - These cause canister traps
+- **ALWAYS use saturating arithmetic** - Prevent overflow panics with `.saturating_add()`, `.saturating_sub()`, etc.
+- **ALWAYS validate caller() against Principal::anonymous()** - Prevent anonymous state changes
+- **ALWAYS use explicit type annotations** - Prevent type ambiguity errors
+- **ALWAYS use current clippy lint names** - Use `clippy::arithmetic_side_effects` not `clippy::integer_arithmetic`
+
+### Frontend (React + TypeScript)
+- Use Vite with React and TypeScript
+- Style with Tailwind CSS v4 (uses `@tailwindcss/vite` plugin)  
+- Implement proper Internet Identity integration
+- Create type-safe canister service layers
+- Follow social network UI/UX patterns
+
+### Formatting & Linting
+- **Rust**: Use `cargo fmt` and `cargo clippy` with security-focused rules
+- **TypeScript**: Use `prettier` and `eslint` with strict settings
+- **Motoko** (legacy): Use `dfinity-foundation.vscode-motoko` formatter
+- Run `npm run format` for cross-platform formatting
 
 ## Development Commands
 

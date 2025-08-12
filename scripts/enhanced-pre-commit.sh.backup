@@ -1,0 +1,221 @@
+#!/bin/bash
+
+# Enhanced Pre-commit Hook for deCentra - Error Prevention
+# Based on comprehensive debugging analysis
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+print_error() {
+    echo -e "${RED}❌ ERROR: $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️ WARNING: $1${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✅ SUCCESS: $1${NC}"
+}
+
+print_info() {
+    echo -e "${BLUE}ℹ️ INFO: $1${NC}"
+}
+
+echo "🔍 Running Enhanced deCentra Pre-commit Checks..."
+echo "=========================================="
+
+# Counter for issues found
+ISSUES_FOUND=0
+
+# Function to increment issues and print error
+report_issue() {
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+    print_error "$1"
+}
+
+# 1. CRITICAL SECURITY PATTERN CHECK
+echo ""
+print_info "1. Checking for critical security anti-patterns..."
+
+# Check for forbidden patterns in Rust files
+FORBIDDEN_PATTERNS=(
+    "\.unwrap\(\)"
+    "\.expect\("
+    "panic!\("
+    "unreachable!\("
+    "todo!\("
+    "unimplemented!\("
+    "clippy::integer_arithmetic"
+)
+
+for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
+    # Only check actual Rust code, not comments or strings
+    if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "$pattern" 2>/dev/null | grep -v "^\s*//" | grep -v "^\s*\*" | grep -v "//.*$pattern"; then
+        report_issue "Found forbidden pattern '$pattern' in Rust code"
+        echo "   Use safe alternatives:"
+        case "$pattern" in
+            "\.unwrap\(\)")
+                echo "   - Replace .unwrap() with .ok_or(\"error message\")?"
+                ;;
+            "\.expect\(")
+                echo "   - Replace .expect() with .ok_or(\"error message\")?"
+                ;;
+            "panic!\(")
+                echo "   - Replace panic!() with return Err(\"error message\".to_string())"
+                ;;
+            "clippy::integer_arithmetic")
+                echo "   - Replace with clippy::arithmetic_side_effects"
+                ;;
+        esac
+        echo ""
+    fi
+done
+
+# 2. ARITHMETIC SAFETY CHECK
+print_info "2. Checking for unsafe arithmetic operations..."
+
+# Check for unchecked arithmetic in Rust files
+UNSAFE_ARITHMETIC=(
+    "[^.]+ \+ [^.]+"
+    "[^.]+ - [^.]+"
+    "[^.]+ \* [^.]+"
+    "[^.]+\[[^]]+\]"
+)
+
+for pattern in "${UNSAFE_ARITHMETIC[@]}"; do
+    if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -E "$pattern" 2>/dev/null | grep -v "^\s*//" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_"; then
+        report_issue "Found potentially unsafe arithmetic operation"
+        echo "   Use saturating arithmetic: .saturating_add(), .saturating_sub(), .saturating_mul()"
+        echo "   For array access, use: .get(index).ok_or(\"error\")?"
+        echo ""
+    fi
+done
+
+# 3. TYPE SAFETY CHECK
+print_info "3. Checking for type safety issues..."
+
+# Check for ambiguous numeric types
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "let.*= [0-9]" 2>/dev/null | grep -v ": [ui][0-9]" | grep -v "^\s*//"; then
+    report_issue "Found ambiguous numeric types"
+    echo "   Add explicit type annotations: let count: u32 = 0;"
+    echo ""
+fi
+
+# 4. FORMAT STRING CHECK
+print_info "4. Checking for deprecated format string patterns..."
+
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n 'format!.*"{}"' 2>/dev/null | grep -v "^\s*//"; then
+    report_issue "Found deprecated format string pattern"
+    echo "   Use inlined arguments: format!(\"{variable}\") instead of format!(\"{}\", variable)"
+    echo ""
+fi
+
+# 5. AUTHENTICATION CHECK
+print_info "5. Checking for missing authentication in update functions..."
+
+# Look for update functions without authentication
+UPDATE_FUNCTIONS=$(git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "#\[ic_cdk::update\]" 2>/dev/null | cut -d: -f1,2)
+if [ -n "$UPDATE_FUNCTIONS" ]; then
+    while IFS= read -r func_location; do
+        file=$(echo "$func_location" | cut -d: -f1)
+        line=$(echo "$func_location" | cut -d: -f2)
+        
+        # Check next 10 lines for authentication
+        if ! sed -n "${line},$((line + 10))p" "$file" | grep -q "authenticate_user\|caller()"; then
+            report_issue "Update function at $func_location may be missing authentication check"
+            echo "   Add: let caller = authenticate_user()?;"
+            echo ""
+        fi
+    done <<< "$UPDATE_FUNCTIONS"
+fi
+
+# 6. CLIPPY CHECK WITH ENHANCED LINTS
+print_info "6. Running enhanced clippy checks..."
+
+if ! cargo clippy --all-targets --all-features -- \
+    -D warnings \
+    -D clippy::unwrap_used \
+    -D clippy::expect_used \
+    -D clippy::panic \
+    -D clippy::arithmetic_side_effects \
+    -D clippy::indexing_slicing; then
+    report_issue "Clippy checks failed with enhanced security lints"
+    echo ""
+fi
+
+# 7. FORMATTING CHECK
+print_info "7. Checking code formatting..."
+
+if ! cargo fmt --check; then
+    report_issue "Code formatting check failed"
+    echo "   Run: cargo fmt"
+    echo ""
+fi
+
+# 8. DOCUMENTATION PATTERN CHECK
+print_info "8. Checking documentation for unsafe patterns..."
+
+# Check for unsafe patterns in documentation
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "/// .*\.unwrap\|/// .*\.expect\|/// .*panic!" 2>/dev/null; then
+    report_issue "Found unsafe patterns in documentation examples"
+    echo "   Documentation should show safe patterns only"
+    echo ""
+fi
+
+# 9. EXPERIMENTAL ATTRIBUTE CHECK
+print_info "9. Checking for misused experimental attributes..."
+
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "#\[allow.*experimental" 2>/dev/null; then
+    report_issue "Found experimental attributes - verify they are properly used"
+    echo ""
+fi
+
+# 10. CANISTER-SPECIFIC CHECKS
+print_info "10. Running canister-specific validations..."
+
+# Check for Principal::anonymous() without validation
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "Principal::anonymous()" 2>/dev/null | grep -v "!=" | grep -v "==" | grep -v "^\s*//"; then
+    report_issue "Found Principal::anonymous() usage without validation"
+    echo "   Always check: if caller == Principal::anonymous() { return Err(...) }"
+    echo ""
+fi
+
+# 11. STATE MANAGEMENT CHECK
+print_info "11. Checking state management patterns..."
+
+# Check for direct state mutations without proper error handling
+if git diff --cached --name-only | grep -E "\.(rs)$" | xargs grep -n "\.borrow_mut()" 2>/dev/null | grep -v "with_state_mut\|RefCell.*borrow_mut"; then
+    report_issue "Found direct state mutation - use with_state_mut() pattern"
+    echo ""
+fi
+
+# 12. FINAL SUMMARY
+echo ""
+echo "=========================================="
+if [ $ISSUES_FOUND -eq 0 ]; then
+    print_success "All pre-commit checks passed! ✨"
+    print_info "Code follows deCentra security and quality standards"
+    exit 0
+else
+    print_error "Found $ISSUES_FOUND issues that must be fixed before commit"
+    echo ""
+    echo "🔧 QUICK FIXES:"
+    echo "   1. Run: cargo fmt"
+    echo "   2. Run: cargo clippy --fix --allow-dirty"
+    echo "   3. Replace .unwrap()/.expect() with proper error handling"
+    echo "   4. Use saturating arithmetic for all numeric operations"
+    echo "   5. Add explicit type annotations for numeric variables"
+    echo ""
+    echo "📚 For detailed guidance, see:"
+    echo "   - .github/instructions/code-quality.instructions.md"
+    echo "   - .github/instructions/error-handling.instructions.md"
+    echo ""
+    exit 1
+fi

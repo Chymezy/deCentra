@@ -227,6 +227,192 @@ pub async fn create_post_with_error_handling(
     }).map_err(|e| e.into())
 }
 ```
+## **ERROR HANDLING ENFORCEMENT PROTOCOL**
+
+### **🚫 ZERO-TOLERANCE ERROR PATTERNS**
+
+Based on debugging analysis, these patterns cause critical failures:
+
+```rust
+// ❌ PANIC-INDUCING PATTERNS - ABSOLUTELY FORBIDDEN
+.unwrap()                           // Causes canister trap
+.expect("message")                  // Causes canister trap  
+panic!("error")                     // Causes canister trap
+unreachable!()                      // Causes canister trap
+todo!()                            // Causes canister trap
+unimplemented!()                   // Causes canister trap
+
+// ❌ UNSAFE ARITHMETIC - CAUSES OVERFLOW PANICS
+a + b                              // Use a.saturating_add(b)
+a - b                              // Use a.saturating_sub(b)
+a * b                              // Use a.saturating_mul(b)
+a[index]                           // Use a.get(index).ok_or("error")?
+
+// ❌ DEPRECATED ERROR PATTERNS FOUND IN DEBUGGING
+.or_insert_with(|| Vec::new())     // Use .or_default()
+format!("{}", var)                 // Use format!("{var}")
+```
+
+### **✅ MANDATORY ERROR HANDLING PATTERNS**
+
+```rust
+// ✅ CANISTER-SAFE ERROR HANDLING
+pub fn safe_user_operation(user_id: UserId) -> Result<UserProfile, String> {
+    // Authentication check
+    let caller = authenticate_user()?;
+    
+    // Input validation
+    validate_user_id(&user_id)?;
+    
+    // Safe state access
+    with_state(|state| {
+        state.users
+            .get(&user_id)
+            .cloned()
+            .ok_or_else(|| format!("User not found: {}", user_id.0))
+    })
+}
+
+// ✅ COMPREHENSIVE VALIDATION CHAIN
+pub fn create_post_with_full_validation(
+    content: String,
+    media_urls: Vec<String>
+) -> Result<PostId, String> {
+    // Step 1: Authentication
+    let author = authenticate_user()?;
+    
+    // Step 2: Content validation
+    validate_content_length(&content, MAX_POST_CONTENT)?;
+    validate_content_safety(&content)?;
+    
+    // Step 3: Media validation
+    if media_urls.len() > MAX_MEDIA_URLS {
+        return Err(format!("Too many media URLs: {} > {}", media_urls.len(), MAX_MEDIA_URLS));
+    }
+    
+    for url in &media_urls {
+        validate_media_url(url)?;
+    }
+    
+    // Step 4: Rate limiting check
+    check_rate_limit(&author, "create_post")?;
+    
+    // Step 5: Safe post creation
+    let post_id = generate_post_id()?;
+    let post = Post {
+        id: post_id,
+        author,
+        content: sanitize_content(&content)?,
+        media_urls,
+        created_at: ic_cdk::api::time(),
+        visibility: PostVisibility::Public,
+    };
+    
+    // Step 6: Safe state mutation
+    with_state_mut(|state| {
+        state.posts.insert(post_id, post);
+        Ok(post_id)
+    })
+}
+```
+
+### **ERROR CONTEXT AND RECOVERY PATTERNS**
+
+```rust
+// ✅ CONTEXT-RICH ERROR MESSAGES
+pub fn transfer_with_context(
+    from: UserId,
+    to: UserId,
+    amount: u64
+) -> Result<TransactionId, String> {
+    let from_balance = get_user_balance(&from)
+        .map_err(|e| format!("Failed to get sender balance for {}: {}", from.0, e))?;
+    
+    let to_profile = get_user_profile(&to)
+        .map_err(|e| format!("Failed to get recipient profile for {}: {}", to.0, e))?;
+    
+    if from_balance < amount {
+        return Err(format!(
+            "Insufficient balance: {} < {} for user {}", 
+            from_balance, amount, from.0
+        ));
+    }
+    
+    execute_transfer(from, to, amount)
+        .map_err(|e| format!("Transfer execution failed: {}", e))
+}
+
+// ✅ GRACEFUL DEGRADATION PATTERNS
+pub fn get_user_feed_with_fallback(
+    user_id: UserId,
+    limit: usize
+) -> Result<Vec<Post>, String> {
+    // Primary feed generation
+    match generate_personalized_feed(&user_id, limit) {
+        Ok(feed) => Ok(feed),
+        Err(primary_error) => {
+            // Log primary error for debugging
+            log_safe(LogLevel::Warn, "Primary feed generation failed", Some(&primary_error));
+            
+            // Fallback to basic chronological feed
+            generate_basic_feed(&user_id, limit)
+                .map_err(|fallback_error| {
+                    format!("Both primary and fallback feed generation failed. Primary: {}. Fallback: {}", 
+                           primary_error, fallback_error)
+                })
+        }
+    }
+}
+```
+
+### **VALIDATION UTILITY FUNCTIONS**
+
+```rust
+// ✅ COMPREHENSIVE INPUT VALIDATION FOUND MISSING IN DEBUGGING
+pub fn validate_content_length(content: &str, max_length: usize) -> Result<(), String> {
+    if content.trim().is_empty() {
+        return Err("Content cannot be empty".to_string());
+    }
+    
+    if content.len() > max_length {
+        return Err(format!(
+            "Content too long: {} characters > {} limit", 
+            content.len(), 
+            max_length
+        ));
+    }
+    
+    Ok(())
+}
+
+pub fn validate_user_id(user_id: &UserId) -> Result<(), String> {
+    if user_id.0 == Principal::anonymous() {
+        return Err("Anonymous user ID not allowed".to_string());
+    }
+    
+    if user_id.0.as_slice().is_empty() {
+        return Err("Empty user ID not allowed".to_string());
+    }
+    
+    Ok(())
+}
+
+pub fn validate_numeric_range<T: PartialOrd + std::fmt::Display>(
+    value: T,
+    min: T,
+    max: T,
+    field_name: &str
+) -> Result<(), String> {
+    if value < min || value > max {
+        return Err(format!(
+            "{} must be between {} and {}, got {}", 
+            field_name, min, max, value
+        ));
+    }
+    
+    Ok(())
+}
+```
 
 ### Frontend Error Boundaries for Social Features
 

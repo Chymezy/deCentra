@@ -80,7 +80,7 @@ fi
 
 # Step 3: Verify dfx.json configuration
 print_status "Step 3: Verifying dfx.json configuration..."
-if grep -q '"type": "rust"' dfx.json; then
+if grep -q '"type": "custom"' dfx.json; then
     print_success "dfx.json is configured for Rust backend"
 else
     print_error "dfx.json is not configured for Rust backend"

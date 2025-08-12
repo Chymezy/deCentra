@@ -1,11 +1,34 @@
 #!/bin/bash
 
-# CERT Secure Coding Pre-Commit Hook for ICP Projects
-# This script enforces security checks before allowing commits
+# =============================================================================
+# UNIFIED CERT SECURITY PRE-COMMIT HOOK FOR DECENTRA ICP PROJECT
+# =============================================================================
+# 
+# This script combines:
+# 1. Original comprehensive CERT security checks
+# 2. Enhanced targeted error pattern detection
+# 3. Project-specific validation for ICP/IC canisters
+#
+# Features:
+# - Zero-tolerance for critical security anti-patterns (.unwrap, panic!, etc.)
+# - Enhanced arithmetic safety validation
+# - Comprehensive authentication checks for update functions  
+# - Multi-language support (Rust, Motoko, TypeScript)
+# - Caching for expensive operations
+# - Detailed error reporting with fix suggestions
+#
+# Version: 2.0 (Unified)
+# Last updated: Based on comprehensive debugging analysis
+# =============================================================================
+
+# Unified CERT Security Pre-Commit Hook for deCentra ICP Project
+# Combines comprehensive security checks with targeted error prevention
+# This script enforces CERT security standards and prevents common coding errors
 
 set -e
 
-echo "🔒 Running CERT Security Checks..."
+echo "🔒 Running Unified CERT Security & Quality Checks..."
+echo "=================================================="
 
 # Colors for output
 RED='\033[0;31m'
@@ -33,8 +56,15 @@ print_error() {
     echo -e "${RED}[FAIL]${NC} $1"
 }
 
+# Enhanced reporting functions for critical errors
+report_critical_issue() {
+    CRITICAL_ISSUES=$((CRITICAL_ISSUES + 1))
+    echo -e "${RED}❌ CRITICAL: $1${NC}"
+}
+
 # Track if any check failed
 CHECKS_FAILED=0
+CRITICAL_ISSUES=0
 WARNINGS=""
 
 # Cache directory for expensive checks
@@ -104,6 +134,128 @@ echo "  - Motoko files: $(echo "$STAGED_MO_FILES" | wc -w)"
 echo "  - TypeScript files: $(echo "$STAGED_TS_FILES" | wc -w)"
 echo "  - Total files: $(echo "$STAGED_ALL_FILES" | wc -w)"
 
+# ==============================================================================
+# ENHANCED CRITICAL SECURITY PATTERN CHECKS (from enhanced-pre-commit.sh)
+# ==============================================================================
+print_status "Running enhanced critical security pattern checks..."
+
+# Function to check for forbidden patterns with better precision
+check_forbidden_patterns() {
+    local file_pattern="$1"
+    shift
+    local patterns=("$@")
+    
+    local files_found=false
+    for pattern in "${patterns[@]}"; do
+        # Check staged files only, exclude comments and strings
+        if echo "$STAGED_ALL_FILES" | grep -E "$file_pattern" | while read -r file; do
+            if [ -f "$file" ]; then
+                # Check git diff for new additions of this pattern
+                if git diff --cached "$file" | grep -E "^\+.*$pattern" | grep -v "^\s*//" | grep -v "^\s*\*" | grep -v "//.*$pattern" > /dev/null; then
+                    echo "$file: $pattern"
+                    files_found=true
+                fi
+            fi
+        done | head -10; then
+            report_critical_issue "Found forbidden pattern '$pattern' in staged changes"
+            case "$pattern" in
+                "\.unwrap\(\)")
+                    echo "   🔧 Replace with: .ok_or(\"error message\")?  or  .map_err(|e| format!(\"error: {}\", e))?"
+                    ;;
+                "\.expect\(")
+                    echo "   🔧 Replace with: .ok_or(\"error message\")?  or  .map_err(|e| format!(\"error: {}\", e))?"
+                    ;;
+                "panic!\(")
+                    echo "   🔧 Replace with: return Err(\"error message\".to_string())"
+                    ;;
+                "unreachable!\(")
+                    echo "   🔧 Replace with proper error handling and return Err(...)"
+                    ;;
+                "todo!\("|"unimplemented!\(")
+                    echo "   🔧 Implement the functionality or return an appropriate error"
+                    ;;
+            esac
+            echo ""
+            CHECKS_FAILED=1
+        fi
+    done
+}
+
+# Critical Rust patterns that must not be present
+if [ -n "$STAGED_RS_FILES" ]; then
+    FORBIDDEN_RUST_PATTERNS=(
+        "\.unwrap\(\)"
+        "\.expect\("
+        "panic!\("
+        "unreachable!\("
+        "todo!\("
+        "unimplemented!\("
+    )
+    
+    check_forbidden_patterns "\.rs$" "${FORBIDDEN_RUST_PATTERNS[@]}"
+    
+    # Check for unsafe arithmetic operations
+    print_status "Checking for unsafe arithmetic operations..."
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            # Look for additions of arithmetic operations without safety checks
+            if git diff --cached "$file" | grep -E "^\+.*[^.]\s*[\+\-\*]\s*[^.]" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_" | grep -v "^\s*//" > /dev/null; then
+                echo "$file: unsafe arithmetic"
+            fi
+            # Look for array indexing without bounds checking
+            if git diff --cached "$file" | grep -E "^\+.*\[[^]]+\]" | grep -v "\.get(" | grep -v "^\s*//" > /dev/null; then
+                echo "$file: unsafe indexing"
+            fi
+        fi
+    done | head -5; then
+        report_critical_issue "Found unsafe arithmetic or indexing operations"
+        echo "   🔧 Use: .saturating_add(), .saturating_sub(), .saturating_mul()"
+        echo "   🔧 For arrays: .get(index).ok_or(\"index out of bounds\")?"
+        echo ""
+        CHECKS_FAILED=1
+    fi
+    
+    # Check for ambiguous numeric types
+    print_status "Checking for ambiguous numeric types..."
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E "^\+.*let.*=\s*[0-9]" | grep -v ": [ui][0-9]" | grep -v "^\s*//" > /dev/null; then
+                echo "$file: ambiguous numeric type"
+            fi
+        fi
+    done | head -5; then
+        report_critical_issue "Found ambiguous numeric types"
+        echo "   🔧 Add explicit type: let count: u32 = 0;"
+        echo ""
+        CHECKS_FAILED=1
+    fi
+    
+    # Check authentication in update functions
+    print_status "Checking authentication in update functions..."
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            git diff --cached "$file" | grep -A 10 -B 2 "^\+.*#\[ic_cdk::update\]" | while read -r line; do
+                if echo "$line" | grep -q "#\[ic_cdk::update\]"; then
+                    # Get the next 10 lines to check for authentication
+                    if ! echo "$line" | grep -A 10 -E "authenticate_user|caller\(\)" > /dev/null; then
+                        echo "$file: missing authentication in update function"
+                    fi
+                fi
+            done
+        fi
+    done | head -3; then
+        report_critical_issue "Update functions may be missing authentication checks"
+        echo "   🔧 Add: let caller = authenticate_user()?;"
+        echo "   🔧 Or verify: if caller == Principal::anonymous() { return Err(...) }"
+        echo ""
+        CHECKS_FAILED=1
+    fi
+fi
+
+print_success "Enhanced critical security pattern checks completed"
+
+# ==============================================================================
+
 # Check Rust Files (ONLY if Rust files are staged)
 if [ -n "$STAGED_RS_FILES" ]; then
     print_status "Checking Rust files..."
@@ -118,8 +270,8 @@ if [ -n "$STAGED_RS_FILES" ]; then
         CHECKS_FAILED=1
     fi
 
-    # Check 2: Clippy Linting (with security-focused rules)
-    print_status "Running security-focused linting with Clippy..."
+    # Check 2: Enhanced Clippy Linting (with comprehensive security-focused rules)
+    print_status "Running enhanced security-focused linting with Clippy..."
     if cargo clippy --all-targets --all-features -- \
         -D warnings \
         -D clippy::unwrap_used \
@@ -128,17 +280,18 @@ if [ -n "$STAGED_RS_FILES" ]; then
         -D clippy::unreachable \
         -D clippy::todo \
         -D clippy::unimplemented \
+        -D clippy::arithmetic_side_effects \
+        -D clippy::indexing_slicing \
         -W clippy::cast_possible_truncation \
         -W clippy::cast_possible_wrap \
         -W clippy::cast_precision_loss \
-        -W clippy::arithmetic_side_effects \
         -W clippy::string_slice \
         > /dev/null 2>&1; then
-        print_success "Clippy security checks passed"
+        print_success "Enhanced Clippy security checks passed"
     else
-        print_error "Clippy security checks failed"
+        print_error "Enhanced Clippy security checks failed"
         echo "Fix the warnings above before committing"
-        echo "Particularly check for .unwrap(), .expect(), and panic! usage"
+        echo "Focus on: .unwrap(), .expect(), panic!, arithmetic operations, and array indexing"
         CHECKS_FAILED=1
     fi
 
@@ -446,12 +599,12 @@ fi
 
 # Summary
 echo ""
-echo "==============================="
-echo "CERT Security Check Summary:"
-echo "==============================="
+echo "======================================================="
+echo "UNIFIED CERT SECURITY & QUALITY CHECK SUMMARY:"
+echo "======================================================="
 
-if [ $CHECKS_FAILED -eq 0 ]; then
-    print_success "All CERT security checks passed! 🎉"
+if [ $CHECKS_FAILED -eq 0 ] && [ $CRITICAL_ISSUES -eq 0 ]; then
+    print_success "All CERT security and quality checks passed! 🎉"
     if [ -n "$WARNINGS" ]; then
         echo ""
         print_warning "Non-blocking warnings to review:"
@@ -460,17 +613,32 @@ if [ $CHECKS_FAILED -eq 0 ]; then
     print_status "Commit proceeding..."
     exit 0
 else
-    print_error "CERT security checks failed! ❌"
+    if [ $CRITICAL_ISSUES -gt 0 ]; then
+        echo -e "${RED}🚨 CRITICAL SECURITY ISSUES FOUND: $CRITICAL_ISSUES${NC}"
+        echo ""
+    fi
+    
+    print_error "CERT security and quality checks failed! ❌"
     print_error "Commit aborted. Fix the issues above and try again."
     echo ""
-    echo "Quick fixes:"
+    echo "🔧 PRIORITY FIXES (Critical Issues):"
+    echo "  1. Replace ALL .unwrap()/.expect() with proper error handling"
+    echo "  2. Use saturating arithmetic: .saturating_add(), .saturating_sub(), .saturating_mul()"
+    echo "  3. Replace panic!/unreachable!/todo! with proper error returns"
+    echo "  4. Add authentication checks to all update functions"
+    echo "  5. Use safe array access: .get(index).ok_or(\"error\")?"
+    echo ""
+    echo "🛠️  STANDARD FIXES:"
+    echo "  - Run 'cargo fmt' to fix Rust formatting"
+    echo "  - Run 'cargo clippy --fix --allow-dirty' for auto-fixable issues"
     echo "  - Run 'npm run format' to fix TypeScript formatting"
     echo "  - Run 'npm run type-check' to check TypeScript errors"
-    echo "  - Run 'cargo fmt' to fix Rust formatting (if applicable)"
-    echo "  - Run 'cargo clippy' to see detailed Rust linting errors (if applicable)"
-    echo "  - Run 'npm audit' to check for npm vulnerabilities"
     echo "  - Remove console.logs and debug statements"
-    echo "  - Add proper error handling"
+    echo ""
+    echo "📚 DOCUMENTATION & GUIDANCE:"
+    echo "  - .github/instructions/code-quality.instructions.md"
+    echo "  - .github/instructions/error-handling.instructions.md"
+    echo "  - .github/instructions/rust.instructions.md"
     echo ""
     exit 1
 fi

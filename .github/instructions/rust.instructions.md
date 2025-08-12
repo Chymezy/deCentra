@@ -647,3 +647,76 @@ mod social_network_tests {
 ```
 
 Remember: Every function should consider the social network context and ensure user privacy, content integrity, and censorship resistance while maintaining high performance and security standards.
+
+## **CRITICAL ERROR PREVENTION PATTERNS**
+
+### **🚫 FORBIDDEN PATTERNS - Will Cause Canister Failure**
+
+```rust
+// ❌ ABSOLUTELY FORBIDDEN - These patterns were found in our debugging
+user_data.unwrap()                    // FORBIDDEN - Use .ok_or("error")?
+option.expect("message")              // FORBIDDEN - Use .ok_or("error")?
+panic!("error")                       // FORBIDDEN - Return Err(String)
+count + 1                            // FORBIDDEN - Use count.saturating_add(1)
+format!("{}", variable)              // FORBIDDEN - Use format!("{variable}")
+clippy::integer_arithmetic           // FORBIDDEN - Use clippy::arithmetic_side_effects
+let count = 0;                       // FORBIDDEN - Use let count: u32 = 0;
+.or_insert_with(|| Vec::new())       // FORBIDDEN - Use .or_default()
+
+// ❌ DOCUMENTATION ANTI-PATTERNS
+/// Example: user.unwrap()            // FORBIDDEN - Don't show unsafe patterns in docs
+// TODO: Fix this later              // FORBIDDEN - Complete all implementations
+```
+
+### **✅ MANDATORY REPLACEMENT PATTERNS**
+
+```rust
+// ✅ REQUIRED PATTERNS - Use these instead
+let user = user_data.ok_or("User not found")?;
+let value = option.ok_or("Value not found")?;
+return Err("Operation failed".to_string());
+let new_count = count.saturating_add(1);
+let message = format!("Hello {name}");
+// Use: clippy::arithmetic_side_effects
+let count: u32 = 0;
+connections.or_default()
+
+// ✅ SAFE DOCUMENTATION PATTERNS
+/// Example: user.ok_or("User not found")?
+/// All implementations must be complete
+```
+
+### **ARITHMETIC SAFETY REQUIREMENTS**
+
+```rust
+// ✅ ALWAYS use saturating arithmetic in social network contexts
+let new_follower_count = current_count.saturating_add(1);
+let remaining_space = max_size.saturating_sub(current_size);
+let total_engagement = likes.saturating_add(comments).saturating_add(shares);
+
+// ✅ ALWAYS check for division by zero
+fn calculate_engagement_rate(total_engagements: u64, total_posts: u64) -> Result<f64, String> {
+    if total_posts == 0 {
+        return Err("Cannot calculate rate with zero posts".to_string());
+    }
+    Ok(total_engagements as f64 / total_posts as f64)
+}
+```
+
+### **TYPE SAFETY ENFORCEMENT**
+
+```rust
+// ✅ EXPLICIT TYPE ANNOTATIONS - Prevent ambiguity errors found in debugging
+let mut consecutive_count: u32 = 1;           // Not: let mut consecutive_count = 1;
+let timestamp: u64 = ic_cdk::api::time();     // Not: let timestamp = ic_cdk::api::time();
+let user_count: usize = users.len();          // Not: let user_count = users.len();
+
+// ✅ STRONG DOMAIN TYPING - Prevent ID confusion errors
+#[derive(Debug, Clone, PartialEq, Eq, Hash, CandidType, Deserialize)]
+pub struct UserId(pub Principal);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, CandidType, Deserialize)]
+pub struct PostId(pub u64);
+
+// NEVER use: String, u64, or Principal directly for domain IDs
+```
