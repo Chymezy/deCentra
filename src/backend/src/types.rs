@@ -1,4 +1,5 @@
 use candid::{CandidType, Deserialize, Principal};
+use std::collections::BTreeSet;
 
 // ============================================================================
 // STRONG TYPED IDS
@@ -244,3 +245,82 @@ pub const DEFAULT_FEED_LIMIT: usize = 10;
 
 /// Maximum feed limit to prevent resource exhaustion
 pub const MAX_FEED_LIMIT: usize = 50;
+
+// ============================================================================
+// SOCIAL GRAPH TYPES
+// ============================================================================
+
+/// Social relationship between users
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct FollowRelationship {
+    /// User who is following
+    pub follower: UserId,
+
+    /// User being followed
+    pub following: UserId,
+
+    /// When the follow relationship was created
+    pub created_at: u64,
+
+    /// Whether the relationship is mutual (both users follow each other)
+    pub is_mutual: bool,
+}
+
+/// Social connection metadata for efficient queries
+#[derive(CandidType, Deserialize, Clone, Debug, Default)]
+pub struct SocialConnections {
+    /// Set of users this user follows
+    pub following: BTreeSet<UserId>,
+
+    /// Set of users following this user
+    pub followers: BTreeSet<UserId>,
+
+    /// Set of users this user has blocked
+    pub blocked: BTreeSet<UserId>,
+
+    /// Set of users who have blocked this user
+    pub blocked_by: BTreeSet<UserId>,
+}
+
+/// Follow request for users with private profiles
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct FollowRequest {
+    /// Unique request identifier
+    pub id: u64,
+
+    /// User requesting to follow
+    pub requester: UserId,
+
+    /// User being requested to follow
+    pub target: UserId,
+
+    /// When the request was created
+    pub created_at: u64,
+
+    /// Status of the request
+    pub status: FollowRequestStatus,
+
+    /// Optional message with the request
+    pub message: Option<String>,
+}
+
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub enum FollowRequestStatus {
+    Pending,
+    Approved,
+    Rejected,
+    Cancelled,
+}
+
+// Add social graph limits and constants
+/// Maximum number of users one can follow to prevent spam
+pub const MAX_FOLLOWING_LIMIT: usize = 10_000;
+
+/// Maximum number of pending follow requests
+pub const MAX_PENDING_REQUESTS: usize = 100;
+
+/// Default limit for social connections pagination
+pub const DEFAULT_CONNECTIONS_LIMIT: usize = 20;
+
+/// Maximum limit for social connections pagination
+pub const MAX_CONNECTIONS_LIMIT: usize = 100;

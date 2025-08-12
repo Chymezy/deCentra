@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -11,13 +11,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   /* Brand Colors */
-  --color-deep-indigo: #4B0082;
-  --color-electric-blue: #0F62FE;
-  --color-vibrant-orange: #FF6F00;
-  --color-charcoal-black: #1A1A1A;
-  
+  --color-deep-indigo: #4b0082;
+  --color-electric-blue: #0f62fe;
+  --color-vibrant-orange: #ff6f00;
+  --color-charcoal-black: #1a1a1a;
+
   /* Font Families */
   --font-heading: 'Inter', 'Poppins', system-ui, sans-serif;
   --font-body: 'Roboto', 'Open Sans', system-ui, sans-serif;

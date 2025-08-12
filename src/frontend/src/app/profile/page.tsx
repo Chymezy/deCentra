@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/components/AuthContext';
+import UserConnectionsDisplay from '@/components/social/UserConnectionsDisplay';
+import FollowRequestsPanel from '@/components/social/FollowRequestsPanel';
 import { backend } from '../../../../declarations/backend';
-import type { Profile } from '../../../../declarations/backend/backend.did';
+import type { UserProfile } from '../../../../declarations/backend/backend.did';
 import { Principal } from '@dfinity/principal';
 
 export default function ProfilePage() {
@@ -14,7 +16,7 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('👤');
   const [isUpdating, setIsUpdating] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   // Fetch user profile when authenticated
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function ProfilePage() {
     // Use Principal.fromText for correct type
     const principalId = Principal.fromText(principal);
     try {
-      const userProfileResult = await backend.getProfile(principalId);
+      const userProfileResult = await backend.get_user_profile(principalId);
       if (userProfileResult && userProfileResult.length > 0) {
         const userProfile = userProfileResult[0];
         if (userProfile) {
@@ -57,12 +59,16 @@ export default function ProfilePage() {
 
     setIsUpdating(true);
     try {
-      const result = await backend.updateProfile(username, bio, avatar);
-      if ('ok' in result) {
+      const result = await backend.update_user_profile(
+        username,
+        bio ? [bio] : [],
+        avatar ? [avatar] : []
+      );
+      if ('Ok' in result) {
         alert('Profile updated successfully!');
-        setProfile(result.ok);
+        setProfile(result.Ok);
       } else {
-        alert('Error updating profile: ' + result.err);
+        alert('Error updating profile: ' + result.Err);
       }
     } catch (error) {
       console.error('Update profile error:', error);
@@ -85,12 +91,16 @@ export default function ProfilePage() {
 
     setIsUpdating(true);
     try {
-      const result = await backend.createProfile(username, bio, avatar);
-      if ('ok' in result) {
+      const result = await backend.create_user_profile(
+        username,
+        bio ? [bio] : [],
+        avatar ? [avatar] : []
+      );
+      if ('Ok' in result) {
         alert('Profile created successfully!');
-        setProfile(result.ok);
+        setProfile(result.Ok);
       } else {
-        alert('Error creating profile: ' + result.err);
+        alert('Error creating profile: ' + result.Err);
       }
     } catch (error) {
       console.error('Create profile error:', error);
@@ -128,15 +138,47 @@ export default function ProfilePage() {
                     {avatar}
                   </span>
                 </div>
-                <p className="text-charcoal-black/70">
-                  Principal: {principal}
-                </p>
+                <p className="text-charcoal-black/70">Principal: {principal}</p>
               </div>
 
               <div className="bg-gradient-to-r from-deep-indigo/5 to-electric-blue/5 rounded-2xl p-6">
                 <h2 className="text-xl font-heading font-bold text-deep-indigo mb-4">
                   Profile Information
                 </h2>
+                {profile && (
+                  <div className="mb-6 p-4 bg-white/50 rounded-xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-medium text-charcoal-black">
+                          @{profile.username}
+                        </h3>
+                        {profile.bio && (
+                          <p className="text-gray-600 mt-1">{profile.bio}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-6 text-sm text-gray-600">
+                      <span>
+                        <strong className="text-charcoal-black">
+                          {Number(profile.follower_count)}
+                        </strong>{' '}
+                        followers
+                      </span>
+                      <span>
+                        <strong className="text-charcoal-black">
+                          {Number(profile.following_count)}
+                        </strong>{' '}
+                        following
+                      </span>
+                      <span>
+                        <strong className="text-charcoal-black">
+                          {Number(profile.post_count)}
+                        </strong>{' '}
+                        posts
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-charcoal-black mb-2">
@@ -174,22 +216,41 @@ export default function ProfilePage() {
                       className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-deep-indigo focus:border-transparent text-charcoal-black bg-white"
                     />
                   </div>
-                  <button 
-                    onClick={profile ? handleUpdateProfile : handleCreateProfile}
+                  <button
+                    onClick={
+                      profile ? handleUpdateProfile : handleCreateProfile
+                    }
                     disabled={isUpdating || !username.trim()}
                     className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isUpdating ? 'Updating...' : (profile ? 'Update Profile' : 'Create Profile')}
+                    {isUpdating
+                      ? 'Updating...'
+                      : profile
+                        ? 'Update Profile'
+                        : 'Create Profile'}
                   </button>
                 </div>
               </div>
+
+              {/* Follow Requests Panel - Only show for users with profiles */}
+              {profile && <FollowRequestsPanel />}
+
+              {/* Social Connections Display */}
+              {profile && (
+                <UserConnectionsDisplay
+                  userId={profile.id.toString()}
+                  userProfile={profile}
+                  isOwnProfile={true}
+                />
+              )}
 
               <div className="bg-white border border-gray-200 rounded-2xl p-6">
                 <h2 className="text-xl font-heading font-bold text-deep-indigo mb-4">
                   Your Posts
                 </h2>
                 <p className="text-charcoal-black/70">
-                  Your posts will appear here. Visit the feed to create your first post!
+                  Your posts will appear here. Visit the feed to create your
+                  first post!
                 </p>
               </div>
             </div>
@@ -199,4 +260,4 @@ export default function ProfilePage() {
       <Footer />
     </>
   );
-} 
+}

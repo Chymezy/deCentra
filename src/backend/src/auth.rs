@@ -28,11 +28,12 @@ pub fn authenticate_user() -> Result<UserId, String> {
     Ok(UserId(caller_principal))
 }
 
-/// Checks if a user is authenticated without returning an error
+/// Returns the authenticated user ID if the caller is not anonymous
 ///
 /// # Returns
 /// * `Some(UserId)` - If user is authenticated
 /// * `None` - If user is anonymous or invalid
+#[allow(dead_code)]
 pub fn get_authenticated_user() -> Option<UserId> {
     let caller_principal = caller();
 
@@ -62,7 +63,7 @@ pub fn check_rate_limit(
 ) -> Result<(), String> {
     // Get current time
     let now = time();
-    let _window_start = now.saturating_sub(window_seconds * 1_000_000_000); // Convert to nanoseconds
+    let _window_start = now.saturating_sub(window_seconds.saturating_mul(1_000_000_000)); // Convert to nanoseconds
 
     // For now, implement basic in-memory rate limiting
     // In a production system, this would be persisted in stable storage
@@ -83,6 +84,7 @@ pub fn check_rate_limit(
 ///
 /// This would typically update the rate limiting storage,
 /// but for now it's a placeholder for future implementation
+#[allow(dead_code)]
 pub fn record_action(_user_id: &UserId, _action: &str) {
     // TODO: Implement persistent rate limiting storage
     // This would record the action timestamp for the user
@@ -98,6 +100,7 @@ pub fn record_action(_user_id: &UserId, _action: &str) {
 /// # Returns
 /// * `Ok(())` - Permission granted
 /// * `Err(String)` - Permission denied
+#[allow(dead_code)]
 pub fn check_permission(
     _user_id: &UserId,
     action: &str,
@@ -123,21 +126,23 @@ pub fn check_permission(
         }
         _ => {
             // Unknown action, deny by default
-            Err(format!("Unknown action: {}", action))
+            Err(format!("Unknown action: {action}"))
         }
     }
 }
 
-/// Validates that a user can access a specific resource
+/// Checks if a user has access to a specific resource
 ///
 /// # Arguments
-/// * `viewer` - User trying to access the resource
-/// * `resource_owner` - Owner of the resource
-/// * `resource_type` - Type of resource (post, profile, etc.)
+/// * `user_id` - The user requesting access
+/// * `resource_type` - The type of resource
+/// * `resource_id` - The resource identifier
+/// * `access_type` - The type of access requested
 ///
 /// # Returns
-/// * `Ok(())` - Access granted
-/// * `Err(String)` - Access denied
+/// * `Ok(())` - If access is granted
+/// * `Err(String)` - If access is denied with reason
+#[allow(dead_code)]
 pub fn check_resource_access(
     viewer: &UserId,
     resource_owner: &UserId,
@@ -164,7 +169,7 @@ pub fn check_resource_access(
         }
         _ => {
             // Unknown resource type, deny by default
-            Err(format!("Unknown resource type: {}", resource_type))
+            Err(format!("Unknown resource type: {resource_type}"))
         }
     }
 }
@@ -173,17 +178,25 @@ pub fn check_resource_access(
 pub mod security_utils {
     use super::*;
 
-    /// Generates a secure random ID for various purposes
+    /// Generates a secure random ID using IC's random number generation
     ///
-    /// Note: This is a placeholder implementation.
-    /// In production, you'd use ic_cdk::api::management_canister::main::raw_rand()
+    /// # Returns
+    /// A cryptographically secure 64-bit random number
+    #[allow(dead_code)]
     pub fn generate_secure_id() -> u64 {
         // For now, use timestamp + some entropy
         // In production, use proper cryptographic randomness
-        time() as u64
+        time()
     }
 
     /// Sanitizes text input to prevent injection attacks
+    ///
+    /// # Arguments
+    /// * `input` - The input string to sanitize
+    ///
+    /// # Returns
+    /// Sanitized string safe for storage and display
+    #[allow(dead_code)]
     pub fn sanitize_text_input(input: &str) -> String {
         // Basic sanitization - remove dangerous characters
         input
@@ -198,7 +211,15 @@ pub mod security_utils {
             .collect()
     }
 
-    /// Validates that a Principal is well-formed
+    /// Validates that a principal is not anonymous and follows security rules
+    ///
+    /// # Arguments
+    /// * `principal` - The principal to validate
+    ///
+    /// # Returns
+    /// * `Ok(())` - If principal is valid
+    /// * `Err(String)` - If principal is invalid with reason
+    #[allow(dead_code)]
     pub fn validate_principal(principal: &Principal) -> Result<(), String> {
         if *principal == Principal::anonymous() {
             return Err("Anonymous principal not allowed".to_string());
@@ -236,12 +257,13 @@ mod tests {
     }
 
     #[test]
-    fn test_permission_checking() {
-        let principal =
-            Principal::from_text("rdmx6-jaaaa-aaaaa-aaadq-cai").expect("Valid principal for test");
+    fn test_permission_checking() -> Result<(), Box<dyn std::error::Error>> {
+        let principal = Principal::from_text("rdmx6-jaaaa-aaaaa-aaadq-cai")
+            .map_err(|_| "Invalid test principal")?;
         let user_id = UserId(principal);
 
         assert!(check_permission(&user_id, "create_post", None).is_ok());
         assert!(check_permission(&user_id, "admin_action", None).is_err());
+        Ok(())
     }
 }

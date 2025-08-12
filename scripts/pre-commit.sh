@@ -131,7 +131,7 @@ if [ -n "$STAGED_RS_FILES" ]; then
         -W clippy::cast_possible_truncation \
         -W clippy::cast_possible_wrap \
         -W clippy::cast_precision_loss \
-        -W clippy::integer_arithmetic \
+        -W clippy::arithmetic_side_effects \
         -W clippy::string_slice \
         > /dev/null 2>&1; then
         print_success "Clippy security checks passed"

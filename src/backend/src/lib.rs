@@ -47,16 +47,31 @@ pub struct SocialNetworkState {
 
     /// Rate limiting tracking (user, action) -> last action times
     pub rate_limits: BTreeMap<(UserId, String), Vec<u64>>,
+
+    /// Social connections for each user (following/followers)
+    pub social_connections: BTreeMap<UserId, SocialConnections>,
+
+    /// Follow requests for private profiles
+    pub follow_requests: BTreeMap<u64, FollowRequest>,
+
+    /// Next available follow request ID
+    pub next_follow_request_id: u64,
+
+    /// Index: who follows whom for efficient lookup
+    pub following_index: BTreeMap<UserId, BTreeSet<UserId>>,
+
+    /// Index: who is followed by whom for efficient lookup
+    pub followers_index: BTreeMap<UserId, BTreeSet<UserId>>,
 }
 
 /// Utility function to work with state
 fn with_state<T>(f: impl FnOnce(&SocialNetworkState) -> T) -> T {
-    STATE.with(|state| f(&*state.borrow()))
+    STATE.with(|state| f(&state.borrow()))
 }
 
 /// Utility function to mutate state
 fn with_state_mut<T>(f: impl FnOnce(&mut SocialNetworkState) -> T) -> T {
-    STATE.with(|state| f(&mut *state.borrow_mut()))
+    STATE.with(|state| f(&mut state.borrow_mut()))
 }
 
 // ============================================================================
@@ -289,7 +304,7 @@ pub async fn create_post(
 
     let post_id = with_state_mut(|state| {
         let post_id = PostId(state.next_post_id);
-        state.next_post_id += 1;
+        state.next_post_id = state.next_post_id.saturating_add(1);
 
         let now = time();
         let post = Post {
@@ -308,15 +323,11 @@ pub async fn create_post(
         state.post_comments.insert(post_id, Vec::new());
 
         // Add to user's posts
-        state
-            .user_posts
-            .entry(user_id)
-            .or_insert_with(Vec::new)
-            .push(post_id);
+        state.user_posts.entry(user_id).or_default().push(post_id);
 
         // Update user's post count
         if let Some(profile) = state.users.get_mut(&user_id) {
-            profile.post_count += 1;
+            profile.post_count = profile.post_count.saturating_add(1);
             profile.updated_at = now;
         }
 
@@ -397,59 +408,32 @@ pub fn get_user_posts(user_id: UserId, limit: Option<usize>, offset: Option<usiz
 /// * `Err(String)` - Authentication or validation error
 ///
 /// # Feed Algorithm
-/// 1. Collect all public posts (for MVP - following system to be enhanced)
+/// 1. Collect posts from users the current user follows
 /// 2. Include current user's own posts regardless of visibility
-/// 3. Sort by creation timestamp (descending)
-/// 4. Apply pagination limits
+/// 3. Filter based on post visibility settings
+/// 4. Remove posts from blocked users
+/// 5. Sort by creation timestamp (descending)
+/// 6. Apply pagination limits
+///
+/// # Privacy Filters Applied
+/// - PostVisibility::Public - Always visible
+/// - PostVisibility::FollowersOnly - Only if user follows author or owns post
+/// - PostVisibility::Unlisted - Only author's own posts
 ///
 /// # Performance
 /// - Pagination prevents memory exhaustion
 /// - Efficient indexing for large user bases
-/// - Cycle cost scales with total posts
+/// - Cycle cost scales with following count
 #[query]
 pub fn get_user_feed(offset: Option<usize>, limit: Option<usize>) -> Result<Vec<FeedPost>, String> {
     let viewer = caller();
-    let limit = limit.unwrap_or(10).min(50); // Cap at 50 posts
-    let offset = offset.unwrap_or(0);
 
     if viewer == Principal::anonymous() {
         return Err("Authentication required for personalized feed".to_string());
     }
 
-    with_state(|state| {
-        let mut feed_posts: Vec<FeedPost> = Vec::new();
-
-        // Collect posts (for MVP, show all public posts + user's own posts)
-        for (post_id, post) in state.posts.iter() {
-            let can_view = match post.visibility {
-                PostVisibility::Public => true,
-                PostVisibility::FollowersOnly => true, // For MVP, show all
-                PostVisibility::Unlisted => viewer == post.author_id.0,
-            };
-
-            if can_view {
-                if let Some(author) = state.users.get(&post.author_id) {
-                    feed_posts.push(FeedPost {
-                        post: post.clone(),
-                        author: author.clone(),
-                        is_liked: state
-                            .post_likes
-                            .get(post_id)
-                            .map(|likes| likes.contains(&UserId(viewer)))
-                            .unwrap_or(false),
-                    });
-                }
-            }
-        }
-
-        // Sort by creation time (newest first)
-        feed_posts.sort_by(|a, b| b.post.created_at.cmp(&a.post.created_at));
-
-        // Apply pagination
-        let result: Vec<FeedPost> = feed_posts.into_iter().skip(offset).take(limit).collect();
-
-        Ok(result)
-    })
+    // Use the enhanced social feed for authenticated users
+    get_social_feed(limit, offset)
 }
 
 // ============================================================================
@@ -474,10 +458,7 @@ pub async fn like_post(post_id: PostId) -> Result<(), String> {
         let post = state.posts.get_mut(&post_id).ok_or("Post not found")?;
 
         // Check if already liked
-        let likes = state
-            .post_likes
-            .entry(post_id)
-            .or_insert_with(BTreeSet::new);
+        let likes = state.post_likes.entry(post_id).or_default();
 
         if likes.contains(&user_id) {
             return Err("Already liked this post".to_string());
@@ -485,7 +466,7 @@ pub async fn like_post(post_id: PostId) -> Result<(), String> {
 
         // Add like
         likes.insert(user_id);
-        post.like_count += 1;
+        post.like_count = post.like_count.saturating_add(1);
         post.updated_at = time();
 
         Ok(())
@@ -502,10 +483,7 @@ pub async fn unlike_post(post_id: PostId) -> Result<(), String> {
         let post = state.posts.get_mut(&post_id).ok_or("Post not found")?;
 
         // Remove like
-        let likes = state
-            .post_likes
-            .entry(post_id)
-            .or_insert_with(BTreeSet::new);
+        let likes = state.post_likes.entry(post_id).or_default();
 
         if !likes.remove(&user_id) {
             return Err("Haven't liked this post".to_string());
@@ -538,7 +516,7 @@ pub async fn add_comment(post_id: PostId, content: String) -> Result<Comment, St
         let post = state.posts.get_mut(&post_id).ok_or("Post not found")?;
 
         let comment_id = CommentId(state.next_comment_id);
-        state.next_comment_id += 1;
+        state.next_comment_id = state.next_comment_id.saturating_add(1);
 
         let now = time();
         let comment = Comment {
@@ -554,11 +532,11 @@ pub async fn add_comment(post_id: PostId, content: String) -> Result<Comment, St
         state
             .post_comments
             .entry(post_id)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(comment_id);
 
         // Update post comment count
-        post.comment_count += 1;
+        post.comment_count = post.comment_count.saturating_add(1);
         post.updated_at = now;
 
         Ok(comment)
@@ -651,6 +629,669 @@ async fn ensure_user_profile(user_id: UserId) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+// ============================================================================
+// SOCIAL GRAPH MANAGEMENT (FOLLOW/UNFOLLOW SYSTEM)
+// ============================================================================
+
+/// Follows another user or sends a follow request for private profiles
+///
+/// # Purpose
+/// Establishes or requests a social connection between users. This is the core
+/// functionality for building the social graph in deCentra.
+///
+/// # Arguments
+/// * `target_user_id` - Principal of the user to follow
+///
+/// # Returns
+/// * `Ok(())` - Successfully followed user or sent follow request
+/// * `Err(String)` - Validation error or operation failure
+///
+/// # Behavior
+/// - For public profiles: Immediately creates follow relationship
+/// - For private profiles: Creates pending follow request
+/// - Updates follower/following counts and social graph indices
+/// - Prevents self-following and duplicate follows
+///
+/// # Errors
+/// - "Cannot follow yourself" - Self-follow attempt
+/// - "User does not exist" - Target user not found
+/// - "Already following this user" - Duplicate follow attempt
+/// - "User has blocked you" - Target has blocked the follower
+/// - "Following limit exceeded" - Follower has reached MAX_FOLLOWING_LIMIT
+/// - "Authentication required" - Anonymous caller
+///
+/// # Security
+/// * Requires authenticated user (Internet Identity)
+/// * Validates target user exists and is not blocked
+/// * Enforces following limits to prevent spam
+/// * Respects privacy settings (public vs private profiles)
+/// * Rate limited to prevent abuse
+///
+/// # Example
+/// ```rust
+/// // Following a public user
+/// if let Ok(target) = Principal::from_text("rdmx6-jaaaa-aaaah-qcaiq-cai") {
+///     let result = follow_user(target).await;
+///     match result {
+///         Ok(()) => println!("Successfully followed user"),
+///         Err(error) => println!("Failed to follow: {}", error),
+///     }
+/// }
+/// }
+/// ```
+///
+/// # Privacy Notes
+/// - Private profiles will receive a follow request instead of immediate follow
+/// - Blocked users cannot send follow requests
+/// - Following relationships are visible based on user privacy settings
+#[update]
+pub async fn follow_user(target_user_id: Principal) -> Result<(), String> {
+    let follower_id = authenticate_user()?;
+    let target_id = UserId(target_user_id);
+
+    // Prevent self-following
+    if follower_id == target_id {
+        return Err("Cannot follow yourself".to_string());
+    }
+
+    // Check if target user exists
+    let target_profile = with_state(|state| state.users.get(&target_id).cloned());
+    let target_profile = target_profile.ok_or("User does not exist".to_string())?;
+
+    // Check if already following
+    if with_state(|state| {
+        state
+            .social_connections
+            .get(&follower_id)
+            .map(|conn| conn.following.contains(&target_id))
+            .unwrap_or(false)
+    }) {
+        return Err("Already following this user".to_string());
+    }
+
+    // Check if blocked by target user
+    if with_state(|state| {
+        state
+            .social_connections
+            .get(&target_id)
+            .map(|conn| conn.blocked.contains(&follower_id))
+            .unwrap_or(false)
+    }) {
+        return Err("User has blocked you".to_string());
+    }
+
+    // Check following limit
+    let current_following_count = with_state(|state| {
+        state
+            .social_connections
+            .get(&follower_id)
+            .map(|conn| conn.following.len())
+            .unwrap_or(0)
+    });
+
+    if current_following_count >= MAX_FOLLOWING_LIMIT {
+        return Err("Following limit exceeded".to_string());
+    }
+
+    // Handle follow based on target user's privacy settings
+    match target_profile.privacy_settings.profile_visibility {
+        ProfileVisibility::Public => {
+            // Direct follow for public profiles
+            execute_follow(follower_id, target_id)?;
+        }
+        ProfileVisibility::FollowersOnly | ProfileVisibility::Private => {
+            // Send follow request for private profiles
+            create_follow_request(follower_id, target_id, None)?;
+        }
+    }
+
+    Ok(())
+}
+
+/// Unfollows a user and removes the social connection
+///
+/// # Purpose
+/// Removes an existing follow relationship between users and updates
+/// the social graph accordingly.
+///
+/// # Arguments
+/// * `target_user_id` - Principal of the user to unfollow
+///
+/// # Returns
+/// * `Ok(())` - Successfully unfollowed user
+/// * `Err(String)` - Validation error or operation failure
+///
+/// # Errors
+/// - "User does not exist" - Target user not found
+/// - "Not following this user" - No existing follow relationship
+/// - "Authentication required" - Anonymous caller
+///
+/// # Security
+/// * Requires authenticated user (Internet Identity)
+/// * Only allows unfollowing existing relationships
+/// * Updates all relevant indices and counts atomically
+///
+/// # Example
+/// ```rust
+/// if let Ok(target) = Principal::from_text("rdmx6-jaaaa-aaaah-qcaiq-cai") {
+///     let result = unfollow_user(target).await;
+/// }
+/// ```
+#[update]
+pub async fn unfollow_user(target_user_id: Principal) -> Result<(), String> {
+    let follower_id = authenticate_user()?;
+    let target_id = UserId(target_user_id);
+
+    // Check if target user exists
+    if !with_state(|state| state.users.contains_key(&target_id)) {
+        return Err("User does not exist".to_string());
+    }
+
+    // Check if currently following
+    if !with_state(|state| {
+        state
+            .social_connections
+            .get(&follower_id)
+            .map(|conn| conn.following.contains(&target_id))
+            .unwrap_or(false)
+    }) {
+        return Err("Not following this user".to_string());
+    }
+
+    execute_unfollow(follower_id, target_id)?;
+
+    Ok(())
+}
+
+/// Approves a pending follow request
+///
+/// # Purpose
+/// Allows users with private profiles to approve follow requests,
+/// converting them into actual follow relationships.
+///
+/// # Arguments
+/// * `request_id` - ID of the follow request to approve
+///
+/// # Returns
+/// * `Ok(())` - Successfully approved request and created follow relationship
+/// * `Err(String)` - Validation error or operation failure
+///
+/// # Security
+/// * Only the target user can approve their own follow requests
+/// * Validates request exists and is still pending
+/// * Atomically converts request to follow relationship
+#[update]
+pub async fn approve_follow_request(request_id: u64) -> Result<(), String> {
+    let target_id = authenticate_user()?;
+
+    let request = with_state(|state| state.follow_requests.get(&request_id).cloned());
+    let request = request.ok_or("Follow request not found".to_string())?;
+
+    // Only the target user can approve their own requests
+    if request.target != target_id {
+        return Err("Not authorized to approve this request".to_string());
+    }
+
+    // Only approve pending requests
+    if !matches!(request.status, FollowRequestStatus::Pending) {
+        return Err("Follow request is not pending".to_string());
+    }
+
+    // Execute the follow relationship
+    execute_follow(request.requester, request.target)?;
+
+    // Update request status
+    with_state_mut(|state| {
+        if let Some(req) = state.follow_requests.get_mut(&request_id) {
+            req.status = FollowRequestStatus::Approved;
+        }
+    });
+
+    Ok(())
+}
+
+/// Rejects a pending follow request
+///
+/// # Security
+/// * Only the target user can reject their own follow requests
+#[update]
+pub async fn reject_follow_request(request_id: u64) -> Result<(), String> {
+    let target_id = authenticate_user()?;
+
+    let request = with_state(|state| state.follow_requests.get(&request_id).cloned());
+    let request = request.ok_or("Follow request not found".to_string())?;
+
+    if request.target != target_id {
+        return Err("Not authorized to reject this request".to_string());
+    }
+
+    if !matches!(request.status, FollowRequestStatus::Pending) {
+        return Err("Follow request is not pending".to_string());
+    }
+
+    with_state_mut(|state| {
+        if let Some(req) = state.follow_requests.get_mut(&request_id) {
+            req.status = FollowRequestStatus::Rejected;
+        }
+    });
+
+    Ok(())
+}
+
+/// Gets the list of users that the specified user follows
+///
+/// # Arguments
+/// * `user_id` - Principal of the user whose following list to retrieve
+/// * `limit` - Maximum number of results (optional, defaults to DEFAULT_CONNECTIONS_LIMIT)
+/// * `offset` - Number of results to skip for pagination (optional)
+///
+/// # Returns
+/// * `Ok(Vec<UserProfile>)` - List of user profiles that the user follows
+/// * `Err(String)` - Error if user not found or privacy restrictions
+///
+/// # Privacy
+/// * Respects user privacy settings for showing social graph
+/// * Only shows public information unless viewer is authorized
+#[query]
+pub fn get_following(
+    user_id: Principal,
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<Vec<UserProfile>, String> {
+    let user_id = UserId(user_id);
+    let caller_id = UserId(caller());
+
+    // Check if user exists
+    let target_user = with_state(|state| state.users.get(&user_id).cloned());
+    let target_user = target_user.ok_or("User does not exist".to_string())?;
+
+    // Check privacy permissions
+    if !target_user.privacy_settings.show_social_graph && caller_id != user_id {
+        return Err("Social graph is private".to_string());
+    }
+
+    let limit = limit
+        .unwrap_or(DEFAULT_CONNECTIONS_LIMIT)
+        .min(MAX_CONNECTIONS_LIMIT);
+    let offset = offset.unwrap_or(0);
+
+    let following_profiles = with_state(|state| {
+        let connections = state.social_connections.get(&user_id);
+        match connections {
+            Some(conn) => conn
+                .following
+                .iter()
+                .skip(offset)
+                .take(limit)
+                .filter_map(|&following_id| state.users.get(&following_id).cloned())
+                .collect(),
+            None => Vec::new(),
+        }
+    });
+
+    Ok(following_profiles)
+}
+
+/// Gets the list of users that follow the specified user
+///
+/// # Arguments
+/// * `user_id` - Principal of the user whose followers list to retrieve
+/// * `limit` - Maximum number of results (optional)
+/// * `offset` - Number of results to skip for pagination (optional)
+///
+/// # Privacy
+/// * Respects user privacy settings for showing social graph
+#[query]
+pub fn get_followers(
+    user_id: Principal,
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<Vec<UserProfile>, String> {
+    let user_id = UserId(user_id);
+    let caller_id = UserId(caller());
+
+    let target_user = with_state(|state| state.users.get(&user_id).cloned());
+    let target_user = target_user.ok_or("User does not exist".to_string())?;
+
+    if !target_user.privacy_settings.show_social_graph && caller_id != user_id {
+        return Err("Social graph is private".to_string());
+    }
+
+    let limit = limit
+        .unwrap_or(DEFAULT_CONNECTIONS_LIMIT)
+        .min(MAX_CONNECTIONS_LIMIT);
+    let offset = offset.unwrap_or(0);
+
+    let followers_profiles = with_state(|state| {
+        let connections = state.social_connections.get(&user_id);
+        match connections {
+            Some(conn) => conn
+                .followers
+                .iter()
+                .skip(offset)
+                .take(limit)
+                .filter_map(|&follower_id| state.users.get(&follower_id).cloned())
+                .collect(),
+            None => Vec::new(),
+        }
+    });
+
+    Ok(followers_profiles)
+}
+
+/// Gets pending follow requests for the authenticated user
+///
+/// # Returns
+/// * `Ok(Vec<FollowRequest>)` - List of pending follow requests
+/// * `Err(String)` - Authentication error
+///
+/// # Security
+/// * Only returns requests where the caller is the target
+#[query]
+pub fn get_pending_follow_requests() -> Result<Vec<FollowRequest>, String> {
+    let user_id = authenticate_user()?;
+
+    let pending_requests = with_state(|state| {
+        state
+            .follow_requests
+            .values()
+            .filter(|req| {
+                req.target == user_id && matches!(req.status, FollowRequestStatus::Pending)
+            })
+            .cloned()
+            .collect()
+    });
+
+    Ok(pending_requests)
+}
+
+/// Checks if user A follows user B
+///
+/// # Arguments
+/// * `follower_id` - Principal of the potential follower
+/// * `target_id` - Principal of the potential target
+///
+/// # Returns
+/// * `Ok(bool)` - True if follower follows target, false otherwise
+#[query]
+pub fn is_following(follower_id: Principal, target_id: Principal) -> Result<bool, String> {
+    let follower_id = UserId(follower_id);
+    let target_id = UserId(target_id);
+
+    let is_following = with_state(|state| {
+        state
+            .social_connections
+            .get(&follower_id)
+            .map(|conn| conn.following.contains(&target_id))
+            .unwrap_or(false)
+    });
+
+    Ok(is_following)
+}
+
+// ============================================================================
+// INTERNAL HELPER FUNCTIONS
+// ============================================================================
+
+/// Internal function to execute a follow relationship
+fn execute_follow(follower_id: UserId, target_id: UserId) -> Result<(), String> {
+    with_state_mut(|state| {
+        // Initialize social connections if they don't exist
+        state.social_connections.entry(follower_id).or_default();
+        state.social_connections.entry(target_id).or_default();
+
+        // Add to follower's following list
+        if let Some(follower_conn) = state.social_connections.get_mut(&follower_id) {
+            follower_conn.following.insert(target_id);
+        }
+
+        // Add to target's followers list
+        if let Some(target_conn) = state.social_connections.get_mut(&target_id) {
+            target_conn.followers.insert(follower_id);
+        }
+
+        // Update indices
+        state
+            .following_index
+            .entry(follower_id)
+            .or_default()
+            .insert(target_id);
+        state
+            .followers_index
+            .entry(target_id)
+            .or_default()
+            .insert(follower_id);
+
+        // Update user profile counts
+        if let Some(follower_profile) = state.users.get_mut(&follower_id) {
+            follower_profile.following_count = follower_profile.following_count.saturating_add(1);
+            follower_profile.updated_at = time();
+        }
+        if let Some(target_profile) = state.users.get_mut(&target_id) {
+            target_profile.follower_count = target_profile.follower_count.saturating_add(1);
+            target_profile.updated_at = time();
+        }
+    });
+
+    Ok(())
+}
+
+/// Internal function to execute an unfollow relationship
+fn execute_unfollow(follower_id: UserId, target_id: UserId) -> Result<(), String> {
+    with_state_mut(|state| {
+        // Remove from follower's following list
+        if let Some(follower_conn) = state.social_connections.get_mut(&follower_id) {
+            follower_conn.following.remove(&target_id);
+        }
+
+        // Remove from target's followers list
+        if let Some(target_conn) = state.social_connections.get_mut(&target_id) {
+            target_conn.followers.remove(&follower_id);
+        }
+
+        // Update indices
+        if let Some(following_set) = state.following_index.get_mut(&follower_id) {
+            following_set.remove(&target_id);
+        }
+        if let Some(followers_set) = state.followers_index.get_mut(&target_id) {
+            followers_set.remove(&follower_id);
+        }
+
+        // Update user profile counts
+        if let Some(follower_profile) = state.users.get_mut(&follower_id) {
+            follower_profile.following_count = follower_profile.following_count.saturating_sub(1);
+            follower_profile.updated_at = time();
+        }
+        if let Some(target_profile) = state.users.get_mut(&target_id) {
+            target_profile.follower_count = target_profile.follower_count.saturating_sub(1);
+            target_profile.updated_at = time();
+        }
+    });
+
+    Ok(())
+}
+
+/// Internal function to create a follow request
+fn create_follow_request(
+    requester_id: UserId,
+    target_id: UserId,
+    message: Option<String>,
+) -> Result<(), String> {
+    with_state_mut(|state| {
+        // Check if there's already a pending request
+        let existing_request = state.follow_requests.values().any(|req| {
+            req.requester == requester_id
+                && req.target == target_id
+                && matches!(req.status, FollowRequestStatus::Pending)
+        });
+
+        if existing_request {
+            return Err("Follow request already pending".to_string());
+        }
+
+        // Check pending requests limit
+        let pending_count = state
+            .follow_requests
+            .values()
+            .filter(|req| {
+                req.requester == requester_id && matches!(req.status, FollowRequestStatus::Pending)
+            })
+            .count();
+
+        if pending_count >= MAX_PENDING_REQUESTS {
+            return Err("Too many pending follow requests".to_string());
+        }
+
+        let request_id = state.next_follow_request_id;
+        state.next_follow_request_id = state.next_follow_request_id.saturating_add(1);
+
+        let follow_request = FollowRequest {
+            id: request_id,
+            requester: requester_id,
+            target: target_id,
+            created_at: time(),
+            status: FollowRequestStatus::Pending,
+            message,
+        };
+
+        state.follow_requests.insert(request_id, follow_request);
+        Ok(())
+    })
+}
+
+/// Enhanced feed that respects follow relationships and privacy settings
+///
+/// # Purpose
+/// Generates a personalized feed based on the user's social connections.
+/// This replaces the basic MVP feed with one that understands the social graph.
+///
+/// # Arguments
+/// * `limit` - Maximum number of posts to return (optional)
+/// * `offset` - Number of posts to skip for pagination (optional)
+///
+/// # Returns
+/// * `Ok(Vec<FeedPost>)` - Personalized feed of posts with author information
+/// * `Err(String)` - Error in feed generation
+///
+/// # Feed Algorithm
+/// 1. For authenticated users: Posts from followed users + own posts
+/// 2. For anonymous users: Only public posts
+/// 3. Respects post visibility settings and user privacy
+/// 4. Orders by creation time (newest first)
+///
+/// # Security
+/// * Respects all privacy and visibility settings
+/// * Filters blocked users' content
+/// * Validates post access permissions
+#[query]
+pub fn get_social_feed(
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<Vec<FeedPost>, String> {
+    let limit = limit.unwrap_or(DEFAULT_FEED_LIMIT).min(MAX_FEED_LIMIT);
+    let offset = offset.unwrap_or(0);
+
+    let caller_id = match caller() {
+        caller if caller == Principal::anonymous() => None,
+        caller => Some(UserId(caller)),
+    };
+
+    let feed_posts = with_state(|state| {
+        let mut visible_posts: Vec<(u64, &Post, &UserProfile)> = Vec::new();
+
+        // Determine which users' posts to include
+        let relevant_users: BTreeSet<UserId> = match caller_id {
+            Some(user_id) => {
+                // For authenticated users: own posts + followed users' posts
+                let mut users = BTreeSet::new();
+                users.insert(user_id); // Include own posts
+
+                // Add followed users
+                if let Some(connections) = state.social_connections.get(&user_id) {
+                    for &followed_id in &connections.following {
+                        // Don't include blocked users
+                        if !connections.blocked.contains(&followed_id) {
+                            users.insert(followed_id);
+                        }
+                    }
+                }
+                users
+            }
+            None => {
+                // For anonymous users: all users (but only public posts will be shown)
+                state.users.keys().copied().collect()
+            }
+        };
+
+        // Collect posts from relevant users
+        for &user_id in &relevant_users {
+            if let Some(user_profile) = state.users.get(&user_id) {
+                if let Some(user_posts) = state.user_posts.get(&user_id) {
+                    for &post_id in user_posts {
+                        if let Some(post) = state.posts.get(&post_id) {
+                            // Check if post is visible to the caller
+                            let is_visible = match &post.visibility {
+                                PostVisibility::Public => true,
+                                PostVisibility::FollowersOnly => {
+                                    if let Some(caller_user_id) = caller_id {
+                                        // Post author or followers can see
+                                        post.author_id == caller_user_id
+                                            || state
+                                                .social_connections
+                                                .get(&post.author_id)
+                                                .map(|conn| {
+                                                    conn.followers.contains(&caller_user_id)
+                                                })
+                                                .unwrap_or(false)
+                                    } else {
+                                        false // Anonymous users can't see followers-only posts
+                                    }
+                                }
+                                PostVisibility::Unlisted => {
+                                    // Only the author can see unlisted posts in feed
+                                    caller_id.map(|id| id == post.author_id).unwrap_or(false)
+                                }
+                            };
+
+                            if is_visible {
+                                visible_posts.push((post.created_at, post, user_profile));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort by creation time (newest first)
+        visible_posts.sort_by(|a, b| b.0.cmp(&a.0));
+
+        // Apply pagination and convert to FeedPost
+        visible_posts
+            .into_iter()
+            .skip(offset)
+            .take(limit)
+            .map(|(_, post, author)| {
+                let is_liked = caller_id
+                    .and_then(|user_id| {
+                        state
+                            .post_likes
+                            .get(&post.id)
+                            .map(|likes| likes.contains(&user_id))
+                    })
+                    .unwrap_or(false);
+
+                FeedPost {
+                    post: post.clone(),
+                    author: author.clone(),
+                    is_liked,
+                }
+            })
+            .collect()
+    });
+
+    Ok(feed_posts)
 }
 
 // Export Candid interface

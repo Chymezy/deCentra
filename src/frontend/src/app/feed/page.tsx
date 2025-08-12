@@ -11,9 +11,13 @@ export default function FeedPage() {
     <>
       <Header />
       <main className="pt-16">
-        <FeedSection isAuthenticated={isAuthenticated} principal={principal} login={login} />
+        <FeedSection
+          isAuthenticated={isAuthenticated}
+          principal={principal}
+          login={login}
+        />
         <Footer />
       </main>
     </>
   );
-} 
+}

@@ -12,15 +12,13 @@ pub fn validate_username(username: &str) -> Result<(), String> {
     // Length check
     if username.len() < MIN_USERNAME_LENGTH {
         return Err(format!(
-            "Username must be at least {} characters",
-            MIN_USERNAME_LENGTH
+            "Username must be at least {MIN_USERNAME_LENGTH} characters"
         ));
     }
 
     if username.len() > MAX_USERNAME_LENGTH {
         return Err(format!(
-            "Username must be less than {} characters",
-            MAX_USERNAME_LENGTH
+            "Username must be less than {MAX_USERNAME_LENGTH} characters"
         ));
     }
 
@@ -100,10 +98,7 @@ pub fn validate_username(username: &str) -> Result<(), String> {
 /// - Basic XSS prevention
 pub fn validate_bio(bio: &str) -> Result<(), String> {
     if bio.len() > MAX_BIO_LENGTH {
-        return Err(format!(
-            "Bio must be less than {} characters",
-            MAX_BIO_LENGTH
-        ));
+        return Err(format!("Bio must be less than {MAX_BIO_LENGTH} characters"));
     }
 
     // Basic XSS prevention
@@ -123,8 +118,7 @@ pub fn validate_bio(bio: &str) -> Result<(), String> {
 pub fn validate_avatar(avatar: &str) -> Result<(), String> {
     if avatar.len() > MAX_AVATAR_LENGTH {
         return Err(format!(
-            "Avatar must be less than {} characters",
-            MAX_AVATAR_LENGTH
+            "Avatar must be less than {MAX_AVATAR_LENGTH} characters"
         ));
     }
 
@@ -165,8 +159,7 @@ pub fn validate_post_content(content: &str) -> Result<(), String> {
 
     if content.len() > MAX_POST_CONTENT {
         return Err(format!(
-            "Post content must be less than {} characters",
-            MAX_POST_CONTENT
+            "Post content must be less than {MAX_POST_CONTENT} characters"
         ));
     }
 
@@ -199,8 +192,7 @@ pub fn validate_comment_content(content: &str) -> Result<(), String> {
 
     if content.len() > MAX_COMMENT_CONTENT {
         return Err(format!(
-            "Comment must be less than {} characters",
-            MAX_COMMENT_CONTENT
+            "Comment must be less than {MAX_COMMENT_CONTENT} characters"
         ));
     }
 
@@ -318,12 +310,12 @@ fn is_likely_spam(content: &str) -> bool {
 /// Detects excessive character repetition
 fn has_excessive_repetition(content: &str) -> bool {
     let chars: Vec<char> = content.chars().collect();
-    let mut consecutive_count = 1;
+    let mut consecutive_count: u32 = 1;
     let mut prev_char = None;
 
     for &ch in &chars {
         if Some(ch) == prev_char {
-            consecutive_count += 1;
+            consecutive_count = consecutive_count.saturating_add(1);
             if consecutive_count > 10 {
                 // More than 10 consecutive identical characters
                 return true;
@@ -350,6 +342,7 @@ fn has_excessive_caps(content: &str) -> bool {
         return false;
     }
 
+    #[allow(clippy::cast_precision_loss)]
     let caps_ratio = caps_letters as f64 / total_letters as f64;
     caps_ratio > 0.7 // More than 70% caps
 }
@@ -367,6 +360,7 @@ fn has_excessive_special_chars(content: &str) -> bool {
         return false;
     }
 
+    #[allow(clippy::cast_precision_loss)]
     let special_ratio = special_chars as f64 / total_chars as f64;
     special_ratio > 0.5 // More than 50% special characters
 }

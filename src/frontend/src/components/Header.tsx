@@ -22,13 +22,13 @@ export default function Header() {
     { name: 'Learn', href: '#learn' },
     { name: 'Feed', href: '/feed' },
     { name: 'Profile', href: '/profile' },
-    { name: 'GitHub', href: 'https://github.com', external: true }
+    { name: 'GitHub', href: 'https://github.com', external: true },
   ];
 
   const authenticatedNavItems: NavItem[] = [
     { name: 'Feed', href: '/feed' },
     { name: 'Profile', href: '/profile' },
-    { name: 'Logout', href: '#logout', action: 'logout' }
+    { name: 'Logout', href: '#logout', action: 'logout' },
   ];
 
   const handleLogout = () => {
@@ -58,9 +58,13 @@ export default function Header() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-electric-blue rounded-lg flex items-center justify-center animate-pulse">
-                <span className="text-white font-code font-bold text-sm">DC</span>
+                <span className="text-white font-code font-bold text-sm">
+                  DC
+                </span>
               </div>
-              <span className="text-deep-indigo font-heading font-bold text-xl">deCentra</span>
+              <span className="text-deep-indigo font-heading font-bold text-xl">
+                deCentra
+              </span>
             </div>
             <div className="w-8 h-4 bg-gray-200 rounded animate-pulse"></div>
           </div>
@@ -78,7 +82,10 @@ export default function Header() {
             <div className="w-8 h-8 bg-electric-blue rounded-lg flex items-center justify-center">
               <span className="text-white font-code font-bold text-sm">DC</span>
             </div>
-            <Link href="/" className="text-deep-indigo font-heading font-bold text-xl">
+            <Link
+              href="/"
+              className="text-deep-indigo font-heading font-bold text-xl"
+            >
               deCentra
             </Link>
           </div>
@@ -87,7 +94,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             {isAuthenticated ? (
               <>
-                {authenticatedNavItems.map((item) => (
+                {authenticatedNavItems.map((item) =>
                   item.href.startsWith('/') ? (
                     <Link
                       key={item.name}
@@ -109,7 +116,7 @@ export default function Header() {
                       {item.name}
                     </a>
                   )
-                ))}
+                )}
                 {/* User Avatar */}
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
@@ -124,7 +131,7 @@ export default function Header() {
               </>
             ) : (
               <>
-                {publicNavItems.map((item) => (
+                {publicNavItems.map((item) =>
                   item.href.startsWith('/') ? (
                     <Link
                       key={item.name}
@@ -149,7 +156,7 @@ export default function Header() {
                       {item.name}
                     </a>
                   )
-                ))}
+                )}
                 <button className="btn-primary" onClick={login}>
                   Connect Internet Identity
                 </button>
@@ -194,33 +201,28 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-              {isAuthenticated ? (
-                authenticatedNavItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => handleNavClick(item)}
-                    className="block px-3 py-2 text-charcoal-black hover:text-deep-indigo font-body font-medium"
-                  >
-                    {item.name}
-                  </Link>
-                ))
-              ) : (
-                publicNavItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-3 py-2 text-charcoal-black hover:text-deep-indigo font-body font-medium"
-                  >
-                    {item.name}
-                  </Link>
-                ))
-              )}
+              {isAuthenticated
+                ? authenticatedNavItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => handleNavClick(item)}
+                      className="block px-3 py-2 text-charcoal-black hover:text-deep-indigo font-body font-medium"
+                    >
+                      {item.name}
+                    </Link>
+                  ))
+                : publicNavItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block px-3 py-2 text-charcoal-black hover:text-deep-indigo font-body font-medium"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
               {!isAuthenticated && (
-                <button
-                  onClick={login}
-                  className="w-full mt-4 btn-primary"
-                >
+                <button onClick={login} className="w-full mt-4 btn-primary">
                   Connect Internet Identity
                 </button>
               )}
@@ -230,4 +232,4 @@ export default function Header() {
       </div>
     </header>
   );
-} 
+}

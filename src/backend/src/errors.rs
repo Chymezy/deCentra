@@ -196,12 +196,12 @@ impl From<SocialNetworkError> for String {
             SocialNetworkError::AuthenticationRequired => {
                 "Authentication required. Please log in with Internet Identity.".to_string()
             }
-            SocialNetworkError::Unauthorized(msg) => format!("Unauthorized: {}", msg),
+            SocialNetworkError::Unauthorized(msg) => format!("Unauthorized: {msg}"),
             SocialNetworkError::IdentityInvalid => {
                 "Invalid identity. Please try logging in again.".to_string()
             }
             SocialNetworkError::AccountSuspended(reason) => {
-                format!("Account suspended: {}", reason)
+                format!("Account suspended: {reason}")
             }
 
             // User Management
@@ -209,34 +209,34 @@ impl From<SocialNetworkError> for String {
                 format!("User not found: {}", user_id.0.to_text())
             }
             SocialNetworkError::UsernameAlreadyTaken(username) => {
-                format!("Username '{}' is already taken", username)
+                format!("Username '{username}' is already taken")
             }
             SocialNetworkError::ProfileAlreadyExists => "User profile already exists".to_string(),
-            SocialNetworkError::InvalidUsername(msg) => format!("Invalid username: {}", msg),
-            SocialNetworkError::InvalidDisplayName(msg) => format!("Invalid display name: {}", msg),
-            SocialNetworkError::InvalidBio(msg) => format!("Invalid bio: {}", msg),
-            SocialNetworkError::InvalidAvatar(msg) => format!("Invalid avatar: {}", msg),
+            SocialNetworkError::InvalidUsername(msg) => format!("Invalid username: {msg}"),
+            SocialNetworkError::InvalidDisplayName(msg) => format!("Invalid display name: {msg}"),
+            SocialNetworkError::InvalidBio(msg) => format!("Invalid bio: {msg}"),
+            SocialNetworkError::InvalidAvatar(msg) => format!("Invalid avatar: {msg}"),
 
             // Content Management
             SocialNetworkError::PostNotFound(post_id) => format!("Post not found: {}", post_id.0),
             SocialNetworkError::ContentTooLong { max, actual } => {
-                format!("Content too long: {} characters (max: {})", actual, max)
+                format!("Content too long: {actual} characters (max: {max})")
             }
             SocialNetworkError::ContentEmpty => "Content cannot be empty".to_string(),
             SocialNetworkError::ContentProhibited(reason) => {
-                format!("Content prohibited: {}", reason)
+                format!("Content prohibited: {reason}")
             }
-            SocialNetworkError::InvalidMediaUrl(url) => format!("Invalid media URL: {}", url),
+            SocialNetworkError::InvalidMediaUrl(url) => format!("Invalid media URL: {url}"),
             SocialNetworkError::ContentUnderReview => {
                 "Content is under moderation review".to_string()
             }
-            SocialNetworkError::ContentRemoved(reason) => format!("Content removed: {}", reason),
+            SocialNetworkError::ContentRemoved(reason) => format!("Content removed: {reason}"),
 
             // Comment System
             SocialNetworkError::CommentNotFound(comment_id) => {
                 format!("Comment not found: {}", comment_id.0)
             }
-            SocialNetworkError::InvalidCommentContent(msg) => format!("Invalid comment: {}", msg),
+            SocialNetworkError::InvalidCommentContent(msg) => format!("Invalid comment: {msg}"),
             SocialNetworkError::CommentDepthExceeded => {
                 "Comment threading depth exceeded".to_string()
             }
@@ -255,7 +255,7 @@ impl From<SocialNetworkError> for String {
             SocialNetworkError::UserBlocked(user_id) => {
                 format!("User has blocked you: {}", user_id.0.to_text())
             }
-            SocialNetworkError::PrivacyRestriction(msg) => format!("Privacy restriction: {}", msg),
+            SocialNetworkError::PrivacyRestriction(msg) => format!("Privacy restriction: {msg}"),
             SocialNetworkError::AlreadyLiked => "Already liked this post".to_string(),
             SocialNetworkError::NotLiked => "Haven't liked this post".to_string(),
 
@@ -265,14 +265,13 @@ impl From<SocialNetworkError> for String {
                 window_seconds,
                 retry_after,
             } => format!(
-                "Rate limit exceeded: {} actions per {} seconds. Try again in {} seconds.",
-                limit, window_seconds, retry_after
+                "Rate limit exceeded: {limit} actions per {window_seconds} seconds. Try again in {retry_after} seconds."
             ),
             SocialNetworkError::ResourceLimitExceeded(resource) => {
-                format!("Resource limit exceeded: {}", resource)
+                format!("Resource limit exceeded: {resource}")
             }
             SocialNetworkError::BatchSizeTooLarge { max, requested } => {
-                format!("Batch size too large: {} items (max: {})", requested, max)
+                format!("Batch size too large: {requested} items (max: {max})")
             }
             SocialNetworkError::StorageQuotaExceeded => "Storage quota exceeded".to_string(),
             SocialNetworkError::CycleLimitExceeded => {
@@ -280,13 +279,13 @@ impl From<SocialNetworkError> for String {
             }
 
             // Content Moderation
-            SocialNetworkError::ContentFlagged(reason) => format!("Content flagged: {}", reason),
-            SocialNetworkError::SpamDetected(reason) => format!("Spam detected: {}", reason),
+            SocialNetworkError::ContentFlagged(reason) => format!("Content flagged: {reason}"),
+            SocialNetworkError::SpamDetected(reason) => format!("Spam detected: {reason}"),
             SocialNetworkError::MaliciousContentDetected(reason) => {
-                format!("Malicious content detected: {}", reason)
+                format!("Malicious content detected: {reason}")
             }
             SocialNetworkError::ModerationProposalNotFound(id) => {
-                format!("Moderation proposal not found: {}", id)
+                format!("Moderation proposal not found: {id}")
             }
             SocialNetworkError::InsufficientModerationRights => {
                 "Insufficient moderation rights".to_string()
@@ -296,37 +295,43 @@ impl From<SocialNetworkError> for String {
             SocialNetworkError::InsufficientBalance {
                 required,
                 available,
-            } => format!(
-                "Insufficient balance: need {} ICP, have {} ICP",
-                required as f64 / 100_000_000.0,
-                available as f64 / 100_000_000.0
-            ),
-            SocialNetworkError::InvalidTipAmount(msg) => format!("Invalid tip amount: {}", msg),
+            } => {
+                // Allow precision loss for ICP balance display (acceptable trade-off)
+                #[allow(clippy::cast_precision_loss)]
+                let required_icp = required as f64 / 100_000_000.0;
+                #[allow(clippy::cast_precision_loss)]
+                let available_icp = available as f64 / 100_000_000.0;
+                format!(
+                    "Insufficient balance: need {required_icp:.8} ICP, have {available_icp:.8} ICP"
+                )
+            }
+            SocialNetworkError::InvalidTipAmount(msg) => format!("Invalid tip amount: {msg}"),
             SocialNetworkError::TipTransactionFailed(reason) => {
-                format!("Tip transaction failed: {}", reason)
+                format!("Tip transaction failed: {reason}")
             }
             SocialNetworkError::SubscriptionNotFound(id) => {
-                format!("Subscription not found: {}", id)
+                format!("Subscription not found: {id}")
             }
-            SocialNetworkError::PaymentError(msg) => format!("Payment error: {}", msg),
+            SocialNetworkError::PaymentError(msg) => format!("Payment error: {msg}"),
 
             // System & Technical
-            SocialNetworkError::StateCorrupted(msg) => format!("System state corrupted: {}", msg),
-            SocialNetworkError::StorageError(msg) => format!("Storage error: {}", msg),
-            SocialNetworkError::InvalidRequest(msg) => format!("Invalid request: {}", msg),
-            SocialNetworkError::NetworkError(msg) => format!("Network error: {}", msg),
+            SocialNetworkError::StateCorrupted(msg) => format!("System state corrupted: {msg}"),
+            SocialNetworkError::StorageError(msg) => format!("Storage error: {msg}"),
+            SocialNetworkError::InvalidRequest(msg) => format!("Invalid request: {msg}"),
+            SocialNetworkError::NetworkError(msg) => format!("Network error: {msg}"),
             SocialNetworkError::UpgradeInProgress => {
                 "System upgrade in progress. Please try again later.".to_string()
             }
             SocialNetworkError::NotImplemented(feature) => {
-                format!("Feature not yet implemented: {}", feature)
+                format!("Feature not yet implemented: {feature}")
             }
-            SocialNetworkError::InternalError(msg) => format!("Internal error: {}", msg),
+            SocialNetworkError::InternalError(msg) => format!("Internal error: {msg}"),
         }
     }
 }
 
 /// Result type alias for cleaner error handling
+#[allow(dead_code)]
 pub type SocialResult<T> = Result<T, SocialNetworkError>;
 
 /// Error categorization for metrics and monitoring
@@ -389,13 +394,13 @@ impl SocialNetworkError {
 
     /// Checks if error is retryable
     pub fn is_retryable(&self) -> bool {
-        match self {
+        matches!(
+            self,
             SocialNetworkError::RateLimitExceeded { .. }
-            | SocialNetworkError::NetworkError(_)
-            | SocialNetworkError::CycleLimitExceeded
-            | SocialNetworkError::UpgradeInProgress => true,
-            _ => false,
-        }
+                | SocialNetworkError::NetworkError(_)
+                | SocialNetworkError::CycleLimitExceeded
+                | SocialNetworkError::UpgradeInProgress
+        )
     }
 
     /// Gets suggested retry delay in seconds
@@ -415,18 +420,21 @@ impl SocialNetworkError {
 // ============================================================================
 
 /// Creates a validation error with context
+#[allow(dead_code)]
 pub fn validation_error(field: &str, message: &str) -> SocialNetworkError {
-    SocialNetworkError::InvalidRequest(format!("{}: {}", field, message))
+    SocialNetworkError::InvalidRequest(format!("{field}: {message}"))
 }
 
 /// Creates a permission error with context
+#[allow(dead_code)]
 pub fn permission_error(action: &str, reason: &str) -> SocialNetworkError {
-    SocialNetworkError::Unauthorized(format!("Cannot {}: {}", action, reason))
+    SocialNetworkError::Unauthorized(format!("Cannot {action}: {reason}"))
 }
 
 /// Creates a resource not found error
+#[allow(dead_code)]
 pub fn not_found_error(resource: &str, id: &str) -> SocialNetworkError {
-    SocialNetworkError::InvalidRequest(format!("{} not found: {}", resource, id))
+    SocialNetworkError::InvalidRequest(format!("{resource} not found: {id}"))
 }
 
 // ============================================================================
@@ -436,7 +444,6 @@ pub fn not_found_error(resource: &str, id: &str) -> SocialNetworkError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use candid::Principal;
 
     #[test]
     fn test_error_conversion() {

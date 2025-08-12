@@ -1,0 +1,381 @@
+type Comment = record {
+  id : nat64;
+  updated_at : nat64;
+  post_id : nat64;
+  content : text;
+  created_at : nat64;
+  author_id : principal;
+};
+type FeedPost = record { post : Post; author : UserProfile; is_liked : bool };
+type FollowRequest = record {
+  id : nat64;
+  status : FollowRequestStatus;
+  requester : principal;
+  created_at : nat64;
+  target : principal;
+  message : opt text;
+};
+type FollowRequestStatus = variant { Approved; Rejected; Cancelled; Pending };
+type MessagePrivacy = variant { Nobody; FollowersOnly; Everyone };
+type PlatformStats = record {
+  total_likes : nat64;
+  total_users : nat64;
+  total_comments : nat64;
+  total_posts : nat64;
+};
+type Post = record {
+  id : nat64;
+  updated_at : nat64;
+  content : text;
+  comment_count : nat64;
+  like_count : nat64;
+  created_at : nat64;
+  author_id : principal;
+  visibility : PostVisibility;
+};
+type PostVisibility = variant { FollowersOnly; Public; Unlisted };
+type PrivacySettings = record {
+  message_privacy : MessagePrivacy;
+  searchable : bool;
+  show_social_graph : bool;
+  profile_visibility : ProfileVisibility;
+};
+type ProfileVisibility = variant { Private; FollowersOnly; Public };
+type Result = variant { Ok : Comment; Err : text };
+type Result_1 = variant { Ok; Err : text };
+type Result_2 = variant { Ok : nat64; Err : text };
+type Result_3 = variant { Ok : UserProfile; Err : text };
+type Result_4 = variant { Ok : vec UserProfile; Err : text };
+type Result_5 = variant { Ok : vec FollowRequest; Err : text };
+type Result_6 = variant { Ok : vec FeedPost; Err : text };
+type Result_7 = variant { Ok : bool; Err : text };
+type UserProfile = record {
+  id : principal;
+  bio : text;
+  updated_at : nat64;
+  username : text;
+  following_count : nat64;
+  post_count : nat64;
+  created_at : nat64;
+  verification_status : VerificationStatus;
+  follower_count : nat64;
+  privacy_settings : PrivacySettings;
+  avatar : text;
+};
+type VerificationStatus = variant {
+  Whistleblower;
+  Organization;
+  Unverified;
+  Journalist;
+  Verified;
+};
+service : {
+  // Adds a comment to a post
+  add_comment : (nat64, text) -> (Result);
+  // Approves a pending follow request
+  // 
+  // # Purpose
+  // Allows users with private profiles to approve follow requests,
+  // converting them into actual follow relationships.
+  // 
+  // # Arguments
+  // * `request_id` - ID of the follow request to approve
+  // 
+  // # Returns
+  // * `Ok(())` - Successfully approved request and created follow relationship
+  // * `Err(String)` - Validation error or operation failure
+  // 
+  // # Security
+  // * Only the target user can approve their own follow requests
+  // * Validates request exists and is still pending
+  // * Atomically converts request to follow relationship
+  approve_follow_request : (nat64) -> (Result_1);
+  // Creates a new post with content validation
+  // 
+  // # Purpose
+  // Creates a new social media post with content validation and security checks.
+  // Posts are stored on-chain and become part of the user's social graph.
+  // 
+  // # Arguments
+  // * `content` - Post content (1-10,000 characters)
+  // * `visibility` - Who can see this post (Public, FollowersOnly, Unlisted)
+  // 
+  // # Returns
+  // * `Ok(PostId)` - Successfully created post ID
+  // * `Err(String)` - Validation or security error
+  // 
+  // # Security
+  // * Requires authenticated user
+  // * Validates content length and safety
+  // * Rate limited to prevent spam
+  // * Auto-creates profile if needed
+  create_post : (text, opt PostVisibility) -> (Result_2);
+  // Creates a new user profile with privacy controls
+  // 
+  // # Purpose
+  // Initializes a user profile for social networking on deCentra.
+  // This is required before users can post content or interact socially.
+  // 
+  // # Arguments
+  // * `username` - Unique identifier (3-50 chars, alphanumeric + _ -)
+  // * `bio` - Optional biography (max 500 chars)
+  // * `avatar` - Optional avatar URL or emoji
+  // 
+  // # Returns
+  // * `Ok(UserProfile)` - Successfully created profile with default privacy settings
+  // * `Err(String)` - Validation error or username conflict
+  // 
+  // # Errors
+  // - "Username already taken" - Duplicate username
+  // - "Username must be between 3 and 50 characters" - Invalid length
+  // - "User profile already exists" - User already has profile
+  // - "Authentication required" - Anonymous caller
+  // 
+  // # Security
+  // * Requires authenticated user (Internet Identity)
+  // * Validates all input parameters against DoS attacks
+  // * Sanitizes text content to prevent injection
+  // * Rate limited to 1 profile per principal
+  // 
+  // # Example
+  // ```rust
+  // // Creating a basic user profile
+  // let result = create_user_profile(
+  // "alice_doe".to_string(),
+  // Some("Digital rights activist and journalist".to_string()),
+  // Some("👩‍💻".to_string())
+  // ).await;
+  // 
+  // match result {
+  // Ok(profile) => println!("Profile created for {}", profile.username),
+  // Err(error) => println!("Failed to create profile: {}", error),
+  // }
+  // ```
+  // 
+  // # Privacy Notes
+  // - Profile starts with privacy_settings.profile_visibility = Public
+  // - Users can change privacy settings after creation
+  // - Bio and avatar are optional for enhanced privacy
+  create_user_profile : (text, opt text, opt text) -> (Result_3);
+  // Follows another user or sends a follow request for private profiles
+  // 
+  // # Purpose
+  // Establishes or requests a social connection between users. This is the core
+  // functionality for building the social graph in deCentra.
+  // 
+  // # Arguments
+  // * `target_user_id` - Principal of the user to follow
+  // 
+  // # Returns
+  // * `Ok(())` - Successfully followed user or sent follow request
+  // * `Err(String)` - Validation error or operation failure
+  // 
+  // # Behavior
+  // - For public profiles: Immediately creates follow relationship
+  // - For private profiles: Creates pending follow request
+  // - Updates follower/following counts and social graph indices
+  // - Prevents self-following and duplicate follows
+  // 
+  // # Errors
+  // - "Cannot follow yourself" - Self-follow attempt
+  // - "User does not exist" - Target user not found
+  // - "Already following this user" - Duplicate follow attempt
+  // - "User has blocked you" - Target has blocked the follower
+  // - "Following limit exceeded" - Follower has reached MAX_FOLLOWING_LIMIT
+  // - "Authentication required" - Anonymous caller
+  // 
+  // # Security
+  // * Requires authenticated user (Internet Identity)
+  // * Validates target user exists and is not blocked
+  // * Enforces following limits to prevent spam
+  // * Respects privacy settings (public vs private profiles)
+  // * Rate limited to prevent abuse
+  // 
+  // # Example
+  // ```rust
+  // // Following a public user
+  // if let Ok(target) = Principal::from_text("rdmx6-jaaaa-aaaah-qcaiq-cai") {
+  // let result = follow_user(target).await;
+  // match result {
+  // Ok(()) => println!("Successfully followed user"),
+  // Err(error) => println!("Failed to follow: {}", error),
+  // }
+  // }
+  // }
+  // ```
+  // 
+  // # Privacy Notes
+  // - Private profiles will receive a follow request instead of immediate follow
+  // - Blocked users cannot send follow requests
+  // - Following relationships are visible based on user privacy settings
+  follow_user : (principal) -> (Result_1);
+  // Gets the list of users that follow the specified user
+  // 
+  // # Arguments
+  // * `user_id` - Principal of the user whose followers list to retrieve
+  // * `limit` - Maximum number of results (optional)
+  // * `offset` - Number of results to skip for pagination (optional)
+  // 
+  // # Privacy
+  // * Respects user privacy settings for showing social graph
+  get_followers : (principal, opt nat64, opt nat64) -> (Result_4) query;
+  // Gets the list of users that the specified user follows
+  // 
+  // # Arguments
+  // * `user_id` - Principal of the user whose following list to retrieve
+  // * `limit` - Maximum number of results (optional, defaults to DEFAULT_CONNECTIONS_LIMIT)
+  // * `offset` - Number of results to skip for pagination (optional)
+  // 
+  // # Returns
+  // * `Ok(Vec<UserProfile>)` - List of user profiles that the user follows
+  // * `Err(String)` - Error if user not found or privacy restrictions
+  // 
+  // # Privacy
+  // * Respects user privacy settings for showing social graph
+  // * Only shows public information unless viewer is authorized
+  get_following : (principal, opt nat64, opt nat64) -> (Result_4) query;
+  // Get the authenticated user's own profile
+  get_my_profile : () -> (opt UserProfile) query;
+  // Gets pending follow requests for the authenticated user
+  // 
+  // # Returns
+  // * `Ok(Vec<FollowRequest>)` - List of pending follow requests
+  // * `Err(String)` - Authentication error
+  // 
+  // # Security
+  // * Only returns requests where the caller is the target
+  get_pending_follow_requests : () -> (Result_5) query;
+  // Gets platform statistics
+  get_platform_stats : () -> (PlatformStats) query;
+  // Retrieves a post by ID with privacy checks
+  get_post : (nat64) -> (opt Post) query;
+  // Gets comments for a post
+  get_post_comments : (nat64, opt nat64, opt nat64) -> (vec Comment) query;
+  // Enhanced feed that respects follow relationships and privacy settings
+  // 
+  // # Purpose
+  // Generates a personalized feed based on the user's social connections.
+  // This replaces the basic MVP feed with one that understands the social graph.
+  // 
+  // # Arguments
+  // * `limit` - Maximum number of posts to return (optional)
+  // * `offset` - Number of posts to skip for pagination (optional)
+  // 
+  // # Returns
+  // * `Ok(Vec<FeedPost>)` - Personalized feed of posts with author information
+  // * `Err(String)` - Error in feed generation
+  // 
+  // # Feed Algorithm
+  // 1. For authenticated users: Posts from followed users + own posts
+  // 2. For anonymous users: Only public posts
+  // 3. Respects post visibility settings and user privacy
+  // 4. Orders by creation time (newest first)
+  // 
+  // # Security
+  // * Respects all privacy and visibility settings
+  // * Filters blocked users' content
+  // * Validates post access permissions
+  get_social_feed : (opt nat64, opt nat64) -> (Result_6) query;
+  // Retrieves the authenticated user's personalized social feed
+  // 
+  // # Purpose
+  // Generates a chronological feed of posts from followed users plus own posts.
+  // Respects privacy settings and blocks between users.
+  // 
+  // # Arguments
+  // * `offset` - Number of posts to skip (for pagination)
+  // * `limit` - Maximum posts to return (capped at 50)
+  // 
+  // # Returns
+  // * `Ok(Vec<FeedPost>)` - List of posts with author info sorted by creation time (newest first)
+  // * `Err(String)` - Authentication or validation error
+  // 
+  // # Feed Algorithm
+  // 1. Collect posts from users the current user follows
+  // 2. Include current user's own posts regardless of visibility
+  // 3. Filter based on post visibility settings
+  // 4. Remove posts from blocked users
+  // 5. Sort by creation timestamp (descending)
+  // 6. Apply pagination limits
+  // 
+  // # Privacy Filters Applied
+  // - PostVisibility::Public - Always visible
+  // - PostVisibility::FollowersOnly - Only if user follows author or owns post
+  // - PostVisibility::Unlisted - Only author's own posts
+  // 
+  // # Performance
+  // - Pagination prevents memory exhaustion
+  // - Efficient indexing for large user bases
+  // - Cycle cost scales with following count
+  get_user_feed : (opt nat64, opt nat64) -> (Result_6) query;
+  // Gets all posts by a specific user
+  get_user_posts : (principal, opt nat64, opt nat64) -> (vec Post) query;
+  // Retrieves a user profile by user ID
+  // 
+  // # Privacy
+  // * Respects privacy settings
+  // * Anonymous users can only see public profiles
+  get_user_profile : (principal) -> (opt UserProfile) query;
+  // Health check endpoint
+  health_check : () -> (text) query;
+  // Checks if user A follows user B
+  // 
+  // # Arguments
+  // * `follower_id` - Principal of the potential follower
+  // * `target_id` - Principal of the potential target
+  // 
+  // # Returns
+  // * `Ok(bool)` - True if follower follows target, false otherwise
+  is_following : (principal, principal) -> (Result_7) query;
+  // Likes a post
+  // 
+  // # Security
+  // * Prevents duplicate likes from same user
+  // * Validates post exists
+  // * Rate limited to prevent spam
+  like_post : (nat64) -> (Result_1);
+  // Rejects a pending follow request
+  // 
+  // # Security
+  // * Only the target user can reject their own follow requests
+  reject_follow_request : (nat64) -> (Result_1);
+  // Unfollows a user and removes the social connection
+  // 
+  // # Purpose
+  // Removes an existing follow relationship between users and updates
+  // the social graph accordingly.
+  // 
+  // # Arguments
+  // * `target_user_id` - Principal of the user to unfollow
+  // 
+  // # Returns
+  // * `Ok(())` - Successfully unfollowed user
+  // * `Err(String)` - Validation error or operation failure
+  // 
+  // # Errors
+  // - "User does not exist" - Target user not found
+  // - "Not following this user" - No existing follow relationship
+  // - "Authentication required" - Anonymous caller
+  // 
+  // # Security
+  // * Requires authenticated user (Internet Identity)
+  // * Only allows unfollowing existing relationships
+  // * Updates all relevant indices and counts atomically
+  // 
+  // # Example
+  // ```rust
+  // if let Ok(target) = Principal::from_text("rdmx6-jaaaa-aaaah-qcaiq-cai") {
+  // let result = unfollow_user(target).await;
+  // }
+  // ```
+  unfollow_user : (principal) -> (Result_1);
+  // Unlikes a post
+  unlike_post : (nat64) -> (Result_1);
+  // Updates an existing user profile
+  // 
+  // # Security
+  // * Only the profile owner can update their profile
+  // * Validates all input parameters
+  // * Maintains creation timestamp
+  update_user_profile : (text, opt text, opt text) -> (Result_3);
+}

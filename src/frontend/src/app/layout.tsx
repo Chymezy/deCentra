@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { AuthProvider } from "@/components/AuthContext";
+import type { Metadata } from 'next';
+import './globals.css';
+import { AuthProvider } from '@/components/AuthContext';
 
 export const metadata: Metadata = {
-  title: "deCentra - Fully On-Chain Social Network",
-  description: "A censorship-resistant, privacy-first social network built 100% on the Internet Computer Protocol (ICP).",
+  title: 'deCentra - Fully On-Chain Social Network',
+  description:
+    'A censorship-resistant, privacy-first social network built 100% on the Internet Computer Protocol (ICP).',
 };
 
 export default function RootLayout({
@@ -15,9 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <AuthProvider>
-        {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

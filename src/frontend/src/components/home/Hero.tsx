@@ -18,7 +18,10 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="relative min-h-screen bg-gradient-to-br from-deep-indigo via-electric-blue to-vibrant-orange flex items-center justify-center overflow-hidden">
+    <section
+      id="home"
+      className="relative min-h-screen bg-gradient-to-br from-deep-indigo via-electric-blue to-vibrant-orange flex items-center justify-center overflow-hidden"
+    >
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-4 h-4 bg-vibrant-orange rounded-full animate-pulse-slow opacity-60"></div>
@@ -40,8 +43,9 @@ export default function Hero() {
 
           {/* Value Proposition */}
           <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-12 font-body leading-relaxed">
-            The first truly decentralized social platform where you control your data, 
-            monetize your content, and build communities that can&apos;t be silenced.
+            The first truly decentralized social platform where you control your
+            data, monetize your content, and build communities that can&apos;t
+            be silenced.
           </p>
 
           {/* Social Proof */}
@@ -62,16 +66,13 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <button 
+            <button
               onClick={scrollToFeed}
               className="btn-primary transform hover:scale-105"
             >
               Start Building
             </button>
-            <button 
-              onClick={scrollToFeatures}
-              className="btn-secondary"
-            >
+            <button onClick={scrollToFeatures} className="btn-secondary">
               Explore Platform
             </button>
           </div>
@@ -88,50 +89,68 @@ export default function Hero() {
                   </div>
                   <div className="text-white/90 font-body text-xs">Creator</div>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-vibrant-orange to-deep-indigo rounded-full flex items-center justify-center mb-2 animate-pulse">
                     <span className="text-white font-bold text-lg">👤</span>
                   </div>
-                  <div className="text-white/90 font-body text-xs">Developer</div>
+                  <div className="text-white/90 font-body text-xs">
+                    Developer
+                  </div>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center mb-2 animate-pulse">
                     <span className="text-white font-bold text-lg">👤</span>
                   </div>
-                  <div className="text-white/90 font-body text-xs">Community</div>
+                  <div className="text-white/90 font-body text-xs">
+                    Community
+                  </div>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-electric-blue to-vibrant-orange rounded-full flex items-center justify-center mb-2 animate-pulse">
                     <span className="text-white font-bold text-lg">👤</span>
                   </div>
-                  <div className="text-white/90 font-body text-xs">Activist</div>
+                  <div className="text-white/90 font-body text-xs">
+                    Activist
+                  </div>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-vibrant-orange to-deep-indigo rounded-full flex items-center justify-center mb-2 animate-pulse">
                     <span className="text-white font-bold text-lg">👤</span>
                   </div>
-                  <div className="text-white/90 font-body text-xs">Investor</div>
+                  <div className="text-white/90 font-body text-xs">
+                    Investor
+                  </div>
                 </div>
               </div>
 
               {/* Electric Connections - Behind Text */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <svg
+                  className="w-full h-full"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
                   {/* Electric lines connecting all nodes */}
-                  <path 
-                    d="M20 50 Q50 20 80 50 M20 50 Q50 80 80 50 M20 50 Q80 20 80 50 M20 50 Q80 80 80 50" 
-                    stroke="url(#electricGradient)" 
-                    strokeWidth="1.5" 
+                  <path
+                    d="M20 50 Q50 20 80 50 M20 50 Q50 80 80 50 M20 50 Q80 20 80 50 M20 50 Q80 80 80 50"
+                    stroke="url(#electricGradient)"
+                    strokeWidth="1.5"
                     fill="none"
                     className="animate-pulse"
                     opacity="0.6"
                   />
                   <defs>
-                    <linearGradient id="electricGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient
+                      id="electricGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
                       <stop offset="0%" stopColor="#3B82F6" />
                       <stop offset="50%" stopColor="#F59E0B" />
                       <stop offset="100%" stopColor="#8B5CF6" />
@@ -163,4 +182,4 @@ export default function Hero() {
       </div>
     </section>
   );
-} 
+}

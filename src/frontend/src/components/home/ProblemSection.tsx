@@ -5,23 +5,26 @@ import React from 'react';
 export default function ProblemSection() {
   const challenges = [
     {
-      icon: "🔐",
-      title: "Data Ownership",
-      description: "Your content, your rules. No more algorithms deciding what you see or who sees you.",
-      highlight: "Complete data sovereignty"
+      icon: '🔐',
+      title: 'Data Ownership',
+      description:
+        'Your content, your rules. No more algorithms deciding what you see or who sees you.',
+      highlight: 'Complete data sovereignty',
     },
     {
-      icon: "💎",
-      title: "Direct Monetization",
-      description: "Keep 100% of your earnings. No platform fees, no intermediaries taking cuts.",
-      highlight: "Zero platform fees"
+      icon: '💎',
+      title: 'Direct Monetization',
+      description:
+        'Keep 100% of your earnings. No platform fees, no intermediaries taking cuts.',
+      highlight: 'Zero platform fees',
     },
     {
-      icon: "🌍",
-      title: "Global Reach",
-      description: "Access from anywhere, anytime. No regional restrictions or content blocking.",
-      highlight: "Borderless connectivity"
-    }
+      icon: '🌍',
+      title: 'Global Reach',
+      description:
+        'Access from anywhere, anytime. No regional restrictions or content blocking.',
+      highlight: 'Borderless connectivity',
+    },
   ];
 
   const scrollToFeed = () => {
@@ -39,13 +42,17 @@ export default function ProblemSection() {
             Why deCentra is Different
           </h2>
           <p className="text-xl text-charcoal-black/70 font-body max-w-3xl mx-auto">
-            We&apos;re not just building another social platform. We&apos;re creating the foundation for digital freedom.
+            We&apos;re not just building another social platform. We&apos;re
+            creating the foundation for digital freedom.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {challenges.map((challenge, index) => (
-            <div key={index} className="bg-gradient-to-br from-deep-indigo/5 to-electric-blue/5 p-8 rounded-2xl border border-deep-indigo/10 hover:shadow-lg transition-all duration-300">
+            <div
+              key={index}
+              className="bg-gradient-to-br from-deep-indigo/5 to-electric-blue/5 p-8 rounded-2xl border border-deep-indigo/10 hover:shadow-lg transition-all duration-300"
+            >
               <div className="text-4xl mb-4">{challenge.icon}</div>
               <h3 className="text-2xl font-heading font-bold text-deep-indigo mb-4">
                 {challenge.title}
@@ -66,17 +73,14 @@ export default function ProblemSection() {
             Built for the Future of Social Media
           </h3>
           <p className="text-white/90 font-body mb-6 max-w-2xl mx-auto">
-            Join thousands of creators, activists, and communities who are already building 
-            the future of decentralized social media.
+            Join thousands of creators, activists, and communities who are
+            already building the future of decentralized social media.
           </p>
-          <button 
-            onClick={scrollToFeed}
-            className="btn-primary"
-          >
+          <button onClick={scrollToFeed} className="btn-primary">
             Join the Movement
           </button>
         </div>
       </div>
     </section>
   );
-} 
+}

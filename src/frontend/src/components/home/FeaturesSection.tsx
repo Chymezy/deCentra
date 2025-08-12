@@ -3,75 +3,83 @@ import React from 'react';
 export default function FeaturesSection() {
   const features = [
     {
-      icon: "🔒",
-      title: "Censorship Resistant",
-      description: "No centralized servers to seize or censor. Your voice remains free, regardless of political pressure.",
-      gradient: "from-deep-indigo to-electric-blue"
+      icon: '🔒',
+      title: 'Censorship Resistant',
+      description:
+        'No centralized servers to seize or censor. Your voice remains free, regardless of political pressure.',
+      gradient: 'from-deep-indigo to-electric-blue',
     },
     {
-      icon: "👥",
-      title: "DAO Governance",
-      description: "Community-driven moderation. Users, not governments or corporations, decide what's acceptable.",
-      gradient: "from-electric-blue to-vibrant-orange"
+      icon: '👥',
+      title: 'DAO Governance',
+      description:
+        "Community-driven moderation. Users, not governments or corporations, decide what's acceptable.",
+      gradient: 'from-electric-blue to-vibrant-orange',
     },
     {
-      icon: "💰",
-      title: "Creator Monetization",
-      description: "Direct micro-tipping with ICP tokens. No intermediaries taking cuts from your content.",
-      gradient: "from-vibrant-orange to-deep-indigo"
+      icon: '💰',
+      title: 'Creator Monetization',
+      description:
+        'Direct micro-tipping with ICP tokens. No intermediaries taking cuts from your content.',
+      gradient: 'from-vibrant-orange to-deep-indigo',
     },
     {
-      icon: "🕵️",
-      title: "Anonymous Whistleblowing",
-      description: "Secure tools for activists and journalists to share information without fear of retribution.",
-      gradient: "from-deep-indigo to-vibrant-orange"
+      icon: '🕵️',
+      title: 'Anonymous Whistleblowing',
+      description:
+        'Secure tools for activists and journalists to share information without fear of retribution.',
+      gradient: 'from-deep-indigo to-vibrant-orange',
     },
     {
-      icon: "🌍",
-      title: "Global Accessibility",
-      description: "Built for the 3.3 billion users in censored regions with seamless, borderless access.",
-      gradient: "from-electric-blue to-deep-indigo"
+      icon: '🌍',
+      title: 'Global Accessibility',
+      description:
+        'Built for the 3.3 billion users in censored regions with seamless, borderless access.',
+      gradient: 'from-electric-blue to-deep-indigo',
     },
     {
-      icon: "⚡",
-      title: "100% On-Chain",
-      description: "All data, posts, and interactions stored on the Internet Computer Protocol for complete transparency.",
-      gradient: "from-vibrant-orange to-electric-blue"
-    }
+      icon: '⚡',
+      title: '100% On-Chain',
+      description:
+        'All data, posts, and interactions stored on the Internet Computer Protocol for complete transparency.',
+      gradient: 'from-vibrant-orange to-electric-blue',
+    },
   ];
 
   const platformStats = [
-    { metric: "99.9%", label: "Uptime" },
-    { metric: "0ms", label: "Censorship" },
-    { metric: "100%", label: "Data Ownership" },
-    { metric: "0%", label: "Platform Fees" }
+    { metric: '99.9%', label: 'Uptime' },
+    { metric: '0ms', label: 'Censorship' },
+    { metric: '100%', label: 'Data Ownership' },
+    { metric: '0%', label: 'Platform Fees' },
   ];
 
   return (
-    <section id="features" className="py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section
+      id="features"
+      className="py-20 bg-gradient-to-br from-gray-50 to-white"
+    >
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-deep-indigo mb-6">
             Platform Capabilities
           </h2>
           <p className="text-xl text-charcoal-black/70 font-body max-w-3xl mx-auto">
-            Built for the 3.3 billion users in censored regions, with features that traditional platforms can&apos;t provide.
+            Built for the 3.3 billion users in censored regions, with features
+            that traditional platforms can&apos;t provide.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {features.map((feature, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`bg-gradient-to-br ${feature.gradient} p-8 rounded-2xl text-white hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2`}
             >
               <div className="text-4xl mb-6">{feature.icon}</div>
               <h3 className="text-2xl font-heading font-bold mb-4">
                 {feature.title}
               </h3>
-              <p className="text-white/90 font-body">
-                {feature.description}
-              </p>
+              <p className="text-white/90 font-body">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -148,4 +156,4 @@ export default function FeaturesSection() {
       </div>
     </section>
   );
-} 
+}

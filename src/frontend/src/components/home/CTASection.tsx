@@ -18,15 +18,21 @@ export default function CTASection() {
   };
 
   const handleDeveloperCTA = () => {
-    alert('Developer APIs coming soon! This will include comprehensive SDKs and documentation.');
+    alert(
+      'Developer APIs coming soon! This will include comprehensive SDKs and documentation.'
+    );
   };
 
   const handleCreatorCTA = () => {
-    alert('Creator monetization features coming in Phase 2! Direct tipping and tokenization.');
+    alert(
+      'Creator monetization features coming in Phase 2! Direct tipping and tokenization.'
+    );
   };
 
   const handleOrganizationCTA = () => {
-    alert('Enterprise solutions coming soon! Custom deployments for organizations and NGOs.');
+    alert(
+      'Enterprise solutions coming soon! Custom deployments for organizations and NGOs.'
+    );
   };
 
   return (
@@ -42,22 +48,19 @@ export default function CTASection() {
           Ready to Build the Future?
         </h2>
         <p className="text-xl text-white/90 font-body mb-12 max-w-2xl mx-auto">
-          Join thousands of creators, developers, and communities who are already building 
-          the future of decentralized social media.
+          Join thousands of creators, developers, and communities who are
+          already building the future of decentralized social media.
         </p>
 
         {/* Primary CTA */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <button 
+          <button
             onClick={scrollToFeed}
             className="btn-primary transform hover:scale-105"
           >
             Start Building
           </button>
-          <button 
-            onClick={scrollToFeatures}
-            className="btn-secondary"
-          >
+          <button onClick={scrollToFeatures} className="btn-secondary">
             Explore Platform
           </button>
         </div>
@@ -66,11 +69,13 @@ export default function CTASection() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
             <div className="text-3xl mb-4">👨‍💻</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">Developers</h3>
+            <h3 className="text-xl font-heading font-bold text-white mb-2">
+              Developers
+            </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
               Build on our open platform with comprehensive APIs and SDKs
             </p>
-            <button 
+            <button
               onClick={handleDeveloperCTA}
               className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
             >
@@ -80,11 +85,13 @@ export default function CTASection() {
 
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
             <div className="text-3xl mb-4">🎥</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">Creators</h3>
+            <h3 className="text-xl font-heading font-bold text-white mb-2">
+              Creators
+            </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
               Monetize your content directly without platform fees
             </p>
-            <button 
+            <button
               onClick={handleCreatorCTA}
               className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
             >
@@ -94,11 +101,13 @@ export default function CTASection() {
 
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
             <div className="text-3xl mb-4">🏢</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">Organizations</h3>
+            <h3 className="text-xl font-heading font-bold text-white mb-2">
+              Organizations
+            </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
               Deploy custom solutions for your community or organization
             </p>
-            <button 
+            <button
               onClick={handleOrganizationCTA}
               className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
             >
@@ -119,7 +128,9 @@ export default function CTASection() {
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">💬</div>
-              <div className="text-white font-body text-sm">Comments & Likes</div>
+              <div className="text-white font-body text-sm">
+                Comments & Likes
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">🪙</div>
@@ -145,4 +156,4 @@ export default function CTASection() {
       </div>
     </section>
   );
-} 
+}
