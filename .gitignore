@@ -23,3 +23,12 @@ dist/
 
 # environment variables
 .env
+
+
+# Backup files
+*.bak
+*.tmp
+*.swp
+*.swo
+*.backup
+backup/
