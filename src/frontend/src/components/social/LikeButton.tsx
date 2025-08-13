@@ -13,10 +13,10 @@ interface LikeButtonProps {
 
 /**
  * LikeButton Component
- * 
+ *
  * Interactive like/unlike button with optimistic updates and backend integration.
  * Provides immediate user feedback while handling backend synchronization.
- * 
+ *
  * Features:
  * - Optimistic UI updates for better UX
  * - Automatic error recovery with state rollback
@@ -24,11 +24,11 @@ interface LikeButtonProps {
  * - Visual feedback for interactions
  * - Duplicate like prevention (handled by backend)
  */
-export default function LikeButton({ 
-  postId, 
-  isLiked: initialIsLiked, 
+export default function LikeButton({
+  postId,
+  isLiked: initialIsLiked,
   likeCount: initialLikeCount,
-  onLikeChange 
+  onLikeChange,
 }: LikeButtonProps) {
   const { isAuthenticated } = useAuth();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
@@ -46,14 +46,14 @@ export default function LikeButton({
     // Optimistic update
     const newIsLiked = !isLiked;
     const optimisticCount = newIsLiked ? likeCount + 1 : likeCount - 1;
-    
+
     setIsLiked(newIsLiked);
     setLikeCount(optimisticCount);
     setIsLoading(true);
 
     try {
       let result;
-      
+
       if (newIsLiked) {
         result = await backend.like_post(postId);
       } else {
@@ -68,9 +68,12 @@ export default function LikeButton({
         console.error('Like/unlike failed:', result.Err);
         setIsLiked(!newIsLiked);
         setLikeCount(likeCount);
-        
+
         // Show user-friendly error message
-        if (result.Err.includes('already liked') || result.Err.includes('not liked')) {
+        if (
+          result.Err.includes('already liked') ||
+          result.Err.includes('not liked')
+        ) {
           // Duplicate like/unlike - sync with actual state
           setIsLiked(initialIsLiked);
           setLikeCount(initialLikeCount);
@@ -80,11 +83,11 @@ export default function LikeButton({
       }
     } catch (error) {
       console.error('Network error during like/unlike:', error);
-      
+
       // Rollback optimistic update
       setIsLiked(!newIsLiked);
       setLikeCount(likeCount);
-      
+
       alert('Network error. Please try again.');
     } finally {
       setIsLoading(false);
@@ -97,9 +100,10 @@ export default function LikeButton({
       disabled={!isAuthenticated || isLoading}
       className={`
         flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200
-        ${isLiked 
-          ? 'bg-red-50 text-red-600 hover:bg-red-100' 
-          : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+        ${
+          isLiked
+            ? 'bg-red-50 text-red-600 hover:bg-red-100'
+            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
         }
         ${!isAuthenticated ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
         ${isLoading ? 'animate-pulse' : ''}
@@ -107,7 +111,9 @@ export default function LikeButton({
       aria-label={isLiked ? 'Unlike post' : 'Like post'}
       aria-pressed={isLiked}
     >
-      <span className={`text-lg transition-transform duration-200 ${isLoading ? 'animate-bounce' : ''}`}>
+      <span
+        className={`text-lg transition-transform duration-200 ${isLoading ? 'animate-bounce' : ''}`}
+      >
         {isLiked ? '❤️' : '🤍'}
       </span>
       <span className="text-sm font-medium">

@@ -7,8 +7,9 @@ import { useAuth } from '@/components/AuthContext';
 import ProfileCreationWizard from '@/components/profile/ProfileCreationWizard';
 
 export default function FeedPage() {
-  const { isAuthenticated, principal, login, needsProfileCreation, isLoading } = useAuth();
-  
+  const { isAuthenticated, principal, login, needsProfileCreation, isLoading } =
+    useAuth();
+
   // Show loading state while checking authentication
   if (isLoading) {
     return (
@@ -31,7 +32,7 @@ export default function FeedPage() {
       <>
         <Header />
         <main className="pt-16">
-          <ProfileCreationWizard 
+          <ProfileCreationWizard
             onComplete={() => {
               // Profile creation completed, the context will automatically refresh
               // and needsProfileCreation will become false

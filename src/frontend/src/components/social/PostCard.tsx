@@ -17,10 +17,10 @@ interface PostCardProps {
 
 /**
  * Enhanced PostCard Component
- * 
+ *
  * Displays a social media post with comprehensive engagement features.
  * Fully integrated with the backend's social network capabilities.
- * 
+ *
  * Features:
  * - Rich post content display with author information
  * - Interactive like/unlike with real-time counts
@@ -35,8 +35,12 @@ export default function PostCard({
   onLike,
   onCommentAdded,
 }: PostCardProps) {
-  const [currentLikeCount, setCurrentLikeCount] = useState(Number(post.post.like_count));
-  const [currentCommentCount, setCurrentCommentCount] = useState(Number(post.post.comment_count));
+  const [currentLikeCount, setCurrentLikeCount] = useState(
+    Number(post.post.like_count)
+  );
+  const [currentCommentCount, setCurrentCommentCount] = useState(
+    Number(post.post.comment_count)
+  );
 
   /**
    * Formats timestamp for display
@@ -60,7 +64,11 @@ export default function PostCard({
   /**
    * Handles like count changes from the LikeButton component
    */
-  const handleLikeChange = (postId: bigint, isLiked: boolean, newCount: number) => {
+  const handleLikeChange = (
+    postId: bigint,
+    isLiked: boolean,
+    newCount: number
+  ) => {
     setCurrentLikeCount(newCount);
     onLike?.(postId);
   };
@@ -84,7 +92,7 @@ export default function PostCard({
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
               {post.author.username.slice(0, 2).toUpperCase()}
             </div>
-            
+
             {/* Author Details */}
             <div>
               <h3 className="font-semibold text-gray-900">
@@ -93,7 +101,11 @@ export default function PostCard({
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>@{post.author.username}</span>
                 <span>&bull;</span>
-                <time dateTime={new Date(Number(post.post.created_at) / 1000000).toISOString()}>
+                <time
+                  dateTime={new Date(
+                    Number(post.post.created_at) / 1000000
+                  ).toISOString()}
+                >
                   {formatTimestamp(post.post.created_at)}
                 </time>
               </div>
@@ -138,8 +150,18 @@ export default function PostCard({
 
           {/* Share Button (placeholder) */}
           <button className="flex items-center gap-1 text-gray-600 hover:text-gray-800 transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+              />
             </svg>
             <span className="text-sm">Share</span>
           </button>

@@ -10,23 +10,23 @@ interface ProfileCreationWizardProps {
 
 /**
  * ProfileCreationWizard Component
- * 
+ *
  * A comprehensive onboarding flow for new users to create their deCentra profile.
  * This component guides users through the essential setup steps required before
  * they can fully participate in the social network.
- * 
+ *
  * Features:
  * - Step-by-step profile creation process
  * - Real-time username validation
  * - Privacy-focused default settings
  * - Accessibility-compliant form design
  * - Integration with backend profile creation API
- * 
+ *
  * Required for new users after Internet Identity authentication.
  */
-export default function ProfileCreationWizard({ 
-  onComplete, 
-  onSkip 
+export default function ProfileCreationWizard({
+  onComplete,
+  onSkip,
 }: ProfileCreationWizardProps) {
   const { createProfile, principal } = useAuth();
 
@@ -84,18 +84,18 @@ export default function ProfileCreationWizard({
    * Handles form field changes with real-time validation
    */
   const handleFieldChange = (field: keyof typeof formData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     // Clear existing error for this field
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
 
     // Real-time validation for username
     if (field === 'username') {
       const error = validateUsername(value);
       if (error) {
-        setErrors(prev => ({ ...prev, username: error }));
+        setErrors((prev) => ({ ...prev, username: error }));
       }
     }
   };
@@ -132,7 +132,7 @@ export default function ProfileCreationWizard({
    */
   const nextStep = () => {
     if (validateCurrentStep()) {
-      setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
     }
   };
 
@@ -140,7 +140,7 @@ export default function ProfileCreationWizard({
    * Moves to the previous step
    */
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   /**
@@ -185,12 +185,16 @@ export default function ProfileCreationWizard({
                 Choose Your Username
               </h2>
               <p className="text-charcoal-black/70">
-                This will be your unique identifier on deCentra. Choose wisely - you can&apos;t change it later!
+                This will be your unique identifier on deCentra. Choose wisely -
+                you can&apos;t change it later!
               </p>
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-charcoal-black mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-charcoal-black mb-2"
+              >
                 Username *
               </label>
               <input
@@ -204,7 +208,9 @@ export default function ProfileCreationWizard({
                 }`}
                 maxLength={50}
                 autoComplete="username"
-                aria-describedby={errors.username ? 'username-error' : undefined}
+                aria-describedby={
+                  errors.username ? 'username-error' : undefined
+                }
               />
               {errors.username && (
                 <p id="username-error" className="text-red-500 text-sm mt-2">
@@ -212,7 +218,8 @@ export default function ProfileCreationWizard({
                 </p>
               )}
               <p className="text-gray-500 text-sm mt-2">
-                3-50 characters. Letters, numbers, underscores, and hyphens only.
+                3-50 characters. Letters, numbers, underscores, and hyphens
+                only.
               </p>
             </div>
           </div>
@@ -227,29 +234,40 @@ export default function ProfileCreationWizard({
                 Display Name (Optional)
               </h2>
               <p className="text-charcoal-black/70">
-                This is how others will see your name. You can change this anytime.
+                This is how others will see your name. You can change this
+                anytime.
               </p>
             </div>
 
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-charcoal-black mb-2">
+              <label
+                htmlFor="displayName"
+                className="block text-sm font-medium text-charcoal-black mb-2"
+              >
                 Display Name
               </label>
               <input
                 type="text"
                 id="displayName"
                 value={formData.displayName}
-                onChange={(e) => handleFieldChange('displayName', e.target.value)}
+                onChange={(e) =>
+                  handleFieldChange('displayName', e.target.value)
+                }
                 placeholder="Your Display Name"
                 className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-deep-indigo focus:border-transparent transition-all ${
                   errors.displayName ? 'border-red-500' : 'border-gray-200'
                 }`}
                 maxLength={100}
                 autoComplete="name"
-                aria-describedby={errors.displayName ? 'display-name-error' : undefined}
+                aria-describedby={
+                  errors.displayName ? 'display-name-error' : undefined
+                }
               />
               {errors.displayName && (
-                <p id="display-name-error" className="text-red-500 text-sm mt-2">
+                <p
+                  id="display-name-error"
+                  className="text-red-500 text-sm mt-2"
+                >
                   {errors.displayName}
                 </p>
               )}
@@ -264,7 +282,8 @@ export default function ProfileCreationWizard({
                 <div>
                   <h4 className="font-semibold text-blue-900">Privacy Tip</h4>
                   <p className="text-blue-800 text-sm">
-                    Your display name is public. You can always update your privacy settings later.
+                    Your display name is public. You can always update your
+                    privacy settings later.
                   </p>
                 </div>
               </div>
@@ -286,7 +305,10 @@ export default function ProfileCreationWizard({
             </div>
 
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-charcoal-black mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-charcoal-black mb-2"
+              >
                 Bio
               </label>
               <textarea
@@ -315,7 +337,9 @@ export default function ProfileCreationWizard({
               <div className="flex items-start space-x-3">
                 <div className="text-deep-indigo text-xl">🔒</div>
                 <div>
-                  <h4 className="font-semibold text-deep-indigo">Default Privacy Settings</h4>
+                  <h4 className="font-semibold text-deep-indigo">
+                    Default Privacy Settings
+                  </h4>
                   <ul className="text-deep-indigo/80 text-sm space-y-1 mt-1">
                     <li>• Profile: Public (you can change this)</li>
                     <li>• Posts: Public by default</li>
@@ -373,9 +397,7 @@ export default function ProfileCreationWizard({
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          {renderStepContent()}
-        </div>
+        <div className="p-6">{renderStepContent()}</div>
 
         {/* Footer */}
         <div className="p-6 border-t border-gray-100">
@@ -391,7 +413,9 @@ export default function ProfileCreationWizard({
             {currentStep < totalSteps ? (
               <button
                 onClick={nextStep}
-                disabled={!!errors.username || !!errors.displayName || !!errors.bio}
+                disabled={
+                  !!errors.username || !!errors.displayName || !!errors.bio
+                }
                 className="px-6 py-2 bg-deep-indigo text-white rounded-xl hover:bg-deep-indigo/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Next
@@ -399,7 +423,12 @@ export default function ProfileCreationWizard({
             ) : (
               <button
                 onClick={handleSubmit}
-                disabled={isSubmitting || !!errors.username || !!errors.displayName || !!errors.bio}
+                disabled={
+                  isSubmitting ||
+                  !!errors.username ||
+                  !!errors.displayName ||
+                  !!errors.bio
+                }
                 className="px-6 py-2 bg-deep-indigo text-white rounded-xl hover:bg-deep-indigo/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {isSubmitting ? 'Creating Profile...' : 'Create Profile'}

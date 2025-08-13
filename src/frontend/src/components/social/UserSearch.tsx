@@ -20,10 +20,10 @@ interface UserSearchResult {
 
 /**
  * UserSearch Component
- * 
+ *
  * A comprehensive user search component with real-time search and follow functionality.
  * Integrates with the backend's user search capabilities.
- * 
+ *
  * Features:
  * - Real-time search with debouncing
  * - User profile display with avatars
@@ -34,9 +34,9 @@ interface UserSearchResult {
  */
 export default function UserSearch({
   onUserSelect,
-  placeholder = "Search users...",
+  placeholder = 'Search users...',
   showFollowButtons = true,
-  className = ""
+  className = '',
 }: UserSearchProps) {
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,7 +77,7 @@ export default function UserSearch({
     const timeout = setTimeout(() => {
       performSearch(searchQuery);
     }, 300);
-    
+
     return () => clearTimeout(timeout);
   }, [searchQuery, performSearch]);
 
@@ -118,14 +118,24 @@ export default function UserSearch({
           placeholder={placeholder}
           className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
         />
-        
+
         {/* Search Icon */}
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
           {isSearching ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
           ) : (
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="h-4 w-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           )}
         </div>
@@ -153,23 +163,29 @@ export default function UserSearch({
                       <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                         {user.username.slice(0, 2).toUpperCase()}
                       </div>
-                      
+
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h3 className="text-sm font-semibold text-gray-900 truncate">
                             {getUserDisplayName(user)}
                           </h3>
-                          {user.verification_status && !('Unverified' in user.verification_status) && (
-                            <span className="flex-shrink-0">
-                              {'Verified' in user.verification_status && '✅'}
-                              {'Whistleblower' in user.verification_status && '🔒'}
-                              {'Organization' in user.verification_status && '🏢'}
-                              {'Journalist' in user.verification_status && '📰'}
-                            </span>
-                          )}
+                          {user.verification_status &&
+                            !('Unverified' in user.verification_status) && (
+                              <span className="flex-shrink-0">
+                                {'Verified' in user.verification_status && '✅'}
+                                {'Whistleblower' in user.verification_status &&
+                                  '🔒'}
+                                {'Organization' in user.verification_status &&
+                                  '🏢'}
+                                {'Journalist' in user.verification_status &&
+                                  '📰'}
+                              </span>
+                            )}
                         </div>
-                        <p className="text-xs text-gray-600">@{user.username}</p>
+                        <p className="text-xs text-gray-600">
+                          @{user.username}
+                        </p>
                         <p className="text-xs text-gray-500 truncate mt-1">
                           {getUserBio(user)}
                         </p>
@@ -192,7 +208,9 @@ export default function UserSearch({
           ) : searchQuery.length >= 2 && !isSearching ? (
             <div className="p-4 text-center text-gray-500">
               <span className="text-lg block mb-2">👤</span>
-              <p className="text-sm">No users found for &quot;{searchQuery}&quot;</p>
+              <p className="text-sm">
+                No users found for &quot;{searchQuery}&quot;
+              </p>
             </div>
           ) : null}
         </div>

@@ -61,7 +61,7 @@ export default function ProfilePage() {
           <div className="space-y-8">
             {/* User Profile Display */}
             <ProfileDisplay />
-            
+
             {/* Follow Requests Management */}
             <FollowRequestManager />
           </div>

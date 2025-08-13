@@ -19,10 +19,10 @@ interface CommentItemProps {
 
 /**
  * CommentSystem Component
- * 
+ *
  * A comprehensive commenting system with threading support.
  * Integrates with the backend's comment API and provides a rich commenting experience.
- * 
+ *
  * Features:
  * - Threaded comments (up to 3 levels deep as per backend)
  * - Real-time comment loading and posting
@@ -31,10 +31,10 @@ interface CommentItemProps {
  * - Error handling and loading states
  * - Optimistic updates for better UX
  */
-export default function CommentSystem({ 
-  postId, 
+export default function CommentSystem({
+  postId,
   initialCommentCount = 0,
-  onCommentCountChange 
+  onCommentCountChange,
 }: CommentSystemProps) {
   const { isAuthenticated } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -119,9 +119,12 @@ export default function CommentSystem({
       >
         <span className="text-lg">💬</span>
         <span className="text-sm font-medium">
-          {initialCommentCount} {initialCommentCount === 1 ? 'comment' : 'comments'}
+          {initialCommentCount}{' '}
+          {initialCommentCount === 1 ? 'comment' : 'comments'}
         </span>
-        <span className={`transform transition-transform ${showComments ? 'rotate-180' : ''}`}>
+        <span
+          className={`transform transition-transform ${showComments ? 'rotate-180' : ''}`}
+        >
           ▼
         </span>
       </button>
@@ -222,7 +225,9 @@ function CommentItem({ comment, level, onReply }: CommentItemProps) {
   const isMaxDepth = level >= maxLevel;
 
   return (
-    <div className={`space-y-3 ${level > 0 ? 'ml-6 border-l border-gray-100 pl-4' : ''}`}>
+    <div
+      className={`space-y-3 ${level > 0 ? 'ml-6 border-l border-gray-100 pl-4' : ''}`}
+    >
       {/* Comment Content */}
       <div className="bg-gray-50 rounded-lg p-4">
         <div className="flex items-start justify-between mb-2">
@@ -240,9 +245,9 @@ function CommentItem({ comment, level, onReply }: CommentItemProps) {
             </div>
           </div>
         </div>
-        
+
         <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
-        
+
         {/* Reply Button */}
         {isAuthenticated && !isMaxDepth && (
           <button

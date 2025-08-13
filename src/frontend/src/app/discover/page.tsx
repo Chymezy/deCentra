@@ -25,9 +25,12 @@ export default function DiscoverPage() {
           <div className="max-w-4xl mx-auto px-4 py-8">
             <div className="text-center py-16">
               <span className="text-6xl block mb-4">🔍</span>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Discover Users</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                Discover Users
+              </h1>
               <p className="text-gray-600 mb-8">
-                Connect with Internet Identity to search and discover other users
+                Connect with Internet Identity to search and discover other
+                users
               </p>
               <button
                 onClick={login}
@@ -91,8 +94,12 @@ export default function DiscoverPage() {
                       {selectedUser.bio || 'No bio available'}
                     </p>
                     <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
-                      <span>{Number(selectedUser.follower_count)} followers</span>
-                      <span>{Number(selectedUser.following_count)} following</span>
+                      <span>
+                        {Number(selectedUser.follower_count)} followers
+                      </span>
+                      <span>
+                        {Number(selectedUser.following_count)} following
+                      </span>
                       <span>{Number(selectedUser.post_count)} posts</span>
                     </div>
                   </div>

@@ -11,10 +11,10 @@ interface FollowRequestManagerProps {
 
 /**
  * FollowRequestManager Component
- * 
+ *
  * Manages incoming follow requests with approve/reject functionality.
  * Provides a comprehensive interface for handling social connections.
- * 
+ *
  * Features:
  * - Real-time follow request loading
  * - Approve/reject functionality with backend integration
@@ -22,8 +22,8 @@ interface FollowRequestManagerProps {
  * - User-friendly request display
  * - Error handling and loading states
  */
-export default function FollowRequestManager({ 
-  onRequestCountChange 
+export default function FollowRequestManager({
+  onRequestCountChange,
 }: FollowRequestManagerProps) {
   const { isAuthenticated } = useAuth();
   const [requests, setRequests] = useState<FollowRequest[]>([]);
@@ -60,13 +60,13 @@ export default function FollowRequestManager({
    * Approves a follow request
    */
   const approveRequest = async (requestId: bigint) => {
-    setProcessingIds(prev => new Set([...prev, requestId]));
+    setProcessingIds((prev) => new Set([...prev, requestId]));
 
     try {
       const result = await backend.approve_follow_request(requestId);
       if ('Ok' in result) {
         // Remove from requests list
-        setRequests(prev => prev.filter(req => req.id !== requestId));
+        setRequests((prev) => prev.filter((req) => req.id !== requestId));
         onRequestCountChange?.(requests.length - 1);
       } else {
         alert('Failed to approve request: ' + result.Err);
@@ -75,7 +75,7 @@ export default function FollowRequestManager({
       console.error('Error approving request:', error);
       alert('Network error. Please try again.');
     } finally {
-      setProcessingIds(prev => {
+      setProcessingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(requestId);
         return newSet;
@@ -87,13 +87,13 @@ export default function FollowRequestManager({
    * Rejects a follow request
    */
   const rejectRequest = async (requestId: bigint) => {
-    setProcessingIds(prev => new Set([...prev, requestId]));
+    setProcessingIds((prev) => new Set([...prev, requestId]));
 
     try {
       const result = await backend.reject_follow_request(requestId);
       if ('Ok' in result) {
         // Remove from requests list
-        setRequests(prev => prev.filter(req => req.id !== requestId));
+        setRequests((prev) => prev.filter((req) => req.id !== requestId));
         onRequestCountChange?.(requests.length - 1);
       } else {
         alert('Failed to reject request: ' + result.Err);
@@ -102,7 +102,7 @@ export default function FollowRequestManager({
       console.error('Error rejecting request:', error);
       alert('Network error. Please try again.');
     } finally {
-      setProcessingIds(prev => {
+      setProcessingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(requestId);
         return newSet;
@@ -149,7 +149,9 @@ export default function FollowRequestManager({
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Follow Requests</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Follow Requests
+          </h2>
           <button
             onClick={fetchFollowRequests}
             disabled={isLoading}
@@ -181,14 +183,16 @@ export default function FollowRequestManager({
         ) : requests.length === 0 ? (
           <div className="text-center py-8">
             <span className="text-4xl block mb-2">👥</span>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No follow requests</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">
+              No follow requests
+            </h3>
             <p className="text-gray-500 text-sm">
               When people request to follow you, they&apos;ll appear here
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {requests.map(request => (
+            {requests.map((request) => (
               <div
                 key={request.id.toString()}
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
@@ -198,7 +202,7 @@ export default function FollowRequestManager({
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                     {request.requester.toString().slice(0, 2).toUpperCase()}
                   </div>
-                  
+
                   {/* User Info */}
                   <div>
                     <h4 className="font-medium text-gray-900">

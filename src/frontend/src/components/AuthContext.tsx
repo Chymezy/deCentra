@@ -24,17 +24,21 @@ interface AuthContextType extends AuthState {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  createProfile: (username: string, displayName?: string, bio?: string) => Promise<boolean>;
+  createProfile: (
+    username: string,
+    displayName?: string,
+    bio?: string
+  ) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * Enhanced AuthProvider with Profile Management
- * 
+ *
  * This enhanced version integrates user profile management with authentication,
  * providing a complete authentication and user state management solution.
- * 
+ *
  * Features:
  * - Internet Identity authentication
  * - Automatic profile loading and caching
@@ -54,27 +58,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Fetches the user's profile from the backend
    */
-  const fetchUserProfile = useCallback(async (principalId: string): Promise<UserProfile | null> => {
-    try {
-      if (!backend) {
-        console.error('Backend not available');
-        return null;
-      }
+  const fetchUserProfile = useCallback(
+    async (principalId: string): Promise<UserProfile | null> => {
+      try {
+        if (!backend) {
+          console.error('Backend not available');
+          return null;
+        }
 
-      const profileResult = await backend.get_my_profile();
-      
-      if (profileResult.length > 0 && profileResult[0]) {
-        return profileResult[0];
-      } else {
-        // No profile exists - user needs to create one
-        console.log('No profile found for user:', principalId);
+        const profileResult = await backend.get_my_profile();
+
+        if (profileResult.length > 0 && profileResult[0]) {
+          return profileResult[0];
+        } else {
+          // No profile exists - user needs to create one
+          console.log('No profile found for user:', principalId);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
         return null;
       }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-  }, []);
+    },
+    []
+  );
 
   /**
    * Checks authentication status and loads user profile
@@ -83,14 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const authClient = await AuthClient.create();
       const isAuthenticated = await authClient.isAuthenticated();
-      
+
       if (isAuthenticated) {
         const identity = authClient.getIdentity();
         const principalId = identity.getPrincipal().toText();
-        
+
         // Fetch user profile
         const userProfile = await fetchUserProfile(principalId);
-        
+
         setAuthState({
           isAuthenticated: true,
           principal: principalId,
@@ -125,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async () => {
     try {
       const authClient = await AuthClient.create();
-      
+
       await authClient.login({
         identityProvider: process.env.NEXT_PUBLIC_II_CANISTER_URL,
         onSuccess: async () => {
@@ -150,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const authClient = await AuthClient.create();
       await authClient.logout();
-      
+
       setAuthState({
         isAuthenticated: false,
         principal: null,
@@ -172,8 +179,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const userProfile = await fetchUserProfile(authState.principal);
-    
-    setAuthState(prev => ({
+
+    setAuthState((prev) => ({
       ...prev,
       userProfile,
       needsProfileCreation: !userProfile,
@@ -183,38 +190,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Creates a new user profile
    */
-  const createProfile = useCallback(async (
-    username: string, 
-    displayName?: string, 
-    bio?: string
-  ): Promise<boolean> => {
-    if (!authState.isAuthenticated || !backend) {
-      console.error('Not authenticated or backend not available');
-      return false;
-    }
-
-    try {
-      const result = await backend.create_user_profile(
-        username,
-        displayName ? [displayName] : [],
-        bio ? [bio] : []
-      );
-
-      if ('Ok' in result) {
-        // Profile created successfully, refresh the profile
-        await refreshProfile();
-        return true;
-      } else {
-        console.error('Profile creation failed:', result.Err);
-        alert('Profile creation failed: ' + result.Err);
+  const createProfile = useCallback(
+    async (
+      username: string,
+      displayName?: string,
+      bio?: string
+    ): Promise<boolean> => {
+      if (!authState.isAuthenticated || !backend) {
+        console.error('Not authenticated or backend not available');
         return false;
       }
-    } catch (error) {
-      console.error('Profile creation error:', error);
-      alert('Profile creation error: ' + error);
-      return false;
-    }
-  }, [authState.isAuthenticated, refreshProfile]);
+
+      try {
+        const result = await backend.create_user_profile(
+          username,
+          displayName ? [displayName] : [],
+          bio ? [bio] : []
+        );
+
+        if ('Ok' in result) {
+          // Profile created successfully, refresh the profile
+          await refreshProfile();
+          return true;
+        } else {
+          console.error('Profile creation failed:', result.Err);
+          alert('Profile creation failed: ' + result.Err);
+          return false;
+        }
+      } catch (error) {
+        console.error('Profile creation error:', error);
+        alert('Profile creation error: ' + error);
+        return false;
+      }
+    },
+    [authState.isAuthenticated, refreshProfile]
+  );
 
   // Initialize auth check on mount
   useEffect(() => {
@@ -230,9 +240,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
@@ -252,7 +260,7 @@ export function useAuth() {
  */
 export function useProfileCreationStatus() {
   const { needsProfileCreation, isAuthenticated, isLoading } = useAuth();
-  
+
   return {
     needsProfileCreation: isAuthenticated && needsProfileCreation,
     isReady: !isLoading,
