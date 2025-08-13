@@ -203,7 +203,6 @@ export default function FeedSection({
             <PostCard
               key={feedPost.post.id.toString()}
               post={feedPost}
-              isAuthenticated={isAuthenticated}
               onLike={likePost}
               onCommentAdded={fetchFeed}
             />
