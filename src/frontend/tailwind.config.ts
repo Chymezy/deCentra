@@ -38,6 +38,20 @@ const config: Config = {
           default: '#4A4A4A',    // Default borders
           strong: '#666666',     // Strong borders
         },
+
+        // Privacy-focused component colors
+        'privacy-dark': '#1A1A1A',
+        'privacy-background': '#0F0F0F',
+        'privacy-muted': '#2A2A2A',
+        'privacy-border': '#4A4A4A',
+        'privacy-text': '#FFFFFF',
+        'privacy-text-muted': '#B3B3B3',
+        'privacy-accent': '#FF6F00',
+        'privacy-primary': '#4B0082',
+        'privacy-secondary': '#0F62FE',
+        'privacy-success': '#10B981',
+        'privacy-warning': '#F59E0B',
+        'privacy-danger': '#EF4444',
       },
       fontFamily: {
         heading: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
@@ -56,6 +70,11 @@ const config: Config = {
         'medium': '8px 8px 16px rgba(0,0,0,0.3), -8px -8px 16px rgba(255,255,255,0.1)',
         'medium-inset': 'inset 8px 8px 16px rgba(0,0,0,0.3), inset -8px -8px 16px rgba(255,255,255,0.1)',
         'strong': '12px 12px 24px rgba(0,0,0,0.4), -12px -12px 24px rgba(255,255,255,0.15)',
+        
+        // Neumorphic shadow variants for components
+        'neumorphic-inset': 'inset 4px 4px 8px rgba(0,0,0,0.25), inset -4px -4px 8px rgba(255,255,255,0.05)',
+        'neumorphic-raised': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
+        'neumorphic-raised-hover': '6px 6px 12px rgba(0,0,0,0.3), -6px -6px 12px rgba(255,255,255,0.08)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
