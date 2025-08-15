@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { backend } from '../../../../declarations/backend';
-import { useAuth } from '@/components/AuthContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import { Principal } from '@dfinity/principal';
 
 interface FollowButtonProps {
@@ -43,7 +43,7 @@ export default function FollowButton({
   const [error, setError] = useState<string | null>(null);
 
   // Don't show follow button for own profile
-  const isOwnProfile = principal === targetUserId;
+  const isOwnProfile = principal ? principal.toText() === targetUserId : false;
 
   /**
    * Checks the current follow status between the authenticated user and target user
@@ -52,7 +52,7 @@ export default function FollowButton({
     if (!backend || !principal) return;
 
     try {
-      const followerPrincipal = Principal.fromText(principal);
+      const followerPrincipal = Principal.fromText(principal.toText());
       const targetPrincipal = Principal.fromText(targetUserId);
 
       const result = await backend.is_following(

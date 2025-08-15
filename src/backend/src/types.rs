@@ -138,6 +138,11 @@ pub struct Post {
 
     /// Who can view this post
     pub visibility: PostVisibility,
+    pub(crate) comments_count: u32,
+    pub(crate) likes_count: u32,
+    pub(crate) reposts_count: u32,
+    pub(crate) tips_received: u64,
+    pub(crate) edited_at: Option<u64>,
 }
 
 /// Post visibility and privacy controls

@@ -313,9 +313,14 @@ pub async fn create_post(
             content,
             created_at: now,
             updated_at: now,
-            like_count: 0,
-            comment_count: 0,
+            likes_count: 0u32,
+            comments_count: 0u32,
+            reposts_count: 0u32,
+            tips_received: 0u64,
+            edited_at: None,
             visibility: visibility.unwrap_or(PostVisibility::Public),
+            like_count: 0u64,
+            comment_count: 0u64,
         };
 
         state.posts.insert(post_id, post);
@@ -425,15 +430,56 @@ pub fn get_user_posts(user_id: UserId, limit: Option<usize>, offset: Option<usiz
 /// - Efficient indexing for large user bases
 /// - Cycle cost scales with following count
 #[query]
-pub fn get_user_feed(offset: Option<usize>, limit: Option<usize>) -> Result<Vec<FeedPost>, String> {
-    let viewer = caller();
+pub fn get_user_feed(offset: Option<u64>, limit: Option<u64>) -> Result<Vec<CanisterPost>, String> {
+    let _caller = authenticate_user()?;
 
-    if viewer == Principal::anonymous() {
-        return Err("Authentication required for personalized feed".to_string());
-    }
+    let safe_offset: usize = offset.unwrap_or(0u64) as usize;
+    let safe_limit: usize = std::cmp::min(limit.unwrap_or(10u64) as usize, MAX_FEED_LIMIT);
 
-    // Use the enhanced social feed for authenticated users
-    get_social_feed(limit, offset)
+    with_state(|state| {
+        let user_posts: Vec<CanisterPost> = state
+            .posts
+            .values()
+            .filter(|post| {
+                // For now, show all public posts (will add following filter later)
+                matches!(post.visibility, PostVisibility::Public)
+            })
+            .skip(safe_offset)
+            .take(safe_limit)
+            .map(|post| CanisterPost {
+                id: post.id,
+                author_id: post.author_id,
+                content: post.content.clone(),
+                created_at: post.created_at,
+                likes_count: post.likes_count,
+                comments_count: post.comments_count,
+                reposts_count: post.reposts_count,
+                tips_received: post.tips_received,
+                edited_at: post.edited_at,
+                visibility: post.visibility.clone(),
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev() // Newest first
+            .collect();
+
+        Ok(user_posts)
+    })
+}
+
+// Add the CanisterPost type to match frontend expectations
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct CanisterPost {
+    pub id: PostId,
+    pub author_id: UserId,
+    pub content: String,
+    pub created_at: u64,
+    pub likes_count: u32,
+    pub comments_count: u32,
+    pub reposts_count: u32,
+    pub tips_received: u64,
+    pub edited_at: Option<u64>,
+    pub visibility: PostVisibility,
 }
 
 // ============================================================================

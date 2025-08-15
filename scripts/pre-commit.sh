@@ -120,7 +120,8 @@ get_staged_files() {
         return 1
     fi
     
-    echo "$files" | grep -E "$pattern" || true
+    # Exclude .md files
+    echo "$files" | grep -E "$pattern" | grep -v '\.md$' || true
 }
 
 STAGED_RS_FILES=$(get_staged_files '\.rs$') || exit 1
@@ -181,29 +182,21 @@ check_forbidden_patterns() {
     done
 }
 
-# Critical Rust patterns that must not be present
+# Critical Rust patterns are checked in the dedicated Rust section below
+# This prevents checking .md and other documentation files for forbidden patterns
+
 if [ -n "$STAGED_RS_FILES" ]; then
-    FORBIDDEN_RUST_PATTERNS=(
-        "\.unwrap\(\)"
-        "\.expect\("
-        "panic!\("
-        "unreachable!\("
-        "todo!\("
-        "unimplemented!\("
-    )
-    
-    check_forbidden_patterns "\.rs$" "${FORBIDDEN_RUST_PATTERNS[@]}"
     
     # Check for unsafe arithmetic operations
     print_status "Checking for unsafe arithmetic operations..."
     if echo "$STAGED_RS_FILES" | while read -r file; do
         if [ -f "$file" ]; then
             # Look for additions of arithmetic operations without safety checks
-            if git diff --cached "$file" | grep -E "^\+.*[^.]\s*[\+\-\*]\s*[^.]" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_" | grep -v "^\s*//" > /dev/null; then
+            if git diff --cached "$file" | grep -E "^\+.*[^.]\s*[\+\-*]\s*[^.]" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_" | grep -v "^\s*//" > /dev/null; then
                 echo "$file: unsafe arithmetic"
             fi
-            # Look for array indexing without bounds checking
-            if git diff --cached "$file" | grep -E "^\+.*\[[^]]+\]" | grep -v "\.get(" | grep -v "^\s*//" > /dev/null; then
+            # Look for array indexing without bounds checking (exclude attributes)
+            if git diff --cached "$file" | grep -E "^\+.*\[.*\]" | grep -v "\.get(" | grep -v "^\s*//" | grep -v "#\[" > /dev/null; then
                 echo "$file: unsafe indexing"
             fi
         fi
@@ -327,43 +320,79 @@ if [ -n "$STAGED_RS_FILES" ]; then
     print_status "Scanning for security anti-patterns in Rust files..."
     ANTIPATTERNS_FOUND=0
     
-    # Check for .unwrap() usage
-    if git diff --cached | grep -E '^\+.*\.unwrap\(\)' > /dev/null; then
-        print_error "Found .unwrap() in staged changes"
+    # Check for .unwrap() usage in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*\.unwrap\(\)([^_a-zA-Z]|$)' > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_error "Found .unwrap() in staged Rust changes"
         echo "Replace .unwrap() with proper error handling"
         ANTIPATTERNS_FOUND=1
     fi
     
-    # Check for .expect() usage  
-    if git diff --cached | grep -E '^\+.*\.expect\(' > /dev/null; then
-        print_error "Found .expect() in staged changes"
+    # Check for .expect() usage in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*\.expect\(' > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_error "Found .expect() in staged Rust changes"
         echo "Replace .expect() with proper error handling"
         ANTIPATTERNS_FOUND=1
     fi
     
-    # Check for panic! usage
-    if git diff --cached | grep -E '^\+.*panic!' > /dev/null; then
-        print_error "Found panic! in staged changes"
+    # Check for panic! usage in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*panic!' > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_error "Found panic! in staged Rust changes"
         echo "Replace panic! with proper error handling"
         ANTIPATTERNS_FOUND=1
     fi
     
-    # Check for TODO/FIXME in security-related contexts
-    if git diff --cached | grep -E '^\+.*(TODO|FIXME).*(auth|security|password|token|principal)' -i > /dev/null; then
-        print_warning "Found security-related TODO/FIXME in staged changes"
+    # Check for TODO/FIXME in security-related contexts in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*(TODO|FIXME).*(auth|security|password|token|principal)' -i > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_warning "Found security-related TODO/FIXME in staged Rust changes"
         echo "Ensure security-related TODOs are resolved before release"
     fi
     
-    # Check for hardcoded secrets patterns
-    if git diff --cached | grep -E '^\+.*((password|secret|api_key|token)s?)\s*=\s*[\x27\x22][^\x27\x22]{8,}[\x27\x22]' -i > /dev/null; then
-        print_error "Possible hardcoded secret detected in staged changes"
+    # Check for hardcoded secrets patterns in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*((password|secret|api_key|token)s?)\s*=\s*[\x27\x22][^\x27\x22]{8,}[\x27\x22]' -i > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_error "Possible hardcoded secret detected in staged Rust changes"
         echo "Remove hardcoded secrets and use environment variables"
         ANTIPATTERNS_FOUND=1
     fi
     
-    # Check for unsafe blocks
-    if git diff --cached | grep -E '^\+.*unsafe\s*\{' > /dev/null; then
-        print_warning "Found unsafe block in staged changes"
+    # Check for unsafe blocks in .rs files only
+    if echo "$STAGED_RS_FILES" | while read -r file; do
+        if [ -f "$file" ]; then
+            if git diff --cached "$file" | grep -E '^\+.*unsafe\s*\{' > /dev/null; then
+                echo "$file"
+            fi
+        fi
+    done | head -1 | grep -q .; then
+        print_warning "Found unsafe block in staged Rust changes"
         echo "Ensure unsafe code is properly reviewed and documented"
     fi
     

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
 
 interface NavItem {
   name: string;
@@ -27,7 +27,6 @@ export default function Header() {
 
   const authenticatedNavItems: NavItem[] = [
     { name: 'Feed', href: '/feed' },
-    { name: 'Discover', href: '/discover' },
     { name: 'Profile', href: '/profile' },
     { name: 'Logout', href: '#logout', action: 'logout' },
   ];
@@ -122,7 +121,9 @@ export default function Header() {
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
                     <span className="text-white font-code font-bold text-sm">
-                      {principal ? principal.substring(0, 4) + '...' : 'U'}
+                      {principal
+                        ? String(principal).substring(0, 4) + '...'
+                        : 'U'}
                     </span>
                   </div>
                 </div>

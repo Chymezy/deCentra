@@ -1,3 +1,15 @@
+type CanisterPost = record {
+  id : nat64;
+  content : text;
+  reposts_count : nat32;
+  created_at : nat64;
+  edited_at : opt nat64;
+  tips_received : nat64;
+  author_id : principal;
+  comments_count : nat32;
+  visibility : PostVisibility;
+  likes_count : nat32;
+};
 type Comment = record {
   id : nat64;
   updated_at : nat64;
@@ -29,9 +41,14 @@ type Post = record {
   content : text;
   comment_count : nat64;
   like_count : nat64;
+  reposts_count : nat32;
   created_at : nat64;
+  edited_at : opt nat64;
+  tips_received : nat64;
   author_id : principal;
+  comments_count : nat32;
   visibility : PostVisibility;
+  likes_count : nat32;
 };
 type PostVisibility = variant { FollowersOnly; Public; Unlisted };
 type PrivacySettings = record {
@@ -48,7 +65,8 @@ type Result_3 = variant { Ok : UserProfile; Err : text };
 type Result_4 = variant { Ok : vec UserProfile; Err : text };
 type Result_5 = variant { Ok : vec FollowRequest; Err : text };
 type Result_6 = variant { Ok : vec FeedPost; Err : text };
-type Result_7 = variant { Ok : bool; Err : text };
+type Result_7 = variant { Ok : vec CanisterPost; Err : text };
+type Result_8 = variant { Ok : bool; Err : text };
 type UserProfile = record {
   id : principal;
   bio : text;
@@ -307,7 +325,7 @@ service : {
   // - Pagination prevents memory exhaustion
   // - Efficient indexing for large user bases
   // - Cycle cost scales with following count
-  get_user_feed : (opt nat64, opt nat64) -> (Result_6) query;
+  get_user_feed : (opt nat64, opt nat64) -> (Result_7) query;
   // Gets all posts by a specific user
   get_user_posts : (principal, opt nat64, opt nat64) -> (vec Post) query;
   // Retrieves a user profile by user ID
@@ -326,7 +344,7 @@ service : {
   // 
   // # Returns
   // * `Ok(bool)` - True if follower follows target, false otherwise
-  is_following : (principal, principal) -> (Result_7) query;
+  is_following : (principal, principal) -> (Result_8) query;
   // Likes a post
   // 
   // # Security

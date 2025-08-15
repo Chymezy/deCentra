@@ -142,11 +142,15 @@ src/
 │   ├── social/       # Social network business logic
 │   └── api/          # Public API endpoints
 ├── frontend/         # React application
+│   ├── app/          # Main application entry point (Next.js)
 │   ├── components/   # Reusable UI components
-│   ├── hooks/        # Custom React hooks
-│   ├── services/     # Canister service integrations
-│   ├── types/        # TypeScript type definitions
-│   └── utils/        # Utility functions
+│   └── lib/          # Shared libraries and utilities
+│       ├── config/          # Configuration centralization ✓
+│       ├── contexts/        # React context providers ✓  
+│       ├── services/        # Business logic separation ✓
+│       ├── types/           # Type definitions ✓
+│       ├── utils/           # Utility functions ✓
+│       └── hooks/           # Custom hooks (good pattern)
 └── tests/           # Test files
 ```
 

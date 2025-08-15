@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { backend } from '../../../../declarations/backend';
-import { useAuth } from '@/components/AuthContext';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import type {
   FollowRequest,
   UserProfile,
