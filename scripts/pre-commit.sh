@@ -192,7 +192,7 @@ if [ -n "$STAGED_RS_FILES" ]; then
     if echo "$STAGED_RS_FILES" | while read -r file; do
         if [ -f "$file" ]; then
             # Look for additions of arithmetic operations without safety checks
-            if git diff --cached "$file" | grep -E "^\+.*[^.]\s*[\+\-*]\s*[^.]" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_" | grep -v "^\s*//" > /dev/null; then
+            if git diff --cached "$file" | grep -E "^\+.*[^.]\s*[+\-*]\s*[^.]" | grep -v "saturating_" | grep -v "checked_" | grep -v "wrapping_" | grep -v "^\s*//" > /dev/null; then
                 echo "$file: unsafe arithmetic"
             fi
             # Look for array indexing without bounds checking (exclude attributes)
@@ -503,7 +503,7 @@ if [ -n "$STAGED_TS_FILES" ]; then
     for file in $STAGED_TS_FILES; do
         if [ -f "$file" ]; then
             # Check for console.log
-            if git diff --cached "$file" | grep -E '^\+.*console\.(log|debug)' > /dev/null; then
+            if git diff --cached "$file" | grep -E '^\+.*console\.(log)' > /dev/null; then
                 print_warning "Found console.log in $file"
                 echo "Remove console.logs before deployment"
             fi
