@@ -28,6 +28,7 @@ const config: Config = {
           secondary: '#1A1A1A',  // Card/component backgrounds
           tertiary: '#2A2A2A',   // Elevated elements
         },
+        'dark-gray': '#2A2A2A',  // Commonly used gray for cards and components
         'dark-text': {
           primary: '#FFFFFF',    // Main text
           secondary: '#B3B3B3',  // Secondary text
@@ -42,6 +43,7 @@ const config: Config = {
         // Privacy-focused component colors
         'privacy-dark': '#1A1A1A',
         'privacy-background': '#0F0F0F',
+        'privacy-background-secondary': '#1A1A1A',
         'privacy-muted': '#2A2A2A',
         'privacy-border': '#4A4A4A',
         'privacy-text': '#FFFFFF',
@@ -72,6 +74,7 @@ const config: Config = {
         'strong': '12px 12px 24px rgba(0,0,0,0.4), -12px -12px 24px rgba(255,255,255,0.15)',
         
         // Neumorphic shadow variants for components
+        'neumorphic': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
         'neumorphic-inset': 'inset 4px 4px 8px rgba(0,0,0,0.25), inset -4px -4px 8px rgba(255,255,255,0.05)',
         'neumorphic-raised': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
         'neumorphic-raised-hover': '6px 6px 12px rgba(0,0,0,0.3), -6px -6px 12px rgba(255,255,255,0.08)',

@@ -1,84 +1,133 @@
 'use client';
 
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/Card';
 
 export default function ProblemSection() {
-  const challenges = [
+  const problems = [
     {
-      icon: '🔐',
-      title: 'Data Ownership',
-      description:
-        'Your content, your rules. No more algorithms deciding what you see or who sees you.',
-      highlight: 'Complete data sovereignty',
+      icon: '�',
+      title: 'Platform Censorship',
+      description: 'Governments and corporations can silence voices, remove content, and control narratives.',
+      stat: '60% of internet users face content restrictions',
     },
     {
-      icon: '💎',
-      title: 'Direct Monetization',
-      description:
-        'Keep 100% of your earnings. No platform fees, no intermediaries taking cuts.',
-      highlight: 'Zero platform fees',
+      icon: '📊',
+      title: 'Data Exploitation',
+      description: 'Your personal data is harvested, sold, and used against you by big tech platforms.',
+      stat: '$200+ billion data broker industry',
     },
     {
-      icon: '🌍',
-      title: 'Global Reach',
-      description:
-        'Access from anywhere, anytime. No regional restrictions or content blocking.',
-      highlight: 'Borderless connectivity',
+      icon: '�',
+      title: 'Creator Exploitation',
+      description: 'Platforms take huge cuts from creator earnings while controlling monetization.',
+      stat: '30-50% platform fees are standard',
     },
   ];
 
-  const scrollToFeed = () => {
-    const feedSection = document.getElementById('feed');
-    if (feedSection) {
-      feedSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const solutions = [
+    {
+      icon: '🛡️',
+      title: 'Censorship Resistance',
+      description: 'On-chain storage means no single entity can remove your content or silence your voice.',
+      benefit: 'True digital freedom',
+    },
+    {
+      icon: '🔐',
+      title: 'Data Sovereignty',
+      description: 'You own your data completely. No tracking, no selling, no exploitation.',
+      benefit: 'Complete privacy control',
+    },
+    {
+      icon: '💰',
+      title: 'Fair Monetization',
+      description: 'Direct ICP token payments to creators. No intermediaries, no hidden fees.',
+      benefit: '100% of earnings kept',
+    },
+  ];
 
   return (
-    <section id="explore" className="py-20 bg-white">
+    <section id="problems" className="py-20 bg-privacy-background-secondary">
       <div className="max-w-7xl mx-auto px-6">
+        {/* Problems Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-deep-indigo mb-6">
-            Why deCentra is Different
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-privacy-text mb-6">
+            The Problem with Big Tech
           </h2>
-          <p className="text-xl text-charcoal-black/70 font-body max-w-3xl mx-auto">
-            We&apos;re not just building another social platform. We&apos;re
-            creating the foundation for digital freedom.
+          <p className="text-xl text-privacy-text-muted font-body max-w-3xl mx-auto">
+            Current social platforms exploit users, silence voices, and extract value 
+            without giving back. It&apos;s time for something better.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {challenges.map((challenge, index) => (
-            <div
-              key={index}
-              className="bg-gradient-to-br from-deep-indigo/5 to-electric-blue/5 p-8 rounded-2xl border border-deep-indigo/10 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="text-4xl mb-4">{challenge.icon}</div>
-              <h3 className="text-2xl font-heading font-bold text-deep-indigo mb-4">
-                {challenge.title}
-              </h3>
-              <p className="text-charcoal-black/80 font-body mb-4">
-                {challenge.description}
-              </p>
-              <div className="bg-deep-indigo/10 text-deep-indigo px-4 py-2 rounded-lg font-code text-sm font-bold">
-                {challenge.highlight}
-              </div>
-            </div>
+        <div className="grid md:grid-cols-3 gap-8 mb-20">
+          {problems.map((problem, index) => (
+            <Card key={index} className="bg-privacy-background border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
+              <CardContent className="p-8 text-center">
+                <div className="text-5xl mb-6">{problem.icon}</div>
+                <h3 className="text-xl font-heading font-semibold text-privacy-text mb-4">
+                  {problem.title}
+                </h3>
+                <p className="text-privacy-text-muted mb-6 leading-relaxed">
+                  {problem.description}
+                </p>
+                <div className="bg-privacy-danger/10 border border-privacy-danger/20 rounded-lg p-3">
+                  <span className="text-privacy-danger font-semibold text-sm">
+                    {problem.stat}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        {/* Value Proposition */}
-        <div className="text-center bg-gradient-to-r from-deep-indigo to-electric-blue p-8 rounded-2xl text-white">
-          <h3 className="text-2xl font-heading font-bold mb-4">
-            Built for the Future of Social Media
-          </h3>
-          <p className="text-white/90 font-body mb-6 max-w-2xl mx-auto">
-            Join thousands of creators, activists, and communities who are
-            already building the future of decentralized social media.
+        {/* Solutions Section */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-privacy-text mb-6">
+            The deCentra Solution
+          </h2>
+          <p className="text-xl text-privacy-text-muted font-body max-w-3xl mx-auto">
+            Built on Internet Computer Protocol with true decentralization, 
+            privacy, and user empowerment at its core.
           </p>
-          <button onClick={scrollToFeed} className="btn-primary">
-            Join the Movement
-          </button>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {solutions.map((solution, index) => (
+            <Card key={index} className="bg-privacy-background border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300 group">
+              <CardContent className="p-8 text-center">
+                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform">
+                  {solution.icon}
+                </div>
+                <h3 className="text-xl font-heading font-semibold text-privacy-text mb-4">
+                  {solution.title}
+                </h3>
+                <p className="text-privacy-text-muted mb-6 leading-relaxed">
+                  {solution.description}
+                </p>
+                <div className="bg-privacy-success/10 border border-privacy-success/20 rounded-lg p-3">
+                  <span className="text-privacy-success font-semibold text-sm">
+                    ✓ {solution.benefit}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center mt-16">
+          <div className="bg-privacy-background rounded-2xl p-8 shadow-medium border border-privacy-border">
+            <h3 className="text-2xl font-heading font-bold text-privacy-text mb-4">
+              Ready to Take Control?
+            </h3>
+            <p className="text-privacy-text-muted mb-6 max-w-2xl mx-auto">
+              Join the movement toward true digital freedom. Your voice, your data, your future.
+            </p>
+            <button className="bg-privacy-primary hover:bg-privacy-primary/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-soft hover:shadow-medium">
+              Start Your Journey
+            </button>
+          </div>
         </div>
       </div>
     </section>

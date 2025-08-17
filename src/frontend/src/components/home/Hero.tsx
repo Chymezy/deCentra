@@ -1,12 +1,16 @@
 'use client';
 
 import React from 'react';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
 
 export default function Hero() {
-  const scrollToFeed = () => {
-    const feedSection = document.getElementById('feed');
-    if (feedSection) {
-      feedSection.scrollIntoView({ behavior: 'smooth' });
+  const { login, isAuthenticated } = useAuth();
+
+  const handleGetStarted = async () => {
+    if (!isAuthenticated) {
+      await login();
     }
   };
 
@@ -20,166 +24,128 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen bg-gradient-to-br from-deep-indigo via-electric-blue to-vibrant-orange flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen bg-privacy-background flex items-center justify-center overflow-hidden py-20"
     >
-      {/* Background Elements */}
+      {/* Neumorphic Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-4 h-4 bg-vibrant-orange rounded-full animate-pulse-slow opacity-60"></div>
-        <div className="absolute top-40 right-20 w-6 h-6 bg-electric-blue rounded-full animate-pulse-slow opacity-40"></div>
-        <div className="absolute bottom-20 left-1/4 w-3 h-3 bg-white rounded-full animate-pulse-slow opacity-50"></div>
-        <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-white rounded-full animate-pulse-slow opacity-30"></div>
+        {/* Floating neumorphic elements */}
+        <div className="absolute top-20 left-10 w-16 h-16 bg-privacy-background-secondary rounded-full shadow-soft animate-pulse-slow opacity-60"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-privacy-background-secondary rounded-full shadow-medium animate-pulse-slow opacity-40"></div>
+        <div className="absolute bottom-32 left-1/4 w-12 h-12 bg-privacy-background-secondary rounded-full shadow-soft animate-pulse-slow opacity-50"></div>
+        <div className="absolute top-1/2 left-1/3 w-8 h-8 bg-privacy-background-secondary rounded-full shadow-soft animate-pulse-slow opacity-30"></div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)`,
+            backgroundSize: '48px 48px'
+          }}></div>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto">
+      <div className="relative z-10 text-center px-6 max-w-7xl mx-auto">
         <div className="animate-fade-in">
+          {/* Badge */}
+          <div className="inline-flex items-center justify-center mb-8">
+            <div className="bg-privacy-background-secondary border border-privacy-border rounded-full px-6 py-2 shadow-soft">
+              <span className="text-privacy-primary font-semibold text-sm">
+                ✨ Built on Internet Computer Protocol
+              </span>
+            </div>
+          </div>
+
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-black text-white mb-8 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black text-privacy-text mb-8 leading-tight">
             Own Your
-            <span className="block bg-gradient-to-r from-vibrant-orange to-white bg-clip-text text-transparent">
-              Digital Identity
+            <span className="block bg-gradient-to-r from-privacy-primary to-privacy-accent bg-clip-text text-transparent">
+              Digital Voice
             </span>
           </h1>
 
           {/* Value Proposition */}
-          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-12 font-body leading-relaxed">
-            The first truly decentralized social platform where you control your
-            data, monetize your content, and build communities that can&apos;t
-            be silenced.
+          <p className="text-xl md:text-2xl text-privacy-text-muted max-w-4xl mx-auto mb-12 font-body leading-relaxed">
+            The first truly decentralized social platform where you control your data, 
+            monetize your content, and build communities that can&apos;t be silenced.
           </p>
 
-          {/* Social Proof */}
-          <div className="flex flex-wrap justify-center items-center gap-6 mb-12 text-white/80 font-body">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🌐</span>
-              <span>Global accessibility</span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🔒</span>
-              <span>Zero censorship</span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">💰</span>
-              <span>Direct monetization</span>
-            </div>
+          {/* Key Features Preview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
+            <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-privacy-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🛡️</span>
+                </div>
+                <h3 className="font-semibold text-privacy-text mb-2">Censorship Resistant</h3>
+                <p className="text-sm text-privacy-text-muted">100% on-chain storage. No central authority can silence your voice.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-privacy-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <h3 className="font-semibold text-privacy-text mb-2">Creator Economy</h3>
+                <p className="text-sm text-privacy-text-muted">Monetize content with ICP tokens. Direct support from your audience.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-privacy-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <h3 className="font-semibold text-privacy-text mb-2">Privacy First</h3>
+                <p className="text-sm text-privacy-text-muted">Anonymous posting, whistleblower protection, zero tracking.</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <button
-              onClick={scrollToFeed}
-              className="btn-primary transform hover:scale-105"
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <Button 
+              onClick={handleGetStarted}
+              size="lg"
+              className="bg-privacy-primary hover:bg-privacy-primary/90 text-white px-8 py-4 text-lg font-semibold shadow-medium hover:shadow-strong transition-all duration-300"
             >
-              Start Building
-            </button>
-            <button onClick={scrollToFeatures} className="btn-secondary">
-              Explore Platform
-            </button>
+              {isAuthenticated ? 'Go to Feed' : 'Get Started Free'}
+            </Button>
+            
+            <Button 
+              variant="outline"
+              onClick={scrollToFeatures}
+              size="lg"
+              className="border-privacy-border text-privacy-text hover:bg-privacy-background-secondary px-8 py-4 text-lg font-semibold shadow-soft hover:shadow-medium transition-all duration-300"
+            >
+              Learn More
+            </Button>
           </div>
 
-          {/* Network of People */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-5xl mx-auto">
-            <div className="relative">
-              {/* Network Grid */}
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-8 mb-6 relative z-10">
-                {/* People Nodes */}
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-electric-blue to-vibrant-orange rounded-full flex items-center justify-center mb-2 animate-pulse">
-                    <span className="text-white font-bold text-lg">👤</span>
-                  </div>
-                  <div className="text-white/90 font-body text-xs">Creator</div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-vibrant-orange to-deep-indigo rounded-full flex items-center justify-center mb-2 animate-pulse">
-                    <span className="text-white font-bold text-lg">👤</span>
-                  </div>
-                  <div className="text-white/90 font-body text-xs">
-                    Developer
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center mb-2 animate-pulse">
-                    <span className="text-white font-bold text-lg">👤</span>
-                  </div>
-                  <div className="text-white/90 font-body text-xs">
-                    Community
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-electric-blue to-vibrant-orange rounded-full flex items-center justify-center mb-2 animate-pulse">
-                    <span className="text-white font-bold text-lg">👤</span>
-                  </div>
-                  <div className="text-white/90 font-body text-xs">
-                    Activist
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-vibrant-orange to-deep-indigo rounded-full flex items-center justify-center mb-2 animate-pulse">
-                    <span className="text-white font-bold text-lg">👤</span>
-                  </div>
-                  <div className="text-white/90 font-body text-xs">
-                    Investor
-                  </div>
-                </div>
-              </div>
-
-              {/* Electric Connections - Behind Text */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-                <svg
-                  className="w-full h-full"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                >
-                  {/* Electric lines connecting all nodes */}
-                  <path
-                    d="M20 50 Q50 20 80 50 M20 50 Q50 80 80 50 M20 50 Q80 20 80 50 M20 50 Q80 80 80 50"
-                    stroke="url(#electricGradient)"
-                    strokeWidth="1.5"
-                    fill="none"
-                    className="animate-pulse"
-                    opacity="0.6"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="electricGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#3B82F6" />
-                      <stop offset="50%" stopColor="#F59E0B" />
-                      <stop offset="100%" stopColor="#8B5CF6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Power to the People Text */}
-              <div className="text-center mt-6 relative z-10">
-                <h3 className="text-2xl font-heading font-bold text-white mb-2">
-                  Power to the People
-                </h3>
-                <p className="text-white/80 font-body text-sm">
-                  Connected. Empowered. Uncensored.
-                </p>
-              </div>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-privacy-text mb-2">100%</div>
+              <div className="text-sm text-privacy-text-muted">On-Chain</div>
             </div>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-white/60 font-body text-sm">
-            <span>🔓 Open Source</span>
-            <span>🌍 Censorship Resistant</span>
-            <span>💰 Creator Monetization</span>
-            <span>⚡ Built on ICP</span>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-privacy-text mb-2">∞</div>
+              <div className="text-sm text-privacy-text-muted">Uptime</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-privacy-text mb-2">0</div>
+              <div className="text-sm text-privacy-text-muted">Tracking</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-privacy-text mb-2">Web3</div>
+              <div className="text-sm text-privacy-text-muted">Native</div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Bottom Gradient Fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-privacy-background to-transparent"></div>
     </section>
   );
 }

@@ -36,18 +36,18 @@ export default function CTASection() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-r from-deep-indigo to-electric-blue relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-charcoal-black via-dark-gray to-charcoal-black relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full"></div>
-        <div className="absolute bottom-10 left-10 w-24 h-24 bg-vibrant-orange/20 rounded-full"></div>
+        <div className="absolute top-10 right-10 w-32 h-32 bg-electric-blue/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 left-10 w-24 h-24 bg-vibrant-orange/10 rounded-full blur-xl"></div>
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-8">
           Ready to Build the Future?
         </h2>
-        <p className="text-xl text-white/90 font-body mb-12 max-w-2xl mx-auto">
+        <p className="text-xl text-white/80 font-body mb-12 max-w-2xl mx-auto">
           Join thousands of creators, developers, and communities who are
           already building the future of decentralized social media.
         </p>
@@ -67,9 +67,9 @@ export default function CTASection() {
 
         {/* User Type CTAs */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
             <div className="text-3xl mb-4">👨‍💻</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">
+            <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Developers
             </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
@@ -77,15 +77,15 @@ export default function CTASection() {
             </p>
             <button
               onClick={handleDeveloperCTA}
-              className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
+              className="w-full bg-dark-gray shadow-neumorphic-inset text-white px-4 py-2 rounded-lg font-body text-sm hover:shadow-neumorphic-inset-hover transition-all duration-200 border border-white/10"
             >
               View APIs
             </button>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
             <div className="text-3xl mb-4">🎥</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">
+            <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Creators
             </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
@@ -93,15 +93,15 @@ export default function CTASection() {
             </p>
             <button
               onClick={handleCreatorCTA}
-              className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
+              className="w-full bg-dark-gray shadow-neumorphic-inset text-white px-4 py-2 rounded-lg font-body text-sm hover:shadow-neumorphic-inset-hover transition-all duration-200 border border-white/10"
             >
               Start Creating
             </button>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+          <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
             <div className="text-3xl mb-4">🏢</div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">
+            <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Organizations
             </h3>
             <p className="text-white/80 font-body mb-4 text-sm">
@@ -109,7 +109,7 @@ export default function CTASection() {
             </p>
             <button
               onClick={handleOrganizationCTA}
-              className="w-full bg-white/20 text-white px-4 py-2 rounded-lg font-body text-sm hover:bg-white/30 transition-colors"
+              className="w-full bg-dark-gray shadow-neumorphic-inset text-white px-4 py-2 rounded-lg font-body text-sm hover:shadow-neumorphic-inset-hover transition-all duration-200 border border-white/10"
             >
               Contact Sales
             </button>
@@ -117,28 +117,28 @@ export default function CTASection() {
         </div>
 
         {/* Platform Features Preview */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 mb-8">
+        <div className="bg-dark-gray shadow-neumorphic-inset rounded-xl p-8 mb-8 border border-white/5">
           <h3 className="text-2xl font-heading font-bold text-white mb-6">
             Platform Features
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl mb-2">📝</div>
-              <div className="text-white font-body text-sm">Posts & Feed</div>
+              <div className="text-white/80 font-body text-sm">Posts & Feed</div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">💬</div>
-              <div className="text-white font-body text-sm">
+              <div className="text-white/80 font-body text-sm">
                 Comments & Likes
               </div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">🪙</div>
-              <div className="text-white font-body text-sm">Tokenization</div>
+              <div className="text-white/80 font-body text-sm">Tokenization</div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">🔐</div>
-              <div className="text-white font-body text-sm">Identity</div>
+              <div className="text-white/80 font-body text-sm">Identity</div>
             </div>
           </div>
         </div>

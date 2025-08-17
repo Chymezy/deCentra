@@ -28,7 +28,8 @@ export interface AuthState {
 }
 
 export interface AuthContextType extends AuthState {
-  login: () => Promise<void>;
+  privacyMode: 'normal' | 'anonymous' | 'whistleblower';
+  login: (privacyMode?: 'normal' | 'anonymous' | 'whistleblower') => Promise<void>;
   logout: () => Promise<void>;
   createUserProfile: (
     username: string,
@@ -41,6 +42,8 @@ export interface AuthContextType extends AuthState {
     avatar?: string
   ) => Promise<UserProfile | null>;
   refreshAuth: () => Promise<void>;
+  clearAuthError: () => void;
+  setPrivacyMode: (mode: 'normal' | 'anonymous' | 'whistleblower') => void;
 }
 
 // Profile creation form data

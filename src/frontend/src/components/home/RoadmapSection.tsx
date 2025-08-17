@@ -51,7 +51,7 @@ export default function RoadmapSection() {
   ];
 
   return (
-    <section id="build" className="py-20 bg-charcoal-black">
+    <section id="build" className="py-20 bg-gradient-to-br from-dark-gray via-charcoal-black to-dark-gray">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
@@ -67,13 +67,13 @@ export default function RoadmapSection() {
           {phases.map((phase, index) => (
             <div key={index} className="relative">
               <div
-                className={`bg-gradient-to-br ${phase.gradient} p-8 rounded-2xl`}
+                className="bg-dark-gray shadow-neumorphic p-8 rounded-2xl border border-white/5"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-white font-code font-bold text-sm">
+                  <span className="text-electric-blue font-code font-bold text-sm">
                     {phase.phase}
                   </span>
-                  <span className="text-white/80 font-body text-sm">
+                  <span className="text-white/60 font-body text-sm">
                     {phase.timeline}
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export default function RoadmapSection() {
         </div>
 
         {/* Market Opportunity */}
-        <div className="mt-20 bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+        <div className="mt-20 bg-dark-gray shadow-neumorphic-inset rounded-2xl p-8 border border-white/5">
           <h3 className="text-3xl font-heading font-bold text-white mb-8 text-center">
             Market Opportunity
           </h3>
@@ -116,7 +116,7 @@ export default function RoadmapSection() {
             {marketData.map((data, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl mb-2">{data.icon}</div>
-                <div className="text-2xl font-heading font-bold text-white">
+                <div className="text-2xl font-heading font-bold text-electric-blue">
                   {data.metric}
                 </div>
                 <div className="text-white/70 font-body">{data.label}</div>
@@ -126,14 +126,14 @@ export default function RoadmapSection() {
         </div>
 
         {/* Strategic Partnerships */}
-        <div className="mt-16 bg-gradient-to-r from-deep-indigo/20 to-electric-blue/20 rounded-2xl p-8">
+        <div className="mt-16 bg-dark-gray shadow-neumorphic rounded-2xl p-8 border border-white/5">
           <h3 className="text-2xl font-heading font-bold text-white mb-6 text-center">
             Strategic Focus Areas
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-3xl mb-4">👨‍💻</div>
-              <h4 className="text-lg font-heading font-bold text-white mb-2">
+              <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Developer Ecosystem
               </h4>
               <p className="text-white/80 font-body text-sm">
@@ -142,7 +142,7 @@ export default function RoadmapSection() {
             </div>
             <div className="text-center">
               <div className="text-3xl mb-4">🎥</div>
-              <h4 className="text-lg font-heading font-bold text-white mb-2">
+              <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Creator Economy
               </h4>
               <p className="text-white/80 font-body text-sm">
@@ -151,7 +151,7 @@ export default function RoadmapSection() {
             </div>
             <div className="text-center">
               <div className="text-3xl mb-4">🏢</div>
-              <h4 className="text-lg font-heading font-bold text-white mb-2">
+              <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Enterprise Solutions
               </h4>
               <p className="text-white/80 font-body text-sm">

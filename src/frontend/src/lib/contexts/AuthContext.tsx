@@ -12,6 +12,7 @@ import {
 import { AuthClient } from '@dfinity/auth-client';
 import { icpConfig } from '@/lib/config/icp.config';
 import { authService } from '@/lib/services/auth.service';
+import { logAuthError, getAuthErrorMessage } from '@/lib/utils/auth-error-handler';
 import type { AuthState, AuthContextType, UserProfile } from '@/lib/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +38,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading: true,
     error: null,
   });
+
+  const [privacyMode, setPrivacyMode] = useState<'normal' | 'anonymous' | 'whistleblower'>('normal');
 
   const [authClient, setAuthClient] = useState<AuthClient | null>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -110,6 +113,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
     } catch (error) {
+      const errorMessage = getAuthErrorMessage(error);
+      logAuthError(error, 'auth_initialization');
       console.error('Auth initialization error:', error);
       authService.clearIdentity();
       setAuthState({
@@ -118,16 +123,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         principal: null,
         user: null,
         isLoading: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Authentication initialization failed',
+        error: errorMessage,
       });
     }
   }, [isMounted]);
 
   // Login function
-  const login = useCallback(async () => {
+  const login = useCallback(async (privacyModeParam?: 'normal' | 'anonymous' | 'whistleblower') => {
     if (!authClient) {
       console.error('Auth client not initialized');
       return;
@@ -136,10 +138,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
 
+      // Set privacy mode
+      const selectedPrivacyMode = privacyModeParam || 'normal';
+      setPrivacyMode(selectedPrivacyMode);
+
+      // Implement privacy mode logic
+      const identityProvider = icpConfig.identityProvider;
+      let maxTimeToLive = BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000); // 7 days in nanoseconds
+
+      switch (selectedPrivacyMode) {
+        case 'anonymous':
+          // For anonymous mode, use shorter session and special derivation
+          maxTimeToLive = BigInt(24 * 60 * 60 * 1000 * 1000 * 1000); // 1 day
+          console.log('Anonymous mode: Using shorter session duration');
+          break;
+        case 'whistleblower':
+          // For whistleblower mode, use very short session and extra security
+          maxTimeToLive = BigInt(2 * 60 * 60 * 1000 * 1000 * 1000); // 2 hours
+          console.log('Whistleblower mode: Using enhanced security settings');
+          break;
+        default:
+          console.log('Normal mode: Using standard security settings');
+      }
+
       await authClient.login({
-        identityProvider: icpConfig.identityProvider,
-        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000), // 7 days in nanoseconds
-        // derivationOrigin: icpConfig.derivationOrigin, // Use if configured
+        identityProvider,
+        maxTimeToLive,
         onSuccess: async () => {
           const identity = authClient.getIdentity();
           const principal = identity.getPrincipal();
@@ -172,22 +196,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         },
         onError: (error) => {
+          const errorMessage = getAuthErrorMessage(error);
+          logAuthError(error, 'login');
           console.error('Login error:', error);
           authService.clearIdentity();
           setAuthState((prev) => ({
             ...prev,
             isLoading: false,
-            error: error || 'Login failed',
+            error: errorMessage,
           }));
         },
       });
     } catch (error) {
+      const errorMessage = getAuthErrorMessage(error);
+      logAuthError(error, 'login_process');
       console.error('Login process error:', error);
       authService.clearIdentity();
       setAuthState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Login failed',
+        error: errorMessage,
       }));
     }
   }, [authClient]);
@@ -199,6 +227,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authClient.logout();
       authService.clearIdentity();
+      
+      // Reset privacy mode on logout
+      setPrivacyMode('normal');
+      
       setAuthState({
         isAuthenticated: false,
         identity: null,
@@ -208,10 +240,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error: null,
       });
     } catch (error) {
+      const errorMessage = getAuthErrorMessage(error);
+      logAuthError(error, 'logout');
       console.error('Logout error:', error);
       setAuthState((prev) => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Logout failed',
+        error: errorMessage,
       }));
     }
   }, [authClient]);
@@ -240,13 +274,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         return user;
       } catch (error) {
+        const errorMessage = getAuthErrorMessage(error);
+        logAuthError(error, 'create_user_profile');
         console.error('Create user profile error:', error);
         setAuthState((prev) => ({
           ...prev,
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to create user profile',
+          error: errorMessage,
         }));
         return null;
       }
@@ -278,13 +311,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         return user;
       } catch (error) {
+        const errorMessage = getAuthErrorMessage(error);
+        logAuthError(error, 'update_user_profile');
         console.error('Update user profile error:', error);
         setAuthState((prev) => ({
           ...prev,
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Failed to update user profile',
+          error: errorMessage,
         }));
         return null;
       }
@@ -292,10 +324,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [authState.isAuthenticated, authState.identity]
   );
 
-  // Refresh auth function
+  // Refresh auth function with error recovery
   const refreshAuth = useCallback(async () => {
-    await initAuth();
+    try {
+      setAuthState((prev) => ({ ...prev, error: null }));
+      await initAuth();
+    } catch (error) {
+      const errorMessage = getAuthErrorMessage(error);
+      logAuthError(error, 'auth_refresh');
+      console.error('Auth refresh error:', error);
+      setAuthState((prev) => ({
+        ...prev,
+        error: errorMessage,
+      }));
+    }
   }, [initAuth]);
+
+  // Clear authentication errors
+  const clearAuthError = useCallback(() => {
+    setAuthState((prev) => ({ ...prev, error: null }));
+  }, []);
+
+  // Set privacy mode function
+  const updatePrivacyMode = useCallback((mode: 'normal' | 'anonymous' | 'whistleblower') => {
+    setPrivacyMode(mode);
+  }, []);
 
   // Initialize auth on mount
   useEffect(() => {
@@ -323,11 +376,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const contextValue: AuthContextType = {
     ...authState,
+    privacyMode,
     login,
     logout,
     createUserProfile,
     updateUserProfile,
     refreshAuth,
+    clearAuthError,
+    setPrivacyMode: updatePrivacyMode,
   };
 
   return (

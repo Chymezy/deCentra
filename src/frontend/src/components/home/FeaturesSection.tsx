@@ -56,14 +56,14 @@ export default function FeaturesSection() {
   return (
     <section
       id="features"
-      className="py-20 bg-gradient-to-br from-gray-50 to-white"
+      className="py-20 bg-gradient-to-br from-charcoal-black via-dark-gray to-charcoal-black"
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-deep-indigo mb-6">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
             Platform Capabilities
           </h2>
-          <p className="text-xl text-charcoal-black/70 font-body max-w-3xl mx-auto">
+          <p className="text-xl text-white/70 font-body max-w-3xl mx-auto">
             Built for the 3.3 billion users in censored regions, with features
             that traditional platforms can&apos;t provide.
           </p>
@@ -73,29 +73,29 @@ export default function FeaturesSection() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className={`bg-gradient-to-br ${feature.gradient} p-8 rounded-2xl text-white hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2`}
+              className="bg-dark-gray shadow-neumorphic-inset p-8 rounded-2xl text-white hover:shadow-neumorphic-inset-hover transition-all duration-300 border border-white/5"
             >
               <div className="text-4xl mb-6">{feature.icon}</div>
-              <h3 className="text-2xl font-heading font-bold mb-4">
+              <h3 className="text-2xl font-heading font-bold mb-4 text-electric-blue">
                 {feature.title}
               </h3>
-              <p className="text-white/90 font-body">{feature.description}</p>
+              <p className="text-white/80 font-body">{feature.description}</p>
             </div>
           ))}
         </div>
 
         {/* Platform Statistics */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h3 className="text-3xl font-heading font-bold text-deep-indigo mb-8 text-center">
+        <div className="bg-dark-gray shadow-neumorphic rounded-2xl p-8 border border-white/5">
+          <h3 className="text-3xl font-heading font-bold text-white mb-8 text-center">
             Platform Performance
           </h3>
           <div className="grid md:grid-cols-4 gap-8">
             {platformStats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-heading font-bold text-deep-indigo mb-2">
+                <div className="text-4xl font-heading font-bold text-electric-blue mb-2">
                   {stat.metric}
                 </div>
-                <div className="text-charcoal-black/70 font-body">
+                <div className="text-white/70 font-body">
                   {stat.label}
                 </div>
               </div>
@@ -105,11 +105,11 @@ export default function FeaturesSection() {
 
         {/* Technical Advantages */}
         <div className="mt-16 grid md:grid-cols-2 gap-8">
-          <div className="bg-gradient-to-br from-deep-indigo/5 to-electric-blue/5 p-8 rounded-2xl">
-            <h3 className="text-2xl font-heading font-bold text-deep-indigo mb-4">
+          <div className="bg-dark-gray shadow-neumorphic-inset p-8 rounded-2xl border border-white/5">
+            <h3 className="text-2xl font-heading font-bold text-electric-blue mb-4">
               Technical Architecture
             </h3>
-            <ul className="space-y-3 text-charcoal-black/80 font-body">
+            <ul className="space-y-3 text-white/80 font-body">
               <li className="flex items-start">
                 <span className="text-vibrant-orange mr-2">•</span>
                 Fully decentralized on Internet Computer Protocol
@@ -129,11 +129,11 @@ export default function FeaturesSection() {
             </ul>
           </div>
 
-          <div className="bg-gradient-to-br from-electric-blue/5 to-vibrant-orange/5 p-8 rounded-2xl">
-            <h3 className="text-2xl font-heading font-bold text-deep-indigo mb-4">
+          <div className="bg-dark-gray shadow-neumorphic-inset p-8 rounded-2xl border border-white/5">
+            <h3 className="text-2xl font-heading font-bold text-electric-blue mb-4">
               User Benefits
             </h3>
-            <ul className="space-y-3 text-charcoal-black/80 font-body">
+            <ul className="space-y-3 text-white/80 font-body">
               <li className="flex items-start">
                 <span className="text-vibrant-orange mr-2">•</span>
                 Complete data ownership and control

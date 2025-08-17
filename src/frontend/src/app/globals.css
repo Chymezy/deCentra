@@ -4,8 +4,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dark-first design system for deCentra */
+  --background: #0F0F0F;
+  --foreground: #FFFFFF;
 }
 
 @theme inline {
@@ -24,10 +25,12 @@
   --font-code: 'JetBrains Mono', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Light mode override (optional - users can opt-in) */
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Keep dark theme as default even for light mode preference */
+    --background: #0F0F0F;
+    --foreground: #FFFFFF;
   }
 }
 

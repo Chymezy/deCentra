@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="bg-charcoal-black px-6 py-12">
+    <footer className="bg-gradient-to-br from-charcoal-black via-dark-gray to-charcoal-black px-6 py-12 border-t border-white/10">
       <div className="max-w-7xl mx-auto">
         {/* Main Footer Content */}
         <div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -26,7 +26,7 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-electric-blue transition-colors"
               >
                 <span className="sr-only">GitHub</span>
                 <svg
@@ -39,7 +39,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-electric-blue transition-colors"
               >
                 <span className="sr-only">Twitter</span>
                 <svg
@@ -52,7 +52,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-electric-blue transition-colors"
               >
                 <span className="sr-only">Discord</span>
                 <svg
@@ -71,22 +71,22 @@ export default function Footer() {
             <h3 className="text-white font-heading font-bold mb-4">Platform</h3>
             <ul className="space-y-2 text-white/70 font-body">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Explore
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Build
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Learn
                 </a>
               </li>
@@ -100,22 +100,22 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-white/70 font-body">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   GitHub
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Discord
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Twitter
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-electric-blue transition-colors">
                   Blog
                 </a>
               </li>
@@ -131,13 +131,13 @@ export default function Footer() {
               media. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 text-white/50 font-body text-sm">
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-electric-blue transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-electric-blue transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-electric-blue transition-colors">
                 Cookie Policy
               </a>
             </div>

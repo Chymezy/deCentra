@@ -12,7 +12,7 @@ import {
 } from '@/lib/types/unified-auth.types';
 import { usePathname } from 'next/navigation';
 
-export default function DiscoverPage() {
+export default function NotificationsPage() {
   const authState = useAuth();
   const pathname = usePathname();
 
@@ -70,10 +70,10 @@ export default function DiscoverPage() {
         <div className="flex flex-col items-center justify-center min-h-96">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-heading font-bold text-white">
-              🔍 Discover
+              🔔 Notifications
             </h1>
             <p className="text-xl text-white/70 font-body max-w-lg">
-              Discovery features are coming soon. Explore new users, trending content, and community discussions.
+              Stay updated with likes, comments, follows, and mentions from your deCentra community.
             </p>
             <div className="bg-dark-gray shadow-neumorphic-inset rounded-xl p-8 border border-white/5 max-w-md mx-auto">
               <h3 className="text-lg font-heading font-bold text-electric-blue mb-4">
@@ -82,19 +82,19 @@ export default function DiscoverPage() {
               <ul className="space-y-2 text-white/70 font-body text-left">
                 <li className="flex items-start">
                   <span className="text-vibrant-orange mr-2">•</span>
-                  User recommendations
+                  Real-time notifications
                 </li>
                 <li className="flex items-start">
                   <span className="text-vibrant-orange mr-2">•</span>
-                  Trending posts
+                  Push notifications
                 </li>
                 <li className="flex items-start">
                   <span className="text-vibrant-orange mr-2">•</span>
-                  Topic exploration
+                  Customizable alerts
                 </li>
                 <li className="flex items-start">
                   <span className="text-vibrant-orange mr-2">•</span>
-                  Community discovery
+                  Privacy-focused delivery
                 </li>
               </ul>
             </div>
