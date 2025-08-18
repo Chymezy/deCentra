@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { userService } from '@/lib/services/user.service';
+import { icons } from '@/lib/icons';
 import type { UserProfile } from '@/lib/types/user.types';
 import { useDebounce } from '../../lib/hooks/useDebounce';
 
@@ -233,7 +234,11 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center text-sm flex-shrink-0">
-                      {user.avatar || '👤'}
+                      {user.avatar ? (
+                        user.avatar
+                      ) : (
+                        <icons.user className="w-4 h-4 text-gray-600 dark:text-gray-300" aria-hidden={true} />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="font-medium text-gray-900 dark:text-white truncate">
@@ -248,12 +253,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                     </div>
                     {'Verified' in user.verification_status && (
                       <div className="flex-shrink-0">
-                        <span 
-                          className="text-blue-500 text-sm"
-                          aria-label="Verified user"
-                        >
-                          ✓
-                        </span>
+                        <icons.check className="w-4 h-4 text-blue-500" aria-label="Verified user" />
                       </div>
                     )}
                   </div>

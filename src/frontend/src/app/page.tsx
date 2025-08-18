@@ -4,6 +4,7 @@ import React from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { SocialNetworkLayout } from '@/components/layout/SocialNetworkLayout';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { icons } from '@/lib/icons';
 import Hero from '@/components/home/Hero';
 import ProblemSection from '@/components/home/ProblemSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
@@ -33,14 +34,55 @@ export default function Home() {
               },
             } : undefined}
             navigationItems={[
-              { id: 'home', label: 'Home', href: '/', icon: <span>🏠</span>, active: true },
-              { id: 'feed', label: 'Feed', href: '/feed', icon: <span>📰</span> },
-              { id: 'discover', label: 'Discover', href: '/discover', icon: <span>🔍</span> },
-              { id: 'notifications', label: 'Notifications', href: '/notifications', icon: <span>🔔</span> },
-              { id: 'messages', label: 'Messages', href: '/messages', icon: <span>💬</span> },
-              { id: 'profile', label: 'Profile', href: '/profile', icon: <span>👤</span> },
-              { id: 'creator', label: 'Creator Hub', href: '/creator', icon: <span>⭐</span> },
-              { id: 'settings', label: 'Settings', href: '/settings', icon: <span>⚙️</span> },
+              { 
+                id: 'home', 
+                label: 'Home', 
+                href: '/', 
+                icon: <icons.home className="w-5 h-5" aria-hidden="true" />, 
+                active: true 
+              },
+              { 
+                id: 'feed', 
+                label: 'Feed', 
+                href: '/feed', 
+                icon: <icons.feed className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'discover', 
+                label: 'Discover', 
+                href: '/discover', 
+                icon: <icons.discover className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'notifications', 
+                label: 'Notifications', 
+                href: '/notifications', 
+                icon: <icons.notifications className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'messages', 
+                label: 'Messages', 
+                href: '/messages', 
+                icon: <icons.messages className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'profile', 
+                label: 'Profile', 
+                href: '/profile', 
+                icon: <icons.profile className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'creator', 
+                label: 'Creator Hub', 
+                href: '/creator', 
+                icon: <icons.creator className="w-5 h-5" aria-hidden="true" /> 
+              },
+              { 
+                id: 'settings', 
+                label: 'Settings', 
+                href: '/settings', 
+                icon: <icons.settings className="w-5 h-5" aria-hidden="true" /> 
+              },
             ]}
             isAuthenticated={isAuthenticated}
           />

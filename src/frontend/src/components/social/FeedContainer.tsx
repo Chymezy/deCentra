@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PostComposer } from './PostComposer';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import type { Post } from '@/lib/types';
 import { Principal } from '@dfinity/principal';
 
@@ -169,7 +170,7 @@ function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
     <div className={`p-4 ${showBorder ? 'border-b border-dark-background-tertiary' : ''}`}>
       <div className="flex space-x-3">
         <div className="w-10 h-10 bg-deep-indigo rounded-full flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-sm">👤</span>
+          <icons.user className="w-5 h-5 text-white" aria-hidden={true} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
@@ -181,19 +182,19 @@ function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
           <p className="text-dark-text-primary whitespace-pre-wrap">{post.content}</p>
           <div className="flex items-center space-x-6 mt-3 text-dark-text-tertiary">
             <button className="flex items-center space-x-1 hover:text-electric-blue transition-colors">
-              <span>💬</span>
+              <icons.messages className="w-4 h-4" aria-hidden="true" />
               <span className="text-sm">{Number(post.comment_count)}</span>
             </button>
             <button className="flex items-center space-x-1 hover:text-vibrant-orange transition-colors">
-              <span>🔄</span>
+              <icons.repost className="w-4 h-4" aria-hidden="true" />
               <span className="text-sm">{post.reposts_count}</span>
             </button>
             <button className="flex items-center space-x-1 hover:text-red-500 transition-colors">
-              <span>❤️</span>
+              <icons.like className="w-4 h-4" aria-hidden="true" />
               <span className="text-sm">{Number(post.like_count)}</span>
             </button>
             <button className="hover:text-electric-blue transition-colors">
-              <span>📤</span>
+              <icons.share className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
         </div>

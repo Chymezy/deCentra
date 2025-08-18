@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { icons } from '@/lib/icons';
 
 export default function CTASection() {
   const scrollToFeed = () => {
@@ -68,7 +69,9 @@ export default function CTASection() {
         {/* User Type CTAs */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
-            <div className="text-3xl mb-4">👨‍💻</div>
+            <div className="flex items-center justify-center w-12 h-12 mb-4">
+              <icons.developer className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+            </div>
             <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Developers
             </h3>
@@ -84,7 +87,9 @@ export default function CTASection() {
           </div>
 
           <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
-            <div className="text-3xl mb-4">🎥</div>
+            <div className="flex items-center justify-center w-12 h-12 mb-4">
+              <icons.video className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+            </div>
             <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Creators
             </h3>
@@ -100,7 +105,9 @@ export default function CTASection() {
           </div>
 
           <div className="bg-dark-gray shadow-neumorphic rounded-xl p-6 border border-white/5">
-            <div className="text-3xl mb-4">🏢</div>
+            <div className="flex items-center justify-center w-12 h-12 mb-4">
+              <icons.building className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+            </div>
             <h3 className="text-xl font-heading font-bold text-electric-blue mb-2">
               Organizations
             </h3>
@@ -123,11 +130,15 @@ export default function CTASection() {
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl mb-2">📝</div>
+              <div className="mb-2 flex justify-center">
+                <icons.pencil className="w-6 h-6 text-electric-blue" aria-hidden="true" />
+              </div>
               <div className="text-white/80 font-body text-sm">Posts & Feed</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-2">💬</div>
+              <div className="mb-2 flex justify-center">
+                <icons.messages className="w-6 h-6 text-electric-blue" aria-hidden="true" />
+              </div>
               <div className="text-white/80 font-body text-sm">
                 Comments & Likes
               </div>
@@ -137,7 +148,9 @@ export default function CTASection() {
               <div className="text-white/80 font-body text-sm">Tokenization</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-2">🔐</div>
+              <div className="mb-2 flex justify-center">
+                <icons.lock className="w-6 h-6 text-electric-blue" aria-hidden="true" />
+              </div>
               <div className="text-white/80 font-body text-sm">Identity</div>
             </div>
           </div>
@@ -146,11 +159,26 @@ export default function CTASection() {
         {/* Trust Indicators */}
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-wrap justify-center items-center gap-8 text-white/60 font-body text-sm">
-            <span>🔓 Open Source</span>
-            <span>🌍 Censorship Resistant</span>
-            <span>💰 Creator Monetization</span>
-            <span>⚡ Built on ICP</span>
-            <span>🔒 Zero Platform Fees</span>
+            <span className="flex items-center">
+              <icons.lock className="w-4 h-4 mr-1" aria-hidden="true" />
+              Open Source
+            </span>
+            <span className="flex items-center">
+              <icons.public className="w-4 h-4 mr-1" aria-hidden="true" />
+              Censorship Resistant
+            </span>
+            <span className="flex items-center">
+              <icons.money className="w-4 h-4 mr-1" aria-hidden="true" />
+              Creator Monetization
+            </span>
+            <span className="flex items-center">
+              <icons.bolt className="w-4 h-4 mr-1" aria-hidden="true" />
+              Built on ICP
+            </span>
+            <span className="flex items-center">
+              <icons.lock className="w-4 h-4 mr-1" aria-hidden="true" />
+              Zero Platform Fees
+            </span>
           </div>
         </div>
       </div>

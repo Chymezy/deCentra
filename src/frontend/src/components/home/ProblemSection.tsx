@@ -1,24 +1,25 @@
 'use client';
 
 import React from 'react';
+import { icons } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/Card';
 
 export default function ProblemSection() {
   const problems = [
     {
-      icon: '�',
+      icon: icons.lock,
       title: 'Platform Censorship',
       description: 'Governments and corporations can silence voices, remove content, and control narratives.',
       stat: '60% of internet users face content restrictions',
     },
     {
-      icon: '📊',
+      icon: icons.chart,
       title: 'Data Exploitation',
       description: 'Your personal data is harvested, sold, and used against you by big tech platforms.',
       stat: '$200+ billion data broker industry',
     },
     {
-      icon: '�',
+      icon: icons.money,
       title: 'Creator Exploitation',
       description: 'Platforms take huge cuts from creator earnings while controlling monetization.',
       stat: '30-50% platform fees are standard',
@@ -27,19 +28,19 @@ export default function ProblemSection() {
 
   const solutions = [
     {
-      icon: '🛡️',
+      icon: icons.shield,
       title: 'Censorship Resistance',
       description: 'On-chain storage means no single entity can remove your content or silence your voice.',
       benefit: 'True digital freedom',
     },
     {
-      icon: '🔐',
+      icon: icons.lock,
       title: 'Data Sovereignty',
       description: 'You own your data completely. No tracking, no selling, no exploitation.',
       benefit: 'Complete privacy control',
     },
     {
-      icon: '💰',
+      icon: icons.money,
       title: 'Fair Monetization',
       description: 'Direct ICP token payments to creators. No intermediaries, no hidden fees.',
       benefit: '100% of earnings kept',
@@ -64,7 +65,9 @@ export default function ProblemSection() {
           {problems.map((problem, index) => (
             <Card key={index} className="bg-privacy-background border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
               <CardContent className="p-8 text-center">
-                <div className="text-5xl mb-6">{problem.icon}</div>
+                <div className="text-5xl mb-6 flex justify-center">
+                  <problem.icon className="w-12 h-12 text-privacy-danger" aria-hidden="true" />
+                </div>
                 <h3 className="text-xl font-heading font-semibold text-privacy-text mb-4">
                   {problem.title}
                 </h3>
@@ -96,8 +99,8 @@ export default function ProblemSection() {
           {solutions.map((solution, index) => (
             <Card key={index} className="bg-privacy-background border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300 group">
               <CardContent className="p-8 text-center">
-                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform">
-                  {solution.icon}
+                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform flex justify-center">
+                  <solution.icon className="w-12 h-12 text-privacy-success" aria-hidden="true" />
                 </div>
                 <h3 className="text-xl font-heading font-semibold text-privacy-text mb-4">
                   {solution.title}
@@ -106,8 +109,9 @@ export default function ProblemSection() {
                   {solution.description}
                 </p>
                 <div className="bg-privacy-success/10 border border-privacy-success/20 rounded-lg p-3">
-                  <span className="text-privacy-success font-semibold text-sm">
-                    ✓ {solution.benefit}
+                  <span className="text-privacy-success font-semibold text-sm flex items-center justify-center gap-2">
+                    <icons.check className="w-4 h-4" aria-hidden="true" />
+                    {solution.benefit}
                   </span>
                 </div>
               </CardContent>

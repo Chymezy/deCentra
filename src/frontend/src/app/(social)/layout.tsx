@@ -10,6 +10,7 @@ import {
   getNavigationItemsConfig,
   type PrivacyMode 
 } from '@/lib/types/auth.types';
+import { icons } from '@/lib/icons';
 import { usePathname } from 'next/navigation';
 
 /**
@@ -34,20 +35,21 @@ export default function SocialLayout({
     await authState.login(privacyMode);
   };
 
-  // Helper function to get icons for navigation items (using emoji temporarily)
+  // Helper function to get icons for navigation items
   const getIconForNavItem = (id: string): React.ReactNode => {
-    const icons = {
-      home: '🏠',
-      feed: '📰',
-      discover: '🔍',
-      notifications: '🔔',
-      messages: '💬',
-      profile: '👤',
-      creator: '💰',
-      settings: '⚙️',
+    const iconMapping = {
+      home: icons.home,
+      feed: icons.feed,
+      discover: icons.discover,
+      notifications: icons.notifications,
+      messages: icons.messages,
+      profile: icons.profile,
+      creator: icons.creator,
+      settings: icons.settings,
     };
     
-    return <span className="text-lg">{icons[id as keyof typeof icons] || '🏠'}</span>;
+    const IconComponent = iconMapping[id as keyof typeof iconMapping] || icons.home;
+    return <IconComponent className="w-5 h-5" aria-hidden="true" />;
   };
 
   // Get navigation items with icons

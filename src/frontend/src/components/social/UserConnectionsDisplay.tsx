@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { backend } from '../../../../declarations/backend';
 import { Principal } from '@dfinity/principal';
+import { icons } from '@/lib/icons';
 import type { UserProfile } from '../../../../declarations/backend/backend.did';
 import FollowButton from './FollowButton';
 
@@ -245,9 +246,13 @@ export default function UserConnectionsDisplay({
             >
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {user.avatar || '👤'}
-                  </span>
+                  {user.avatar ? (
+                    <span className="text-white font-bold text-sm">
+                      {user.avatar}
+                    </span>
+                  ) : (
+                    <icons.user className="w-5 h-5 text-white" aria-hidden={true} />
+                  )}
                 </div>
                 <div>
                   <h3 className="font-medium text-charcoal-black">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { icons } from '@/lib/icons';
 
 interface Notification {
   id: string;
@@ -60,15 +61,17 @@ export function NotificationsContainer() {
   ];
 
   const getIcon = (type: Notification['type']) => {
-    const icons = {
-      like: '❤️',
-      comment: '💬',
-      follow: '👤',
-      tip: '💰',
-      mention: '📢',
-      repost: '🔄',
+    const iconMapping = {
+      like: icons.like,
+      comment: icons.messages,
+      follow: icons.profile,
+      tip: icons.money,
+      mention: icons.megaphone,
+      repost: icons.repost,
     };
-    return icons[type];
+    
+    const IconComponent = iconMapping[type] || icons.notifications;
+    return <IconComponent className="w-5 h-5" aria-hidden="true" />;
   };
 
   const filteredNotifications = notifications.filter(notification => {
@@ -140,7 +143,7 @@ export function NotificationsContainer() {
               <div className="flex space-x-3">
                 <div className="flex-shrink-0">
                   <div className="w-10 h-10 bg-deep-indigo/20 rounded-full flex items-center justify-center">
-                    <span className="text-lg">{getIcon(notification.type)}</span>
+                    {getIcon(notification.type)}
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">

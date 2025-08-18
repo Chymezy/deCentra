@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import { FeedContainer, FeedType } from './FeedContainer';
 import { UserAvatar } from '@/components/ui';
 
@@ -70,7 +71,10 @@ export function ProfileContainer({
             <p className="text-dark-text-primary">{profileData.bio}</p>
             
             <div className="flex items-center space-x-4 text-sm text-dark-text-secondary">
-              <span>📅 Joined {profileData.joinedDate}</span>
+              <span className="flex items-center">
+                <icons.calendar className="w-4 h-4 mr-1" aria-hidden={true} />
+                Joined {profileData.joinedDate}
+              </span>
             </div>
             
             <div className="flex items-center space-x-6 text-sm">

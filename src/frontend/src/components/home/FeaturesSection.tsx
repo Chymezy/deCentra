@@ -1,44 +1,45 @@
 import React from 'react';
+import { icons } from '@/lib/icons';
 
 export default function FeaturesSection() {
   const features = [
     {
-      icon: '🔒',
+      icon: icons.lock,
       title: 'Censorship Resistant',
       description:
         'No centralized servers to seize or censor. Your voice remains free, regardless of political pressure.',
       gradient: 'from-deep-indigo to-electric-blue',
     },
     {
-      icon: '👥',
+      icon: icons.followers,
       title: 'DAO Governance',
       description:
         "Community-driven moderation. Users, not governments or corporations, decide what's acceptable.",
       gradient: 'from-electric-blue to-vibrant-orange',
     },
     {
-      icon: '💰',
+      icon: icons.money,
       title: 'Creator Monetization',
       description:
         'Direct micro-tipping with ICP tokens. No intermediaries taking cuts from your content.',
       gradient: 'from-vibrant-orange to-deep-indigo',
     },
     {
-      icon: '🕵️',
+      icon: icons.lock,
       title: 'Anonymous Whistleblowing',
       description:
         'Secure tools for activists and journalists to share information without fear of retribution.',
       gradient: 'from-deep-indigo to-vibrant-orange',
     },
     {
-      icon: '🌍',
+      icon: icons.public,
       title: 'Global Accessibility',
       description:
         'Built for the 3.3 billion users in censored regions with seamless, borderless access.',
       gradient: 'from-electric-blue to-deep-indigo',
     },
     {
-      icon: '⚡',
+      icon: icons.bolt,
       title: '100% On-Chain',
       description:
         'All data, posts, and interactions stored on the Internet Computer Protocol for complete transparency.',
@@ -75,7 +76,9 @@ export default function FeaturesSection() {
               key={index}
               className="bg-dark-gray shadow-neumorphic-inset p-8 rounded-2xl text-white hover:shadow-neumorphic-inset-hover transition-all duration-300 border border-white/5"
             >
-              <div className="text-4xl mb-6">{feature.icon}</div>
+              <div className="mb-6 flex justify-center">
+                <feature.icon className="w-12 h-12 text-electric-blue" aria-hidden="true" />
+              </div>
               <h3 className="text-2xl font-heading font-bold mb-4 text-electric-blue">
                 {feature.title}
               </h3>

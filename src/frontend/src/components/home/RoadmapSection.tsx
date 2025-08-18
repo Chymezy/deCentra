@@ -1,4 +1,5 @@
 import React from 'react';
+import { icons } from '@/lib/icons';
 
 export default function RoadmapSection() {
   const phases = [
@@ -44,10 +45,10 @@ export default function RoadmapSection() {
   ];
 
   const marketData = [
-    { metric: '3.3B', label: 'Users in censored regions', icon: '🌏' },
-    { metric: '$104B', label: 'Global creator economy', icon: '🎥' },
-    { metric: '10K+', label: 'NGOs & watchdogs', icon: '📰' },
-    { metric: '$35B', label: 'Decentralized social TAM (2030)', icon: '💰' },
+    { metric: '3.3B', label: 'Users in censored regions', icon: 'public' },
+    { metric: '$104B', label: 'Global creator economy', icon: 'video' },
+    { metric: '10K+', label: 'NGOs & watchdogs', icon: 'feed' },
+    { metric: '$35B', label: 'Decentralized social TAM (2030)', icon: 'money' },
   ];
 
   return (
@@ -115,7 +116,12 @@ export default function RoadmapSection() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {marketData.map((data, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl mb-2">{data.icon}</div>
+                <div className="flex justify-center mb-2">
+                  {React.createElement(icons[data.icon as keyof typeof icons], {
+                    className: "w-10 h-10 text-electric-blue",
+                    'aria-hidden': true
+                  })}
+                </div>
                 <div className="text-2xl font-heading font-bold text-electric-blue">
                   {data.metric}
                 </div>
@@ -132,7 +138,9 @@ export default function RoadmapSection() {
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl mb-4">👨‍💻</div>
+              <div className="flex justify-center mb-4">
+                <icons.developer className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+              </div>
               <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Developer Ecosystem
               </h4>
@@ -141,7 +149,9 @@ export default function RoadmapSection() {
               </p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-4">🎥</div>
+              <div className="flex justify-center mb-4">
+                <icons.video className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+              </div>
               <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Creator Economy
               </h4>
@@ -150,7 +160,9 @@ export default function RoadmapSection() {
               </p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-4">🏢</div>
+              <div className="flex justify-center mb-4">
+                <icons.building className="w-8 h-8 text-electric-blue" aria-hidden={true} />
+              </div>
               <h4 className="text-lg font-heading font-bold text-electric-blue mb-2">
                 Enterprise Solutions
               </h4>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { backend } from '../../../../declarations/backend';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import type {
   FollowRequest,
   UserProfile,
@@ -236,9 +237,13 @@ export default function FollowRequestsPanel() {
               >
                 <div className="flex items-center space-x-3 flex-1">
                   <div className="w-12 h-12 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">
-                      {requesterProfile?.avatar || '👤'}
-                    </span>
+                    {requesterProfile?.avatar ? (
+                      <span className="text-white font-bold">
+                        {requesterProfile.avatar}
+                      </span>
+                    ) : (
+                      <icons.user className="w-6 h-6 text-white" aria-hidden={true} />
+                    )}
                   </div>
 
                   <div className="flex-1">

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import { Button } from '@/components/ui';
 import { Card } from '@/components/ui';
 import { UserAvatar } from '@/components/ui';
@@ -69,7 +70,7 @@ export function PostComposer({
           <UserAvatar 
             src={user?.avatar}
             alt={user?.username || 'User'}
-            fallback={user?.username?.substring(0, 2).toUpperCase() || '👤'}
+            fallback={user?.username?.substring(0, 2).toUpperCase() || 'US'}
             size="default"
             className="flex-shrink-0"
           />
@@ -93,22 +94,22 @@ export function PostComposer({
             <div className="flex justify-between items-center mt-3">
               <div className="flex space-x-3">
                 <PostComposerButton 
-                  icon="📷" 
+                  icon={icons.camera} 
                   tooltip="Add media"
                   onClick={() => {/* TODO: Implement media upload */}}
                 />
                 <PostComposerButton 
-                  icon="📊" 
+                  icon={icons.chart} 
                   tooltip="Add poll"
                   onClick={() => {/* TODO: Implement polls */}}
                 />
                 <PostComposerButton 
-                  icon="😊" 
+                  icon={icons.emoji} 
                   tooltip="Add emoji"
                   onClick={() => {/* TODO: Implement emoji picker */}}
                 />
                 <PostComposerButton 
-                  icon="📍" 
+                  icon={icons.location} 
                   tooltip="Add location"
                   onClick={() => {/* TODO: Implement location */}}
                 />
@@ -137,14 +138,14 @@ export function PostComposer({
 }
 
 interface PostComposerButtonProps {
-  icon: string;
+  icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
   tooltip: string;
   onClick: () => void;
   disabled?: boolean;
 }
 
 function PostComposerButton({ 
-  icon, 
+  icon: IconComponent, 
   tooltip, 
   onClick, 
   disabled = false 
@@ -157,7 +158,7 @@ function PostComposerButton({
       title={tooltip}
       aria-label={tooltip}
     >
-      <span className="text-xl">{icon}</span>
+      <IconComponent className="w-5 h-5" aria-hidden={true} />
     </button>
   );
 }

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
@@ -48,9 +49,10 @@ export default function Hero() {
         <div className="animate-fade-in">
           {/* Badge */}
           <div className="inline-flex items-center justify-center mb-8">
-            <div className="bg-privacy-background-secondary border border-privacy-border rounded-full px-6 py-2 shadow-soft">
+            <div className="bg-privacy-background-secondary border border-privacy-border rounded-full px-6 py-2 shadow-soft flex items-center">
+              <icons.sparkles className="w-4 h-4 text-privacy-primary mr-2" aria-hidden="true" />
               <span className="text-privacy-primary font-semibold text-sm">
-                ✨ Built on Internet Computer Protocol
+                Built on Internet Computer Protocol
               </span>
             </div>
           </div>
@@ -74,7 +76,7 @@ export default function Hero() {
             <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-privacy-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🛡️</span>
+                  <icons.shield className="w-6 h-6 text-privacy-primary" aria-hidden="true" />
                 </div>
                 <h3 className="font-semibold text-privacy-text mb-2">Censorship Resistant</h3>
                 <p className="text-sm text-privacy-text-muted">100% on-chain storage. No central authority can silence your voice.</p>
@@ -84,7 +86,7 @@ export default function Hero() {
             <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-privacy-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">💰</span>
+                  <icons.money className="w-6 h-6 text-privacy-secondary" aria-hidden="true" />
                 </div>
                 <h3 className="font-semibold text-privacy-text mb-2">Creator Economy</h3>
                 <p className="text-sm text-privacy-text-muted">Monetize content with ICP tokens. Direct support from your audience.</p>
@@ -94,7 +96,7 @@ export default function Hero() {
             <Card className="bg-privacy-background-secondary border-privacy-border shadow-soft hover:shadow-medium transition-all duration-300">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-privacy-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🔒</span>
+                  <icons.lock className="w-6 h-6 text-privacy-accent" aria-hidden="true" />
                 </div>
                 <h3 className="font-semibold text-privacy-text mb-2">Privacy First</h3>
                 <p className="text-sm text-privacy-text-muted">Anonymous posting, whistleblower protection, zero tracking.</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { icons } from '@/lib/icons';
 
 export function CreatorDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('30d');
@@ -55,7 +56,9 @@ export function CreatorDashboard() {
               <p className="text-dark-text-secondary text-sm">Total Earnings</p>
               <p className="text-2xl font-bold text-dark-text-primary">{analytics.totalEarnings} ICP</p>
             </div>
-            <div className="text-3xl">💰</div>
+            <div>
+              <icons.money className="w-8 h-8 text-green-500" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
@@ -65,7 +68,9 @@ export function CreatorDashboard() {
               <p className="text-dark-text-secondary text-sm">Total Tips</p>
               <p className="text-2xl font-bold text-dark-text-primary">{analytics.totalTips} ICP</p>
             </div>
-            <div className="text-3xl">🎁</div>
+            <div className="text-3xl">
+              <icons.gift className="w-8 h-8 text-vibrant-orange" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
@@ -75,7 +80,9 @@ export function CreatorDashboard() {
               <p className="text-dark-text-secondary text-sm">Subscribers</p>
               <p className="text-2xl font-bold text-dark-text-primary">{analytics.totalSubscribers}</p>
             </div>
-            <div className="text-3xl">👥</div>
+            <div>
+              <icons.followers className="w-8 h-8 text-electric-blue" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
@@ -85,7 +92,9 @@ export function CreatorDashboard() {
               <p className="text-dark-text-secondary text-sm">Total Views</p>
               <p className="text-2xl font-bold text-dark-text-primary">{analytics.totalViews.toLocaleString()}</p>
             </div>
-            <div className="text-3xl">👁️</div>
+            <div>
+              <icons.eye className="w-8 h-8 text-deep-indigo" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
@@ -95,7 +104,9 @@ export function CreatorDashboard() {
               <p className="text-dark-text-secondary text-sm">Avg. Engagement</p>
               <p className="text-2xl font-bold text-dark-text-primary">{analytics.avgEngagement}%</p>
             </div>
-            <div className="text-3xl">📊</div>
+            <div>
+              <icons.chart className="w-8 h-8 text-vibrant-orange" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
@@ -121,7 +132,11 @@ export function CreatorDashboard() {
             <div key={index} className="p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="text-xl">
-                  {activity.type === 'tip' ? '🎁' : '⭐'}
+                  {activity.type === 'tip' ? (
+                    <icons.gift className="w-5 h-5 text-vibrant-orange" aria-hidden="true" />
+                  ) : (
+                    <icons.creator className="w-5 h-5 text-yellow-500" aria-hidden="true" />
+                  )}
                 </div>
                 <div>
                   <p className="text-dark-text-primary font-medium">
@@ -147,7 +162,7 @@ export function CreatorDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button className="p-4 text-left border border-dark-background-tertiary rounded-lg hover:border-electric-blue/50 transition-colors">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">💎</span>
+              <icons.sparkles className="w-6 h-6 text-purple-500" aria-hidden="true" />
               <div>
                 <p className="font-medium text-dark-text-primary">Premium Content</p>
                 <p className="text-sm text-dark-text-secondary">Create subscriber-only posts</p>
@@ -157,7 +172,7 @@ export function CreatorDashboard() {
 
           <button className="p-4 text-left border border-dark-background-tertiary rounded-lg hover:border-electric-blue/50 transition-colors">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">📊</span>
+              <icons.pie className="w-6 h-6 text-vibrant-orange" aria-hidden="true" />
               <div>
                 <p className="font-medium text-dark-text-primary">Analytics</p>
                 <p className="text-sm text-dark-text-secondary">Detailed performance insights</p>
@@ -167,7 +182,7 @@ export function CreatorDashboard() {
 
           <button className="p-4 text-left border border-dark-background-tertiary rounded-lg hover:border-electric-blue/50 transition-colors">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">🎯</span>
+              <icons.target className="w-6 h-6 text-electric-blue" aria-hidden="true" />
               <div>
                 <p className="font-medium text-dark-text-primary">Audience</p>
                 <p className="text-sm text-dark-text-secondary">Manage your subscribers</p>
@@ -177,7 +192,7 @@ export function CreatorDashboard() {
 
           <button className="p-4 text-left border border-dark-background-tertiary rounded-lg hover:border-electric-blue/50 transition-colors">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">⚙️</span>
+              <icons.settings className="w-6 h-6 text-gray-500" aria-hidden="true" />
               <div>
                 <p className="font-medium text-dark-text-primary">Settings</p>
                 <p className="text-sm text-dark-text-secondary">Configure monetization</p>

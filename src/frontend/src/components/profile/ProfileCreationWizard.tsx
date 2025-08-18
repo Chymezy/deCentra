@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { userService } from '@/lib/services/user.service';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { icons } from '@/lib/icons';
 import type { 
   ProfileCreationData, 
   ProfileValidationErrors,
@@ -45,7 +46,7 @@ export const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({
   const [formData, setFormData] = useState<ProfileCreationData>({
     username: '',
     bio: '',
-    avatar: '👤'
+    avatar: 'US' // User initials fallback instead of emoji
   });
   
   // UI state
@@ -218,9 +219,9 @@ export const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({
                     aria-label="Checking username availability"
                   />
                 ) : usernameAvailable === true ? (
-                  <span className="text-green-500 text-xl" aria-label="Username available">✓</span>
+                  <icons.check className="w-5 h-5 text-green-500" aria-label="Username available" />
                 ) : usernameAvailable === false ? (
-                  <span className="text-red-500 text-xl" aria-label="Username taken">✗</span>
+                  <icons.close className="w-5 h-5 text-red-500" aria-label="Username taken" />
                 ) : null}
               </div>
             )}
@@ -301,7 +302,7 @@ export const ProfileCreationWizard: React.FC<ProfileCreationWizardProps> = ({
               value={formData.avatar}
               onChange={(e) => setFormData(prev => ({ ...prev, avatar: e.target.value }))}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
-              placeholder="👤"
+              placeholder="Avatar URL or initials"
               maxLength={100}
               aria-describedby="avatar-help"
             />

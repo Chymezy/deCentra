@@ -271,7 +271,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const result = await userService.createProfile({
           username,
           bio: bio || '',
-          avatar: avatar || '👤'
+          avatar: avatar || '' // Let UserAvatar component handle fallback display
         });
 
         if (result.success && result.data) {
@@ -327,7 +327,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const result = await userService.updateProfile({
           username,
           bio: bio || '',
-          avatar: avatar || '👤'
+          avatar: avatar || '' // Let UserAvatar component handle fallback display
         });
 
         if (result.success && result.data) {

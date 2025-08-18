@@ -6,6 +6,7 @@ import { AuthGuard, type AuthState, type PrivacyMode } from '@/components/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { icons } from '@/lib/icons';
 
 /**
  * Demo component showcasing Phase 1 implementation
@@ -221,7 +222,10 @@ const DeCentraDemo: React.FC = () => {
             {/* Welcome Card */}
             <Card variant="elevated">
               <CardHeader>
-                <CardTitle>Welcome to deCentra! 🎉</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <icons.sparkles className="w-5 h-5 text-vibrant-orange" aria-hidden="true" />
+                  Welcome to deCentra!
+                </CardTitle>
                 <CardDescription>
                   You&apos;ve successfully implemented Phase 1 of the deCentra frontend enhancement.
                   This demonstrates our foundational UI components working together.
@@ -230,44 +234,44 @@ const DeCentraDemo: React.FC = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Button Component
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Card Component
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Input/Textarea Components
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Loading Spinners
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       User Avatars
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Error Boundaries
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Modal Dialogs
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Layout System
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Authentication Flow
                     </div>
-                    <div>
-                      <span className="font-medium text-privacy-success">✓ </span>
+                    <div className="flex items-center">
+                      <icons.check className="w-4 h-4 text-privacy-success mr-2" aria-hidden={true} />
                       Neumorphic Design
                     </div>
                   </div>

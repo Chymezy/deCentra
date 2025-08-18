@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { Principal } from '@dfinity/principal';
 import type { FeedPost } from '../../../../declarations/backend/backend.did';
+import { icons } from '@/lib/icons';
 import {
   socialNetworkService,
   SocialNetworkServiceError,
@@ -340,8 +341,9 @@ export default function FeedSection({
               >
                 {newPost.length}/10,000 characters
                 {newPost.length > 9000 && newPost.length <= 10000 && (
-                  <span className="ml-2 text-amber-600">
-                    ⚠️ Approaching limit
+                  <span className="ml-2 text-amber-600 flex items-center">
+                    <icons.warning className="w-4 h-4 mr-1" aria-hidden={true} />
+                    Approaching limit
                   </span>
                 )}
               </p>
@@ -388,8 +390,8 @@ export default function FeedSection({
         {/* Empty State - Enhanced messaging */}
         {posts.length === 0 && !error && !loading && (
           <div className="text-center py-12" role="status">
-            <div className="text-6xl mb-4" aria-hidden="true">
-              📝
+            <div className="text-6xl mb-4 flex justify-center" aria-hidden="true">
+              <icons.pencil className="w-16 h-16 text-deep-indigo" />
             </div>
             <h3 className="text-2xl font-heading font-bold text-deep-indigo mb-2">
               {isAuthenticated ? 'Your feed is empty' : 'Welcome to deCentra'}
