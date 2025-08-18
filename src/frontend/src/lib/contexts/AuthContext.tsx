@@ -13,7 +13,7 @@ import { AuthClient } from '@dfinity/auth-client';
 import { icpConfig } from '@/lib/config/icp.config';
 import { authService } from '@/lib/services/auth.service';
 import { logAuthError, getAuthErrorMessage } from '@/lib/utils/auth-error-handler';
-import type { AuthState, AuthContextType, UserProfile } from '@/lib/types';
+import type { AuthState, AuthContextType, UserProfile, PrivacyMode } from '@/lib/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     error: null,
   });
 
-  const [privacyMode, setPrivacyMode] = useState<'normal' | 'anonymous' | 'whistleblower'>('normal');
+  const [privacyMode, setPrivacyMode] = useState<PrivacyMode>('normal');
 
   const [authClient, setAuthClient] = useState<AuthClient | null>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [isMounted]);
 
   // Login function
-  const login = useCallback(async (privacyModeParam?: 'normal' | 'anonymous' | 'whistleblower') => {
+  const login = useCallback(async (privacyModeParam?: PrivacyMode) => {
     if (!authClient) {
       console.error('Auth client not initialized');
       return;
@@ -250,29 +250,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [authClient]);
 
-  // Create user profile function
+  // Enhanced profile creation with UserService integration
   const createUserProfile = useCallback(
-    async (
-      username: string,
-      bio?: string,
-      avatar?: string
-    ): Promise<UserProfile | null> => {
-      if (!authState.isAuthenticated || !authState.identity) {
+    async (username: string, bio?: string, avatar?: string): Promise<UserProfile | null> => {
+      if (!authClient || !authState.isAuthenticated || !authState.identity) {
         console.error('User must be authenticated to create profile');
         return null;
       }
 
       try {
-        setAuthState((prev) => ({ ...prev, error: null }));
+        setAuthState((prev) => ({ ...prev, error: null, isLoading: true }));
 
-        const user = await authService.createUserProfile(username, bio, avatar);
+        // Import UserService dynamically to avoid circular dependencies
+        const { userService } = await import('@/lib/services/user.service');
+        
+        // Initialize UserService with current identity
+        await userService.initialize(authState.identity);
 
-        setAuthState((prev) => ({
-          ...prev,
-          user,
-        }));
+        // Create profile using UserService
+        const result = await userService.createProfile({
+          username,
+          bio: bio || '',
+          avatar: avatar || '👤'
+        });
 
-        return user;
+        if (result.success && result.data) {
+          // Update auth state with new profile
+          setAuthState((prev) => ({
+            ...prev,
+            user: result.data,
+            isLoading: false
+          }));
+
+          return result.data;
+        } else {
+          throw new Error('error' in result ? result.error : 'Profile creation failed');
+        }
       } catch (error) {
         const errorMessage = getAuthErrorMessage(error);
         logAuthError(error, 'create_user_profile');
@@ -280,36 +293,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState((prev) => ({
           ...prev,
           error: errorMessage,
+          isLoading: false
         }));
+        
         return null;
       }
     },
-    [authState.isAuthenticated, authState.identity]
+    [authClient, authState.isAuthenticated, authState.identity]
   );
 
-  // Update user profile function
+  // Enhanced profile update with UserService integration
   const updateUserProfile = useCallback(
     async (
       username: string,
       bio?: string,
       avatar?: string
     ): Promise<UserProfile | null> => {
-      if (!authState.isAuthenticated || !authState.identity) {
+      if (!authClient || !authState.isAuthenticated || !authState.identity) {
         console.error('User must be authenticated to update profile');
         return null;
       }
 
       try {
-        setAuthState((prev) => ({ ...prev, error: null }));
+        setAuthState((prev) => ({ ...prev, error: null, isLoading: true }));
 
-        const user = await authService.updateUserProfile(username, bio, avatar);
+        // Import UserService dynamically to avoid circular dependencies
+        const { userService } = await import('@/lib/services/user.service');
+        
+        // Initialize UserService with current identity
+        await userService.initialize(authState.identity);
 
-        setAuthState((prev) => ({
-          ...prev,
-          user,
-        }));
+        // Update profile using UserService
+        const result = await userService.updateProfile({
+          username,
+          bio: bio || '',
+          avatar: avatar || '👤'
+        });
 
-        return user;
+        if (result.success && result.data) {
+          // Update auth state with updated profile
+          setAuthState((prev) => ({
+            ...prev,
+            user: result.data,
+            isLoading: false
+          }));
+
+          return result.data;
+        } else {
+          throw new Error('error' in result ? result.error : 'Profile update failed');
+        }
       } catch (error) {
         const errorMessage = getAuthErrorMessage(error);
         logAuthError(error, 'update_user_profile');
@@ -317,11 +349,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState((prev) => ({
           ...prev,
           error: errorMessage,
+          isLoading: false
         }));
+        
         return null;
       }
     },
-    [authState.isAuthenticated, authState.identity]
+    [authClient, authState.isAuthenticated, authState.identity]
   );
 
   // Refresh auth function with error recovery
@@ -346,7 +380,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Set privacy mode function
-  const updatePrivacyMode = useCallback((mode: 'normal' | 'anonymous' | 'whistleblower') => {
+  const updatePrivacyMode = useCallback((mode: PrivacyMode) => {
     setPrivacyMode(mode);
   }, []);
 

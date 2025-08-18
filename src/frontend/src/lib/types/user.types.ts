@@ -85,6 +85,94 @@ export interface UserService {
   health_check: () => Promise<string>;
 }
 
+// Service layer types for user management
+export interface UserServiceInterface {
+  createProfile(data: ProfileCreationData): Promise<ServiceResult<UserProfile>>;
+  updateProfile(data: ProfileUpdateData): Promise<ServiceResult<UserProfile>>;
+  getUserProfile(userId: string): Promise<ServiceResult<UserProfile | null>>;
+  checkUsernameAvailability(username: string): Promise<ServiceResult<boolean>>;
+  searchUsers(query: string, options?: SearchOptions): Promise<ServiceResult<UserProfile[]>>;
+  getCurrentUserProfile(): Promise<ServiceResult<UserProfile | null>>;
+}
+
+/**
+ * Standard service result wrapper for consistent error handling
+ */
+export interface ServiceResult<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+/**
+ * Profile creation data for new user registration
+ */
+export interface ProfileCreationData {
+  username: string;
+  bio?: string;
+  avatar?: string;
+}
+
+/**
+ * Profile update data for existing users
+ */
+export interface ProfileUpdateData {
+  username: string;
+  bio?: string;
+  avatar?: string;
+}
+
+/**
+ * Search options for user discovery
+ */
+export interface SearchOptions {
+  exact?: boolean;
+  limit?: number;
+}
+
+/**
+ * Extended profile creation options with privacy modes
+ */
+export interface CreateProfileOptionsExtended extends ProfileCreationData {
+  privacyMode?: 'normal' | 'anonymous' | 'whistleblower';
+}
+
+/**
+ * Extended profile update options with privacy preservation
+ */
+export interface UpdateProfileOptionsExtended extends ProfileUpdateData {
+  preservePrivacy?: boolean;
+}
+
+/**
+ * Username validation result
+ */
+export interface UsernameValidationResult {
+  isValid: boolean;
+  isAvailable: boolean | null;
+  isChecking: boolean;
+  error: string | null;
+}
+
+/**
+ * Profile form validation errors
+ */
+export interface ProfileValidationErrors {
+  username?: string;
+  bio?: string;
+  avatar?: string;
+}
+
+/**
+ * Profile creation wizard state
+ */
+export interface ProfileWizardState {
+  currentStep: number;
+  isCreating: boolean;
+  errors: ProfileValidationErrors;
+  formData: ProfileCreationData;
+}
+
 // Utility types for working with the service
 export interface PaginationOptions {
   offset?: number;
@@ -124,3 +212,33 @@ export const fromOptional = <T>(optional: [] | [T]): T | undefined => {
 export const toOptional = <T>(value: T | undefined): [] | [T] => {
   return value !== undefined ? [value] : [];
 };
+
+// Additional utility functions for service results
+
+/**
+ * Extract error message from service result
+ */
+export function getErrorMessage<T>(result: ServiceResult<T>): string {
+  return result.error || 'An unknown error occurred';
+}
+
+/**
+ * Check if service result indicates success
+ */
+export function isSuccess<T>(result: ServiceResult<T>): result is ServiceResult<T> & { success: true; data: T } {
+  return result.success && result.data !== undefined;
+}
+
+/**
+ * Create a successful service result
+ */
+export function createSuccessResult<T>(data: T): ServiceResult<T> {
+  return { success: true, data };
+}
+
+/**
+ * Create an error service result
+ */
+export function createErrorResult<T>(error: string): ServiceResult<T> {
+  return { success: false, error };
+}

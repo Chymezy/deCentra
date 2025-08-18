@@ -5,11 +5,10 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import type { PrivacyMode } from '@/lib/types/auth.types';
 
-/**
- * Privacy mode options for users
- */
-export type PrivacyMode = 'normal' | 'anonymous' | 'whistleblower';
+// Re-export for backward compatibility
+export type { PrivacyMode };
 
 /**
  * Authentication state interface

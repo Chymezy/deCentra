@@ -27,10 +27,21 @@ export type {
 export type {
   AuthState,
   AuthContextType,
+  ComponentAuthState,
+  SidebarUserProfile,
+  NavigationItem,
   ProfileCreationData,
   ProfileUpdateData,
   AuthResult,
   ServiceResult,
+  PrivacyMode,
+} from './auth.types';
+
+// Export utility functions from auth.types
+export { 
+  toComponentAuthState, 
+  toSidebarUserProfile, 
+  getNavigationItemsConfig 
 } from './auth.types';
 
 export type {
