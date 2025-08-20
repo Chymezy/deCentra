@@ -230,6 +230,25 @@ export class AuthService {
    */
   dateToTimestamp(date: Date): bigint {
     return BigInt(date.getTime()) * 1_000_000n;
+  }  /**
+   * Check if a username is available for registration
+   * Uses real-time validation to provide immediate feedback
+   */
+  async checkUsernameAvailability(username: string): Promise<boolean> {
+    try {
+      const result = await backend.check_username_availability(username);
+      
+      if (isOk(result)) {
+        return result.Ok;
+      } else {
+        // If validation fails, username is not available (format invalid)
+        console.warn('Username validation failed:', result.Err);
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to check username availability:', error);
+      return false; // Assume unavailable on error for safety
+    }
   }
 }
 

@@ -1,4 +1,12 @@
 import type { Principal } from '@dfinity/principal';
+import type { ProfileCreationData, ProfileUpdateData } from './auth.types';
+
+// Re-export from auth.types for backward compatibility
+export type { ProfileCreationData, ProfileUpdateData };
+
+// Type aliases for legacy compatibility
+export type CreateProfileOptions = ProfileCreationData;
+export type UpdateProfileOptions = ProfileUpdateData;
 
 // Re-export all backend types for consistency
 export type {
@@ -105,24 +113,6 @@ export interface ServiceResult<T> {
 }
 
 /**
- * Profile creation data for new user registration
- */
-export interface ProfileCreationData {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
-/**
- * Profile update data for existing users
- */
-export interface ProfileUpdateData {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
-/**
  * Search options for user discovery
  */
 export interface SearchOptions {
@@ -177,18 +167,6 @@ export interface ProfileWizardState {
 export interface PaginationOptions {
   offset?: number;
   limit?: number;
-}
-
-export interface CreateProfileOptions {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
-export interface UpdateProfileOptions {
-  username: string;
-  bio?: string;
-  avatar?: string;
 }
 
 // Helper functions for working with backend results

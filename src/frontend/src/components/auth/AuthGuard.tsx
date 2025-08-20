@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { PageLoader } from '@/components/ui/LoadingSpinner';
-import { LoginFlow, type AuthState, type PrivacyMode } from './LoginFlow';
+import { LoginFlow, type PrivacyMode } from './LoginFlow';
+import { ProfileCreationFlow } from './ProfileCreationFlow';
 
 /**
  * Route protection levels
@@ -23,15 +25,31 @@ export interface AuthGuardProps {
    */
   requiredLevel?: ProtectionLevel;
   /**
-   * Current authentication state
+   * Whether a user profile is required
    */
-  authState: AuthState;
+  requireProfile?: boolean;
   /**
-   * Login handler
+   * Optional auth state override (uses context if not provided)
    */
-  onLogin: (privacyMode: PrivacyMode) => Promise<void>;
+  authState?: {
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    user?: {
+      id: string;
+      username?: string;
+      displayName?: string;
+      avatar?: string;
+      verified?: boolean;
+      privacyMode: PrivacyMode;
+    };
+    error?: string;
+  };
   /**
-   * Logout handler
+   * Login handler (optional - will use context if not provided)
+   */
+  onLogin?: (privacyMode: PrivacyMode) => Promise<void>;
+  /**
+   * Logout handler (optional - will use context if not provided)
    */
   onLogout?: () => Promise<void>;
   /**
@@ -68,7 +86,8 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
     {
       children,
       requiredLevel = 'public',
-      authState,
+      requireProfile = false,
+      authState: providedAuthState,
       onLogin,
       onLogout,
       loadingComponent,
@@ -80,6 +99,27 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
     },
     ref
   ) => {
+    // Get auth state from context if not provided
+    const authContext = useAuth();
+    
+    // Use provided authState or fall back to context
+    const authState = providedAuthState || {
+      isAuthenticated: authContext.isAuthenticated,
+      isLoading: authContext.isLoading,
+      user: authContext.user ? {
+        id: authContext.user.id.toString(),
+        username: authContext.user.username || '',
+        displayName: authContext.user.bio || authContext.user.username || '',
+        avatar: authContext.user.avatar,
+        verified: 'Verified' in authContext.user.verification_status,
+        privacyMode: 'normal' as PrivacyMode,
+      } : undefined,
+      error: authContext.error || undefined,
+    };
+
+    // Use context login/logout if not provided
+    const handleLogin = onLogin || authContext.login;
+    const handleLogout = onLogout || authContext.logout;
     // Handle loading state
     if (authState.isLoading) {
       return loadingComponent || <PageLoader text="Checking authentication..." />;
@@ -111,8 +151,8 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
           >
             <LoginFlow
               authState={authState}
-              onLogin={onLogin}
-              onLogout={onLogout}
+              onLogin={handleLogin}
+              onLogout={handleLogout}
               showPrivacyModeSelection={showPrivacyModeSelection}
               mode={mode}
               title="Authentication Required"
@@ -144,6 +184,15 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
       );
     }
 
+    // Show profile creation if user doesn't have a profile and it's required
+    if (requireProfile && authState.isAuthenticated && !authState.user) {
+      return (
+        <div ref={ref} className={className}>
+          <ProfileCreationFlow />
+        </div>
+      );
+    }
+
     // User is authorized, render children
     return (
       <div ref={ref} className={className}>
@@ -158,7 +207,9 @@ AuthGuard.displayName = 'AuthGuard';
 /**
  * Check if user is authorized for the required protection level
  */
-function checkAuthorization(authState: AuthState, requiredLevel: ProtectionLevel): boolean {
+function checkAuthorization(authState: AuthGuardProps['authState'], requiredLevel: ProtectionLevel): boolean {
+  if (!authState) return requiredLevel === 'public';
+  
   switch (requiredLevel) {
     case 'public':
       return true;
@@ -192,7 +243,14 @@ function checkAdminRights(): boolean {
  */
 interface UnauthorizedMessageProps {
   requiredLevel: ProtectionLevel;
-  currentUser?: AuthState['user'];
+  currentUser?: {
+    id: string;
+    username?: string;
+    displayName?: string;
+    avatar?: string;
+    verified?: boolean;
+    privacyMode: PrivacyMode;
+  };
   message?: string;
 }
 
@@ -277,53 +335,32 @@ export const withAuthGuard = <P extends object>(
 
 /**
  * Hook for checking authentication status
+ * Uses the main AuthContext for authentication state
  */
 export const useAuthGuard = (requiredLevel: ProtectionLevel = 'public') => {
-  const [authState, setAuthState] = React.useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-  });
-
-  const checkAuth = React.useCallback(() => {
-    // This would integrate with your actual auth system
-    // For now, return a placeholder implementation
-    setAuthState({
-      isAuthenticated: false,
-      isLoading: false,
-    });
-  }, []);
-
-  React.useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
+  const authContext = useAuth();
+  
+  // Convert context auth state to component format
+  const authState = {
+    isAuthenticated: authContext.isAuthenticated,
+    isLoading: authContext.isLoading,
+    user: authContext.user ? {
+      id: authContext.user.id.toString(),
+      username: authContext.user.username || '',
+      displayName: authContext.user.bio || authContext.user.username || '',
+      avatar: authContext.user.avatar,
+      verified: 'Verified' in authContext.user.verification_status,
+      privacyMode: 'normal' as PrivacyMode,
+    } : undefined,
+    error: authContext.error || undefined,
+  };
+  
   const isAuthorized = checkAuthorization(authState, requiredLevel);
 
   return {
     authState,
     isAuthorized,
-    checkAuth,
   };
-};
-
-/**
- * Context for providing authentication state throughout the app
- */
-export const AuthContext = React.createContext<{
-  authState: AuthState;
-  login: (privacyMode: PrivacyMode) => Promise<void>;
-  logout: () => Promise<void>;
-} | null>(null);
-
-/**
- * Hook for using authentication context
- */
-export const useAuth = () => {
-  const context = React.useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
 
 export {

@@ -2,6 +2,10 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { ProfileCreationFlow } from '@/components/auth/ProfileCreationFlow';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import type { UserProfile } from '@/lib/types/auth.types';
 
 /**
  * Main social network layout component following Twitter-inspired design
@@ -56,6 +60,60 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
     },
     ref
   ) => {
+    const { user, isLoading, refreshAuth } = useAuth();
+
+    // Handle authentication and profile creation flow
+    if (!user) {
+      return (
+        <div className="min-h-screen bg-dark-background-primary flex items-center justify-center">
+          <ErrorBoundary
+            fallback={({ resetError }) => (
+              <div className="max-w-md w-full bg-dark-background-secondary rounded-lg shadow-soft p-6 text-center">
+                <h2 className="text-xl font-semibold text-dark-text-primary mb-2">
+                  Profile Creation Error
+                </h2>
+                <p className="text-dark-text-secondary mb-4">
+                  Something went wrong while creating your profile. Please try again.
+                </p>
+                <button
+                  onClick={resetError}
+                  className="bg-electric-blue hover:bg-electric-blue/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+          >
+            <ProfileCreationFlow
+              onComplete={async (profile: UserProfile) => {
+                console.log('Profile created:', profile);
+                // Refresh auth state instead of hard reload
+                try {
+                  await refreshAuth();
+                } catch (error) {
+                  console.error('Failed to refresh auth after profile creation:', error);
+                  // Fallback to reload only if refresh fails
+                  window.location.reload();
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </div>
+      );
+    }
+
+    // Show loading state while authentication is in progress
+    if (isLoading) {
+      return (
+        <div className="min-h-screen bg-dark-background-primary flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue"></div>
+            <p className="text-dark-text-secondary">Loading...</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
         ref={ref}

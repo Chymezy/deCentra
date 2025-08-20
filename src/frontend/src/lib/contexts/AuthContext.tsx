@@ -187,12 +187,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               ...prev,
               user,
             }));
+
+            // Redirect to feed after successful login with profile
+            if (typeof window !== 'undefined') {
+              window.location.href = '/feed';
+            }
           } catch (profileError) {
             console.warn(
-              'User profile not found after login, user may need to complete registration:',
+              'User profile not found, user may need to complete registration:',
               profileError
             );
+
+            setAuthState({
+              isAuthenticated: true,
+              identity,
+              principal,
+              user: null,
+              isLoading: false,
+              error: null,
+            });
+
             // User is authenticated but doesn't have a profile yet
+            console.warn('User profile not found, user may need to complete registration.');
           }
         },
         onError: (error) => {
@@ -250,7 +266,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [authClient]);
 
-  // Enhanced profile creation with UserService integration
+  // Enhanced profile creation with direct backend integration
   const createUserProfile = useCallback(
     async (username: string, bio?: string, avatar?: string): Promise<UserProfile | null> => {
       if (!authClient || !authState.isAuthenticated || !authState.identity) {
@@ -261,31 +277,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setAuthState((prev) => ({ ...prev, error: null, isLoading: true }));
 
-        // Import UserService dynamically to avoid circular dependencies
-        const { userService } = await import('@/lib/services/user.service');
-        
-        // Initialize UserService with current identity
-        await userService.initialize(authState.identity);
+        // Set identity in auth service for backend calls
+        authService.setIdentity(authState.identity);
 
-        // Create profile using UserService
-        const result = await userService.createProfile({
+        // Create profile using AuthService (matches backend signature exactly)
+        const profile = await authService.createUserProfile(
           username,
-          bio: bio || '',
-          avatar: avatar || '' // Let UserAvatar component handle fallback display
-        });
+          bio || undefined,
+          avatar || undefined
+        );
 
-        if (result.success && result.data) {
-          // Update auth state with new profile
-          setAuthState((prev) => ({
-            ...prev,
-            user: result.data,
-            isLoading: false
-          }));
+        // Update auth state with new profile
+        setAuthState((prev) => ({
+          ...prev,
+          user: profile,
+          isLoading: false
+        }));
 
-          return result.data;
-        } else {
-          throw new Error('error' in result ? result.error : 'Profile creation failed');
-        }
+        return profile;
       } catch (error) {
         const errorMessage = getAuthErrorMessage(error);
         logAuthError(error, 'create_user_profile');
@@ -296,7 +305,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isLoading: false
         }));
         
-        return null;
+        // Re-throw error for component handling
+        throw error;
       }
     },
     [authClient, authState.isAuthenticated, authState.identity]
@@ -407,6 +417,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       };
     }
   }, [authClient, authState.isAuthenticated, logout]);
+
+  // Redirect to profile creation if user profile is missing
+  useEffect(() => {
+    if (authState.isAuthenticated && !authState.user) {
+      console.warn('User profile is missing, but no redirect is needed.');
+    }
+  }, [authState.isAuthenticated, authState.user]);
 
   const contextValue: AuthContextType = {
     ...authState,

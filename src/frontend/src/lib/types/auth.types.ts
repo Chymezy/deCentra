@@ -111,12 +111,13 @@ export interface NavigationItem {
 // =============================================================================
 
 /**
- * Profile creation form data
+ * Profile creation form data with privacy mode support
  */
 export interface ProfileCreationData {
   username: string;
   bio?: string;
   avatar?: string;
+  privacyMode?: PrivacyMode;
 }
 
 /**
@@ -126,6 +127,7 @@ export interface ProfileUpdateData {
   username: string;
   bio?: string;
   avatar?: string;
+  privacyMode?: PrivacyMode;
 }
 
 // =============================================================================

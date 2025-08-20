@@ -2,20 +2,17 @@
 
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { SocialNetworkLayout } from '@/components/layout/SocialNetworkLayout';
-import { Sidebar } from '@/components/layout/Sidebar';
+import Sidebar from '@/components/layout/Sidebar';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { 
-  toComponentAuthState, 
-  toSidebarUserProfile, 
+import {
   getNavigationItemsConfig,
-  type PrivacyMode 
 } from '@/lib/types/auth.types';
 import { icons } from '@/lib/icons';
 import { usePathname } from 'next/navigation';
 
 /**
  * Social Network Layout - Applied to all authenticated social features
- * 
+ *
  * This layout provides:
  * - Authentication guard
  * - Three-column Twitter-style layout
@@ -31,8 +28,8 @@ export default function SocialLayout({
   const authState = useAuth();
   const pathname = usePathname();
 
-  const handleLogin = async (privacyMode: PrivacyMode) => {
-    await authState.login(privacyMode);
+  const handleLogin = async () => {
+    await authState.login();
   };
 
   // Helper function to get icons for navigation items
@@ -47,33 +44,54 @@ export default function SocialLayout({
       creator: icons.creator,
       settings: icons.settings,
     };
-    
+
     const IconComponent = iconMapping[id as keyof typeof iconMapping] || icons.home;
     return <IconComponent className="w-5 h-5" aria-hidden="true" />;
   };
 
   // Get navigation items with icons
-  const navigationItems = getNavigationItemsConfig(pathname).map(item => ({
+  const navigationItems = getNavigationItemsConfig(pathname).map((item) => ({
     ...item,
     icon: getIconForNavItem(item.id),
     active: item.active,
   }));
 
-  // Convert auth state for sidebar
-  const sidebarUser = authState.user ? toSidebarUserProfile(authState.user) : undefined;
-  const componentAuthState = toComponentAuthState(authState);
-
   return (
     <AuthGuard
-      authState={componentAuthState}
+      authState={{
+        isAuthenticated: authState.isAuthenticated,
+        isLoading: authState.isLoading,
+        user: authState.user ? {
+          id: authState.user.id.toString(),
+          username: authState.user.username || '',
+          displayName: authState.user.bio, // Assuming bio can be used as displayName
+          avatar: authState.user.avatar,
+          verified: 'Verified' in authState.user.verification_status,
+          privacyMode: 'normal', // Updated to valid PrivacyMode string
+        } : undefined,
+      }}
       onLogin={handleLogin}
     >
       <SocialNetworkLayout
         sidebar={
           <Sidebar
-            user={sidebarUser}
+            user={authState.user ? {
+              id: authState.user.id.toString(),
+              username: authState.user.username || '',
+              displayName: authState.user.bio, // Assuming bio can be used as displayName
+              avatar: authState.user.avatar,
+              verified: 'Verified' in authState.user.verification_status,
+              stats: {
+                followers: 1234,
+                following: 567,
+                posts: 89,
+              },
+            } : undefined}
             navigationItems={navigationItems}
             isAuthenticated={authState.isAuthenticated}
+            onLogin={handleLogin}
+            onLogout={authState.logout}
+            onCreatePost={() => console.log('Create post clicked')}
           />
         }
         rightPanel={

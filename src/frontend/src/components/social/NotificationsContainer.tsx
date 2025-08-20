@@ -54,7 +54,7 @@ export function NotificationsContainer() {
       id: '5',
       type: 'mention',
       title: 'You were mentioned in a post',
-      description: 'charlie_crypto: "@your_username check this out..."',
+      description: 'charlie_crypto: "@Enter a username check this out..."',
       time: '3 days ago',
       read: true,
     },

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { SocialNetworkLayout, Sidebar, ContentWrapper } from '@/components/layout';
+import { SocialNetworkLayout, ContentWrapper } from '@/components/layout';
+import Sidebar from '@/components/layout/Sidebar';
 import { AuthGuard, type AuthState, type PrivacyMode } from '@/components/auth';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { UserAvatar } from '@/components/ui/UserAvatar';

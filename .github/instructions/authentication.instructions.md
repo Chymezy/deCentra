@@ -643,7 +643,7 @@ export function ProfileCreationFlow() {
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                placeholder="your_username"
+                placeholder="Enter a username"
                 error={errors.username}
                 className="lowercase"
               />

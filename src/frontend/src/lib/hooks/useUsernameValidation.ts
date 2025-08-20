@@ -36,9 +36,30 @@ export function useUsernameValidation(
 
   // Validate username format
   const isValid = useMemo(() => {
+    const reservedWords = [
+      "admin", "administrator", "mod", "moderator", "system", "root",
+      "api", "www", "mail", "email", "support", "help", "info", "news",
+      "blog", "decentra", "backend", "frontend", "canister", "icp",
+      "dfinity", "anonymous", "null", "undefined", "true", "false",
+      "test", "demo"
+    ];
+
     if (!username) return false;
     if (username.length < 3 || username.length > 50) return false;
     if (!/^[a-zA-Z0-9_-]+$/.test(username)) return false;
+    if (username.startsWith('_') || username.startsWith('-') || username.endsWith('_') || username.endsWith('-')) return false;
+    if (reservedWords.includes(username.toLowerCase())) {
+      setError('Username is reserved and cannot be used');
+      return false;
+    }
+
+    let prevSpecial = false;
+    for (const char of username) {
+      const isSpecial = char === '_' || char === '-';
+      if (isSpecial && prevSpecial) return false;
+      prevSpecial = isSpecial;
+    }
+
     return true;
   }, [username]);
 
@@ -87,24 +108,6 @@ export function useUsernameValidation(
 
     return () => clearTimeout(timeoutId);
   }, [username, isValid, checkAvailability, debounceDelay]);
-
-  // Reset states when username becomes invalid
-  useEffect(() => {
-    if (!isValid && username) {
-      setIsAvailable(null);
-      if (username.length > 0 && username.length < 3) {
-        setError('Username must be at least 3 characters');
-      } else if (username.length > 50) {
-        setError('Username must be less than 50 characters');
-      } else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-        setError('Username can only contain letters, numbers, underscore, and dash');
-      } else {
-        setError(null);
-      }
-    } else if (isValid) {
-      setError(null);
-    }
-  }, [isValid, username]);
 
   return {
     isValid,

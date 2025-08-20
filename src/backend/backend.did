@@ -60,13 +60,13 @@ type PrivacySettings = record {
 type ProfileVisibility = variant { Private; FollowersOnly; Public };
 type Result = variant { Ok : Comment; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_2 = variant { Ok : nat64; Err : text };
-type Result_3 = variant { Ok : UserProfile; Err : text };
-type Result_4 = variant { Ok : vec UserProfile; Err : text };
-type Result_5 = variant { Ok : vec FollowRequest; Err : text };
-type Result_6 = variant { Ok : vec FeedPost; Err : text };
-type Result_7 = variant { Ok : vec CanisterPost; Err : text };
-type Result_8 = variant { Ok : bool; Err : text };
+type Result_2 = variant { Ok : bool; Err : text };
+type Result_3 = variant { Ok : nat64; Err : text };
+type Result_4 = variant { Ok : UserProfile; Err : text };
+type Result_5 = variant { Ok : vec UserProfile; Err : text };
+type Result_6 = variant { Ok : vec FollowRequest; Err : text };
+type Result_7 = variant { Ok : vec FeedPost; Err : text };
+type Result_8 = variant { Ok : vec CanisterPost; Err : text };
 type UserProfile = record {
   id : principal;
   bio : text;
@@ -108,6 +108,33 @@ service : {
   // * Validates request exists and is still pending
   // * Atomically converts request to follow relationship
   approve_follow_request : (nat64) -> (Result_1);
+  // Checks if a username is available for registration
+  // 
+  // # Purpose
+  // Validates username format and checks availability for real-time frontend validation.
+  // Used by profile creation forms to provide immediate feedback to users.
+  // 
+  // # Arguments
+  // * `username` - Username to check (3-50 chars, alphanumeric + _ -)
+  // 
+  // # Returns
+  // * `Ok(true)` - Username is available and valid
+  // * `Ok(false)` - Username is taken but format is valid
+  // * `Err(String)` - Username format is invalid
+  // 
+  // # Security
+  // * No authentication required (public query)
+  // * Validates format before checking availability
+  // * Rate limited to prevent username enumeration attacks
+  // 
+  // # Example
+  // ```rust
+  // let available = check_username_availability("alice_doe".to_string())?;
+  // if available {
+  // println!("Username is available!");
+  // }
+  // ```
+  check_username_availability : (text) -> (Result_2) query;
   // Creates a new post with content validation
   // 
   // # Purpose
@@ -127,7 +154,7 @@ service : {
   // * Validates content length and safety
   // * Rate limited to prevent spam
   // * Auto-creates profile if needed
-  create_post : (text, opt PostVisibility) -> (Result_2);
+  create_post : (text, opt PostVisibility) -> (Result_3);
   // Creates a new user profile with privacy controls
   // 
   // # Purpose
@@ -174,7 +201,7 @@ service : {
   // - Profile starts with privacy_settings.profile_visibility = Public
   // - Users can change privacy settings after creation
   // - Bio and avatar are optional for enhanced privacy
-  create_user_profile : (text, opt text, opt text) -> (Result_3);
+  create_user_profile : (text, opt text, opt text) -> (Result_4);
   // Follows another user or sends a follow request for private profiles
   // 
   // # Purpose
@@ -236,7 +263,7 @@ service : {
   // 
   // # Privacy
   // * Respects user privacy settings for showing social graph
-  get_followers : (principal, opt nat64, opt nat64) -> (Result_4) query;
+  get_followers : (principal, opt nat64, opt nat64) -> (Result_5) query;
   // Gets the list of users that the specified user follows
   // 
   // # Arguments
@@ -251,7 +278,7 @@ service : {
   // # Privacy
   // * Respects user privacy settings for showing social graph
   // * Only shows public information unless viewer is authorized
-  get_following : (principal, opt nat64, opt nat64) -> (Result_4) query;
+  get_following : (principal, opt nat64, opt nat64) -> (Result_5) query;
   // Get the authenticated user's own profile
   get_my_profile : () -> (opt UserProfile) query;
   // Gets pending follow requests for the authenticated user
@@ -262,7 +289,7 @@ service : {
   // 
   // # Security
   // * Only returns requests where the caller is the target
-  get_pending_follow_requests : () -> (Result_5) query;
+  get_pending_follow_requests : () -> (Result_6) query;
   // Gets platform statistics
   get_platform_stats : () -> (PlatformStats) query;
   // Retrieves a post by ID with privacy checks
@@ -293,7 +320,7 @@ service : {
   // * Respects all privacy and visibility settings
   // * Filters blocked users' content
   // * Validates post access permissions
-  get_social_feed : (opt nat64, opt nat64) -> (Result_6) query;
+  get_social_feed : (opt nat64, opt nat64) -> (Result_7) query;
   // Retrieves the authenticated user's personalized social feed
   // 
   // # Purpose
@@ -325,7 +352,7 @@ service : {
   // - Pagination prevents memory exhaustion
   // - Efficient indexing for large user bases
   // - Cycle cost scales with following count
-  get_user_feed : (opt nat64, opt nat64) -> (Result_7) query;
+  get_user_feed : (opt nat64, opt nat64) -> (Result_8) query;
   // Gets all posts by a specific user
   get_user_posts : (principal, opt nat64, opt nat64) -> (vec Post) query;
   // Retrieves a user profile by user ID
@@ -344,7 +371,7 @@ service : {
   // 
   // # Returns
   // * `Ok(bool)` - True if follower follows target, false otherwise
-  is_following : (principal, principal) -> (Result_8) query;
+  is_following : (principal, principal) -> (Result_2) query;
   // Likes a post
   // 
   // # Security
@@ -395,5 +422,5 @@ service : {
   // * Only the profile owner can update their profile
   // * Validates all input parameters
   // * Maintains creation timestamp
-  update_user_profile : (text, opt text, opt text) -> (Result_3);
+  update_user_profile : (text, opt text, opt text) -> (Result_4);
 }
