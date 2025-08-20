@@ -1,36 +1,83 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
         // Brand Colors
         'deep-indigo': '#4B0082',
-        'electric-blue': '#0F62FE', 
+        'electric-blue': '#0F62FE',
         'vibrant-orange': '#FF6F00',
         'charcoal-black': '#1A1A1A',
-        
+
         // Semantic colors
-        'primary': '#4B0082',
-        'secondary': '#0F62FE',
-        'accent': '#FF6F00',
-        'dark': '#1A1A1A',
-        'light': '#FFFFFF',
+        primary: '#4B0082',
+        secondary: '#0F62FE',
+        accent: '#FF6F00',
+        dark: '#1A1A1A',
+        light: '#FFFFFF',
+
+        // Dark Mode Palette (Enhanced for neumorphic design)
+        'dark-background': {
+          primary: '#0F0F0F',    // Main background
+          secondary: '#1A1A1A',  // Card/component backgrounds
+          tertiary: '#2A2A2A',   // Elevated elements
+        },
+        'dark-gray': '#2A2A2A',  // Commonly used gray for cards and components
+        'dark-text': {
+          primary: '#FFFFFF',    // Main text
+          secondary: '#B3B3B3',  // Secondary text
+          tertiary: '#808080',   // Muted text
+        },
+        'dark-border': {
+          subtle: '#333333',     // Subtle borders
+          default: '#4A4A4A',    // Default borders
+          strong: '#666666',     // Strong borders
+        },
+
+        // Privacy-focused component colors
+        'privacy-dark': '#1A1A1A',
+        'privacy-background': '#0F0F0F',
+        'privacy-background-secondary': '#1A1A1A',
+        'privacy-muted': '#2A2A2A',
+        'privacy-border': '#4A4A4A',
+        'privacy-text': '#FFFFFF',
+        'privacy-text-muted': '#B3B3B3',
+        'privacy-accent': '#FF6F00',
+        'privacy-primary': '#4B0082',
+        'privacy-secondary': '#0F62FE',
+        'privacy-success': '#10B981',
+        'privacy-warning': '#F59E0B',
+        'privacy-danger': '#EF4444',
       },
       fontFamily: {
-        'heading': ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
-        'body': ['Roboto', 'Open Sans', 'system-ui', 'sans-serif'],
-        'code': ['JetBrains Mono', 'monospace'],
+        heading: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
+        body: ['Roboto', 'Open Sans', 'system-ui', 'sans-serif'],
+        code: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
         'glow': '0 0 20px rgba(79, 0, 130, 0.3)',
         'glow-blue': '0 0 20px rgba(15, 98, 254, 0.3)',
         'glow-orange': '0 0 20px rgba(255, 111, 0, 0.3)',
+        'glow-indigo': '0 0 20px rgba(75, 0, 130, 0.4)',
+        
+        // Neumorphic shadows for enhanced UI
+        'soft': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
+        'soft-inset': 'inset 4px 4px 8px rgba(0,0,0,0.25), inset -4px -4px 8px rgba(255,255,255,0.05)',
+        'medium': '8px 8px 16px rgba(0,0,0,0.3), -8px -8px 16px rgba(255,255,255,0.1)',
+        'medium-inset': 'inset 8px 8px 16px rgba(0,0,0,0.3), inset -8px -8px 16px rgba(255,255,255,0.1)',
+        'strong': '12px 12px 24px rgba(0,0,0,0.4), -12px -12px 24px rgba(255,255,255,0.15)',
+        
+        // Neumorphic shadow variants for components
+        'neumorphic': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
+        'neumorphic-inset': 'inset 4px 4px 8px rgba(0,0,0,0.25), inset -4px -4px 8px rgba(255,255,255,0.05)',
+        'neumorphic-raised': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
+        'neumorphic-raised-hover': '6px 6px 12px rgba(0,0,0,0.3), -6px -6px 12px rgba(255,255,255,0.08)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
@@ -52,4 +99,4 @@ const config: Config = {
   plugins: [],
 };
 
-export default config; 
+export default config;

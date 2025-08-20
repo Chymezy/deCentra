@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+    "src/backend",
+]
+
+[workspace.dependencies]
+candid = "0.10"
+ic-cdk = "0.13"
+ic-cdk-timers = "0.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+getrandom = { version = "0.2", features = ["custom"] }
+ic-stable-structures = "0.6"

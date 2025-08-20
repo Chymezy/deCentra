@@ -1,8 +1,18 @@
 {
   "canisters": {
     "backend": {
-      "main": "src/backend/main.mo",
-      "type": "motoko"
+      "type": "custom",
+      "package": "backend",
+      "candid": "src/backend/backend.did",
+      "shrink": true,
+      "gzip": true,
+      "wasm": "target/wasm32-unknown-unknown/release/backend.wasm",
+      "build": ["bash ./scripts/generate-candid.sh backend"],
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     },
     "frontend": {
       "dependencies": [
@@ -32,6 +42,7 @@
       "packtool": ""
     }
   },
-  "output_env_file": "src/frontend/.env",
-  "version": 1
+  "output_env_file": ".env",
+  "version": 1,
+  "dfx": "0.25.0"
 }
