@@ -1,105 +1,136 @@
 'use client';
 
-import { AuthGuard } from '@/components/auth/AuthGuard';
 import { SocialNetworkLayout } from '@/components/layout/SocialNetworkLayout';
-import { Sidebar } from '@/components/layout/Sidebar';
+import Sidebar from '@/components/layout/Sidebar';
+import Link from 'next/link';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { 
-  toComponentAuthState, 
-  toSidebarUserProfile, 
-  getNavigationItemsConfig,
-  type PrivacyMode 
-} from '@/lib/types/auth.types';
-import { icons } from '@/lib/icons';
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 /**
- * Social Network Layout - Applied to all authenticated social features
- * 
+ * Social Network Layout - Applied to all social features
+ *
  * This layout provides:
- * - Authentication guard
  * - Three-column Twitter-style layout
- * - Sidebar navigation with user profile
+ * - Sidebar navigation with real authentication
  * - Consistent navigation across all social pages
  * - Centralized layout logic (DRY principle)
+ * - Real authentication state and logout functionality
  */
 export default function SocialLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const authState = useAuth();
-  const pathname = usePathname();
+  const router = useRouter();
+  const { 
+    isAuthenticated, 
+    isLoading 
+  } = useAuth();
 
-  const handleLogin = async (privacyMode: PrivacyMode) => {
-    await authState.login(privacyMode);
-  };
+  // Authentication Guard - Redirect unauthenticated users
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('User not authenticated, redirecting to landing page');
+      router.push('/');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
-  // Helper function to get icons for navigation items
-  const getIconForNavItem = (id: string): React.ReactNode => {
-    const iconMapping = {
-      home: icons.home,
-      feed: icons.feed,
-      discover: icons.discover,
-      notifications: icons.notifications,
-      messages: icons.messages,
-      profile: icons.profile,
-      creator: icons.creator,
-      settings: icons.settings,
-    };
-    
-    const IconComponent = iconMapping[id as keyof typeof iconMapping] || icons.home;
-    return <IconComponent className="w-5 h-5" aria-hidden="true" />;
-  };
+  // Show loading spinner while auth is being determined
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <LoadingSpinner size="lg" variant="glass-primary" />
+          <div className="text-gray-300">Loading your social network...</div>
+        </div>
+      </div>
+    );
+  }
 
-  // Get navigation items with icons
-  const navigationItems = getNavigationItemsConfig(pathname).map(item => ({
-    ...item,
-    icon: getIconForNavItem(item.id),
-    active: item.active,
-  }));
-
-  // Convert auth state for sidebar
-  const sidebarUser = authState.user ? toSidebarUserProfile(authState.user) : undefined;
-  const componentAuthState = toComponentAuthState(authState);
+  // Don't render anything if user is not authenticated (redirect is happening)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
-    <AuthGuard
-      authState={componentAuthState}
-      onLogin={handleLogin}
-    >
-      <SocialNetworkLayout
-        sidebar={
-          <Sidebar
-            user={sidebarUser}
-            navigationItems={navigationItems}
-            isAuthenticated={authState.isAuthenticated}
-          />
-        }
-        rightPanel={
-          <div className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Trending Topics</h3>
+    <SocialNetworkLayout
+      sidebar={<Sidebar />}
+      rightPanel={
+        <div className="p-4 space-y-4">
+          {/* Enhanced Trending Topics Section */}
+          <div className="glass-card rounded-xl p-4 animate-fade-in">
+            <h3 className="text-lg font-semibold mb-4 text-white gradient-text-social">
+              🔥 Trending Topics
+            </h3>
             <div className="space-y-2">
-              <div className="p-3 bg-dark-background-secondary rounded-lg">
-                <p className="text-sm text-dark-text-secondary">#decentralization</p>
-                <p className="text-xs text-dark-text-tertiary">12.5K posts</p>
-              </div>
-              <div className="p-3 bg-dark-background-secondary rounded-lg">
-                <p className="text-sm text-dark-text-secondary">#privacy</p>
-                <p className="text-xs text-dark-text-tertiary">8.2K posts</p>
-              </div>
-              <div className="p-3 bg-dark-background-secondary rounded-lg">
-                <p className="text-sm text-dark-text-secondary">#whistleblower</p>
-                <p className="text-xs text-dark-text-tertiary">3.1K posts</p>
-              </div>
+              {[
+                { tag: '#decentralization', posts: '12.5K', href: '/discover?tag=decentralization' },
+                { tag: '#privacy', posts: '8.2K', href: '/discover?tag=privacy' },
+                { tag: '#whistleblower', posts: '3.1K', href: '/discover?tag=whistleblower' },
+                { tag: '#freespeech', posts: '6.7K', href: '/discover?tag=freespeech' },
+                { tag: '#icp', posts: '4.2K', href: '/discover?tag=icp' },
+              ].map((topic, index) => (
+                <Link
+                  key={topic.tag}
+                  href={topic.href}
+                  className={`block p-3 glass-interactive rounded-lg hover:glow-social transition-all duration-300 group animate-fade-in-up animation-delay-${200 + index * 100}`}
+                >
+                  <p className="text-sm text-white font-medium group-hover:gradient-text-social transition-all duration-300">
+                    {topic.tag}
+                  </p>
+                  <p className="text-xs text-gray-300 group-hover:text-gray-100 transition-colors duration-300">
+                    {topic.posts} posts
+                  </p>
+                </Link>
+              ))}
             </div>
           </div>
-        }
+
+          {/* Suggested Users Section */}
+          <div className="glass-card rounded-xl p-4 animate-fade-in animation-delay-400">
+            <h3 className="text-lg font-semibold mb-4 text-white gradient-text-social">
+              👥 Who to Follow
+            </h3>
+            <div className="space-y-3">
+              {[
+                { name: 'Anonymous Whistleblower', username: '@anon_truth', verified: true },
+                { name: 'Privacy Advocate', username: '@privacy_first', verified: false },
+                { name: 'Decentralized Dev', username: '@decentral_dev', verified: true },
+              ].map((user, index) => (
+                <Link
+                  key={user.username}
+                  href={`/profile/${user.username.slice(1)}`}
+                  className={`flex items-center space-x-3 p-3 glass-interactive rounded-lg hover:glow-social transition-all duration-300 group animate-fade-in-left animation-delay-${300 + index * 100}`}
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-full flex items-center justify-center shadow-glass-soft group-hover:scale-110 transition-transform duration-300">
+                    <span className="text-white text-xs font-bold">
+                      {user.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white group-hover:gradient-text-social transition-all duration-300 truncate">
+                      {user.name} {user.verified && '✓'}
+                    </p>
+                    <p className="text-xs text-gray-300 group-hover:text-gray-100 transition-colors duration-300 truncate">
+                      {user.username}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <main 
+        className="flex-1 min-h-screen bg-dark-background-primary"
+        role="main"
+        aria-label="Social network main content"
       >
-        <main className="flex-1 min-h-screen">
-          {children}
-        </main>
-      </SocialNetworkLayout>
-    </AuthGuard>
+        {children}
+      </main>
+    </SocialNetworkLayout>
   );
 }

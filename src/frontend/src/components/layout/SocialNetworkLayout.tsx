@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 /**
  * Main social network layout component following Twitter-inspired design
  * Implements responsive three-column layout with proper accessibility
+ * Simplified version without authentication dependencies
  */
 export interface SocialNetworkLayoutProps {
   /**
@@ -42,7 +43,10 @@ export interface SocialNetworkLayoutProps {
   mobileNavigation?: React.ReactNode;
 }
 
-const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayoutProps>(
+const SocialNetworkLayout = React.forwardRef<
+  HTMLDivElement,
+  SocialNetworkLayoutProps
+>(
   (
     {
       sidebar,
@@ -60,13 +64,24 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
       <div
         ref={ref}
         className={cn(
-          'min-h-screen bg-privacy-background text-privacy-text',
+          'min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white',
+          'relative overflow-hidden',
           className
         )}
       >
+        {/* Animated background elements */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-900/8 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-blue-900/6 rounded-full blur-3xl animate-float-delayed"></div>
+          <div className="absolute top-3/4 right-1/3 w-64 h-64 bg-orange-900/4 rounded-full blur-3xl animate-float"></div>
+          
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        </div>
+
         {/* Mobile Header */}
         {mobileHeader && (
-          <header className="sticky top-0 z-40 lg:hidden bg-privacy-dark/95 backdrop-blur-sm border-b border-privacy-border/20">
+          <header className="sticky top-0 z-40 lg:hidden glass-nav-enhanced">
             {mobileHeader}
           </header>
         )}
@@ -74,7 +89,7 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
         {/* Main Layout Container */}
         <div
           className={cn(
-            'mx-auto flex',
+            'relative mx-auto flex',
             fullWidth ? 'w-full' : 'max-w-6xl',
             'min-h-screen'
           )}
@@ -82,7 +97,7 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
           {/* Left Sidebar - Desktop Only */}
           {sidebar && (
             <aside className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 shrink-0">
-              <div className="sticky top-0 h-screen overflow-y-auto py-4 px-4">
+              <div className="sticky top-0 h-screen overflow-y-auto py-4 px-4 glass-nav rounded-r-2xl">
                 {sidebar}
               </div>
             </aside>
@@ -91,21 +106,19 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
           {/* Main Content Area */}
           <main
             className={cn(
-              'flex-1 min-w-0 border-x border-privacy-border/20',
-              'lg:max-w-2xl xl:max-w-xl'
+              'flex-1 min-w-0 border-x border-glass-border/20',
+              'lg:max-w-2xl xl:max-w-xl glass-social-card/50 backdrop-blur-sm'
             )}
             role="main"
             aria-label="Main content"
           >
-            <div className="min-h-screen">
-              {children}
-            </div>
+            <div className="min-h-screen">{children}</div>
           </main>
 
           {/* Right Panel - Desktop Only */}
           {showRightPanel && rightPanel && (
             <aside className="hidden xl:flex xl:flex-col xl:w-80 shrink-0">
-              <div className="sticky top-0 h-screen overflow-y-auto py-4 px-4">
+              <div className="sticky top-0 h-screen overflow-y-auto py-4 px-4 glass-nav rounded-l-2xl">
                 {rightPanel}
               </div>
             </aside>
@@ -114,7 +127,7 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
 
         {/* Mobile Bottom Navigation */}
         {mobileNavigation && (
-          <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-privacy-dark/95 backdrop-blur-sm border-t border-privacy-border/20">
+          <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden glass-nav-enhanced border-t border-glass-border/30">
             {mobileNavigation}
           </nav>
         )}
@@ -147,13 +160,7 @@ export interface ContentWrapperProps {
 
 const ContentWrapper = React.forwardRef<HTMLDivElement, ContentWrapperProps>(
   (
-    {
-      children,
-      className,
-      padded = true,
-      header,
-      stickyHeader = false,
-    },
+    { children, className, padded = true, header, stickyHeader = false },
     ref
   ) => {
     return (
@@ -161,7 +168,7 @@ const ContentWrapper = React.forwardRef<HTMLDivElement, ContentWrapperProps>(
         {header && (
           <div
             className={cn(
-              'bg-privacy-dark/95 backdrop-blur-sm border-b border-privacy-border/20',
+              'glass-nav-enhanced border-b border-glass-border/30',
               stickyHeader && 'sticky top-0 z-30',
               padded && 'px-4 py-3'
             )}
@@ -169,9 +176,7 @@ const ContentWrapper = React.forwardRef<HTMLDivElement, ContentWrapperProps>(
             {header}
           </div>
         )}
-        <div className={cn(padded && 'px-4 py-2')}>
-          {children}
-        </div>
+        <div className={cn(padded && 'px-4 py-2')}>{children}</div>
       </div>
     );
   }
@@ -196,28 +201,18 @@ export interface PanelWrapperProps {
 }
 
 const PanelWrapper = React.forwardRef<HTMLDivElement, PanelWrapperProps>(
-  (
-    {
-      children,
-      className,
-      title,
-      bordered = true,
-    },
-    ref
-  ) => {
+  ({ children, className, title, bordered = true }, ref  ) => {
     return (
       <div
         ref={ref}
         className={cn(
-          'bg-privacy-dark rounded-xl p-4 space-y-3',
-          bordered && 'border border-privacy-border/20 shadow-neumorphic-inset',
+          'glass-premium rounded-xl p-4 space-y-3 animate-fade-in',
+          bordered && 'border border-glass-border shadow-glass-soft',
           className
         )}
       >
         {title && (
-          <h2 className="text-lg font-semibold text-privacy-text">
-            {title}
-          </h2>
+          <h2 className="text-lg font-semibold text-white gradient-text-social">{title}</h2>
         )}
         {children}
       </div>
@@ -293,9 +288,4 @@ const ResponsiveGrid = React.forwardRef<HTMLDivElement, ResponsiveGridProps>(
 
 ResponsiveGrid.displayName = 'ResponsiveGrid';
 
-export {
-  SocialNetworkLayout,
-  ContentWrapper,
-  PanelWrapper,
-  ResponsiveGrid,
-};
+export { SocialNetworkLayout, ContentWrapper, PanelWrapper, ResponsiveGrid };

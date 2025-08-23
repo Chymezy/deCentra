@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { PageLoader } from '@/components/ui/LoadingSpinner';
-import { LoginFlow, type AuthState, type PrivacyMode } from './LoginFlow';
+import { LoginFlow, type PrivacyMode } from './LoginFlow';
+import { ProfileCreationFlow } from './ProfileCreationFlow';
 
 /**
  * Route protection levels
@@ -23,15 +25,31 @@ export interface AuthGuardProps {
    */
   requiredLevel?: ProtectionLevel;
   /**
-   * Current authentication state
+   * Whether a user profile is required
    */
-  authState: AuthState;
+  requireProfile?: boolean;
   /**
-   * Login handler
+   * Optional auth state override (uses context if not provided)
    */
-  onLogin: (privacyMode: PrivacyMode) => Promise<void>;
+  authState?: {
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    user?: {
+      id: string;
+      username?: string;
+      displayName?: string;
+      avatar?: string;
+      verified?: boolean;
+      privacyMode: PrivacyMode;
+    };
+    error?: string;
+  };
   /**
-   * Logout handler
+   * Login handler (optional - will use context if not provided)
+   */
+  onLogin?: (privacyMode: PrivacyMode) => Promise<void>;
+  /**
+   * Logout handler (optional - will use context if not provided)
    */
   onLogout?: () => Promise<void>;
   /**
@@ -68,7 +86,8 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
     {
       children,
       requiredLevel = 'public',
-      authState,
+      requireProfile = false,
+      authState: providedAuthState,
       onLogin,
       onLogout,
       loadingComponent,
@@ -80,9 +99,35 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
     },
     ref
   ) => {
+    // Get auth state from context if not provided
+    const authContext = useAuth();
+
+    // Use provided authState or fall back to context
+    const authState = providedAuthState || {
+      isAuthenticated: authContext.isAuthenticated,
+      isLoading: authContext.isLoading,
+      user: authContext.user
+        ? {
+            id: authContext.user.id.toString(),
+            username: authContext.user.username || '',
+            displayName:
+              authContext.user.bio || authContext.user.username || '',
+            avatar: authContext.user.avatar,
+            verified: 'Verified' in authContext.user.verification_status,
+            privacyMode: 'normal' as PrivacyMode,
+          }
+        : undefined,
+      error: authContext.error || undefined,
+    };
+
+    // Use context login/logout if not provided
+    const handleLogin = onLogin || authContext.login;
+    const handleLogout = onLogout || authContext.logout;
     // Handle loading state
     if (authState.isLoading) {
-      return loadingComponent || <PageLoader text="Checking authentication..." />;
+      return (
+        loadingComponent || <PageLoader text="Checking authentication..." />
+      );
     }
 
     // Check if user meets protection requirements
@@ -111,8 +156,8 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
           >
             <LoginFlow
               authState={authState}
-              onLogin={onLogin}
-              onLogout={onLogout}
+              onLogin={handleLogin}
+              onLogout={handleLogout}
               showPrivacyModeSelection={showPrivacyModeSelection}
               mode={mode}
               title="Authentication Required"
@@ -144,6 +189,15 @@ const AuthGuard = React.forwardRef<HTMLDivElement, AuthGuardProps>(
       );
     }
 
+    // Show profile creation if user doesn't have a profile and it's required
+    if (requireProfile && authState.isAuthenticated && !authState.user) {
+      return (
+        <div ref={ref} className={className}>
+          <ProfileCreationFlow />
+        </div>
+      );
+    }
+
     // User is authorized, render children
     return (
       <div ref={ref} className={className}>
@@ -158,7 +212,12 @@ AuthGuard.displayName = 'AuthGuard';
 /**
  * Check if user is authorized for the required protection level
  */
-function checkAuthorization(authState: AuthState, requiredLevel: ProtectionLevel): boolean {
+function checkAuthorization(
+  authState: AuthGuardProps['authState'],
+  requiredLevel: ProtectionLevel
+): boolean {
+  if (!authState) return requiredLevel === 'public';
+
   switch (requiredLevel) {
     case 'public':
       return true;
@@ -192,7 +251,14 @@ function checkAdminRights(): boolean {
  */
 interface UnauthorizedMessageProps {
   requiredLevel: ProtectionLevel;
-  currentUser?: AuthState['user'];
+  currentUser?: {
+    id: string;
+    username?: string;
+    displayName?: string;
+    avatar?: string;
+    verified?: boolean;
+    privacyMode: PrivacyMode;
+  };
   message?: string;
 }
 
@@ -218,20 +284,50 @@ const UnauthorizedMessage: React.FC<UnauthorizedMessageProps> = ({
     switch (requiredLevel) {
       case 'verified':
         return (
-          <svg className="w-12 h-12 text-privacy-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          <svg
+            className="w-12 h-12 text-privacy-warning"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+            />
           </svg>
         );
       case 'admin':
         return (
-          <svg className="w-12 h-12 text-privacy-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <svg
+            className="w-12 h-12 text-privacy-danger"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
         );
       default:
         return (
-          <svg className="w-12 h-12 text-privacy-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-12 h-12 text-privacy-accent"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
     }
@@ -239,9 +335,7 @@ const UnauthorizedMessage: React.FC<UnauthorizedMessageProps> = ({
 
   return (
     <div className="text-center max-w-md">
-      <div className="mb-4 flex justify-center">
-        {getIcon()}
-      </div>
+      <div className="mb-4 flex justify-center">{getIcon()}</div>
       <h2 className="text-xl font-semibold text-privacy-text mb-2">
         Access Restricted
       </h2>
@@ -250,7 +344,8 @@ const UnauthorizedMessage: React.FC<UnauthorizedMessageProps> = ({
       </p>
       {currentUser && (
         <p className="text-sm text-privacy-text-muted">
-          Currently signed in as: {currentUser.displayName || currentUser.username}
+          Currently signed in as:{' '}
+          {currentUser.displayName || currentUser.username}
         </p>
       )}
     </div>
@@ -277,57 +372,34 @@ export const withAuthGuard = <P extends object>(
 
 /**
  * Hook for checking authentication status
+ * Uses the main AuthContext for authentication state
  */
 export const useAuthGuard = (requiredLevel: ProtectionLevel = 'public') => {
-  const [authState, setAuthState] = React.useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-  });
+  const authContext = useAuth();
 
-  const checkAuth = React.useCallback(() => {
-    // This would integrate with your actual auth system
-    // For now, return a placeholder implementation
-    setAuthState({
-      isAuthenticated: false,
-      isLoading: false,
-    });
-  }, []);
-
-  React.useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  // Convert context auth state to component format
+  const authState = {
+    isAuthenticated: authContext.isAuthenticated,
+    isLoading: authContext.isLoading,
+    user: authContext.user
+      ? {
+          id: authContext.user.id.toString(),
+          username: authContext.user.username || '',
+          displayName: authContext.user.bio || authContext.user.username || '',
+          avatar: authContext.user.avatar,
+          verified: 'Verified' in authContext.user.verification_status,
+          privacyMode: 'normal' as PrivacyMode,
+        }
+      : undefined,
+    error: authContext.error || undefined,
+  };
 
   const isAuthorized = checkAuthorization(authState, requiredLevel);
 
   return {
     authState,
     isAuthorized,
-    checkAuth,
   };
 };
 
-/**
- * Context for providing authentication state throughout the app
- */
-export const AuthContext = React.createContext<{
-  authState: AuthState;
-  login: (privacyMode: PrivacyMode) => Promise<void>;
-  logout: () => Promise<void>;
-} | null>(null);
-
-/**
- * Hook for using authentication context
- */
-export const useAuth = () => {
-  const context = React.useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export {
-  AuthGuard,
-  UnauthorizedMessage,
-  checkAuthorization,
-};
+export { AuthGuard, UnauthorizedMessage, checkAuthorization };

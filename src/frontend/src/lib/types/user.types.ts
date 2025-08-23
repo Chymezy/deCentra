@@ -1,4 +1,12 @@
 import type { Principal } from '@dfinity/principal';
+import type { ProfileCreationData, ProfileUpdateData } from './auth.types';
+
+// Re-export from auth.types for backward compatibility
+export type { ProfileCreationData, ProfileUpdateData };
+
+// Type aliases for legacy compatibility
+export type CreateProfileOptions = ProfileCreationData;
+export type UpdateProfileOptions = ProfileUpdateData;
 
 // Re-export all backend types for consistency
 export type {
@@ -91,7 +99,10 @@ export interface UserServiceInterface {
   updateProfile(data: ProfileUpdateData): Promise<ServiceResult<UserProfile>>;
   getUserProfile(userId: string): Promise<ServiceResult<UserProfile | null>>;
   checkUsernameAvailability(username: string): Promise<ServiceResult<boolean>>;
-  searchUsers(query: string, options?: SearchOptions): Promise<ServiceResult<UserProfile[]>>;
+  searchUsers(
+    query: string,
+    options?: SearchOptions
+  ): Promise<ServiceResult<UserProfile[]>>;
   getCurrentUserProfile(): Promise<ServiceResult<UserProfile | null>>;
 }
 
@@ -102,24 +113,6 @@ export interface ServiceResult<T> {
   success: boolean;
   data?: T;
   error?: string;
-}
-
-/**
- * Profile creation data for new user registration
- */
-export interface ProfileCreationData {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
-/**
- * Profile update data for existing users
- */
-export interface ProfileUpdateData {
-  username: string;
-  bio?: string;
-  avatar?: string;
 }
 
 /**
@@ -179,18 +172,6 @@ export interface PaginationOptions {
   limit?: number;
 }
 
-export interface CreateProfileOptions {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
-export interface UpdateProfileOptions {
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
 // Helper functions for working with backend results
 export const isOk = <T>(
   result: { Ok: T } | { Err: string }
@@ -225,7 +206,9 @@ export function getErrorMessage<T>(result: ServiceResult<T>): string {
 /**
  * Check if service result indicates success
  */
-export function isSuccess<T>(result: ServiceResult<T>): result is ServiceResult<T> & { success: true; data: T } {
+export function isSuccess<T>(
+  result: ServiceResult<T>
+): result is ServiceResult<T> & { success: true; data: T } {
   return result.success && result.data !== undefined;
 }
 

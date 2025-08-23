@@ -13,10 +13,58 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-privacy-border/40 shadow-neumorphic-inset focus:shadow-neumorphic-raised',
-        ghost: 'border-transparent bg-transparent hover:bg-privacy-muted/20 focus:bg-privacy-dark focus:border-privacy-border/40',
-        filled: 'border-privacy-border/60 bg-privacy-muted/20 focus:bg-privacy-dark',
-        outline: 'border-privacy-border bg-transparent hover:border-privacy-accent/50',
+        default:
+          'border-privacy-border/40 shadow-neumorphic-inset focus:shadow-neumorphic-raised',
+        ghost:
+          'border-transparent bg-transparent hover:bg-privacy-muted/20 focus:bg-privacy-dark focus:border-privacy-border/40',
+        filled:
+          'border-privacy-border/60 bg-privacy-muted/20 focus:bg-privacy-dark',
+        outline:
+          'border-privacy-border bg-transparent hover:border-privacy-accent/50',
+        // Glassmorphism variants
+        glass: `
+          glass-input backdrop-blur-lg
+          focus:glass-input focus:border-indigo-400/40
+          focus:shadow-glass-glow transition-all duration-300
+        `,
+        'glass-subtle': `
+          bg-gradient-to-r from-glass-dark to-glass-light backdrop-blur-xl
+          border border-glass-border hover:border-glass-border-strong
+          focus:border-indigo-400/40 focus:bg-glass-darker
+          focus:shadow-glass-glow transition-all duration-300
+        `,
+        'glass-elevated': `
+          bg-gradient-to-br from-glass-light/60 to-glass-dark/80 backdrop-blur-2xl
+          border border-glass-border-strong shadow-glass-soft
+          hover:border-indigo-400/30 focus:border-indigo-400/50
+          focus:shadow-glass-glow-blue transition-all duration-500
+        `,
+        // Enhanced glassmorphism input variants for social media forms
+        'glass-social': `
+          glass-input-enhanced backdrop-blur-xl border-social-border
+          hover:border-social-hover focus:border-indigo-400/50
+          focus:shadow-glass-glow focus:bg-social-glass/80
+          transition-all duration-300 ease-out
+        `,
+        'glass-premium': `
+          bg-gradient-to-br from-glass-light/70 to-glass-dark/85 backdrop-blur-2xl
+          border border-glass-border-strong shadow-glass-soft
+          hover:from-glass-light/80 hover:to-glass-dark/90 hover:border-glass-border-accent
+          focus:from-glass-light/90 focus:to-glass-dark/95 focus:border-indigo-400/60
+          focus:shadow-glass-glow-blue transition-all duration-500 ease-out
+        `,
+        'glass-floating': `
+          bg-gradient-to-r from-glass-dark/60 to-glass-light/70 backdrop-blur-lg
+          border border-glass-border animate-float-slow shadow-glass-soft
+          hover:border-glass-border-strong focus:border-indigo-400/40
+          focus:shadow-glass-glow focus:animate-none transition-all duration-400 ease-out
+        `,
+        'glass-interactive': `
+          glass-input-enhanced backdrop-blur-xl border-social-border
+          hover:glass-interactive focus:border-indigo-400/50
+          focus:shadow-glow-social focus:transform focus:scale-[1.01]
+          transition-all duration-300 ease-out
+        `,
       },
       size: {
         sm: 'h-8 px-3 py-1 text-sm',
@@ -100,7 +148,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || generatedId;
     const helperTextId = `${inputId}-helper`;
     const charCountId = `${inputId}-char-count`;
-    
+
     const currentLength = typeof value === 'string' ? value.length : 0;
 
     const describedBy = [
@@ -122,14 +170,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {required && <span className="text-privacy-danger ml-1">*</span>}
           </label>
         )}
-        
+
         <div className="relative">
           {startIcon && (
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-privacy-text-muted">
               {startIcon}
             </div>
           )}
-          
+
           <input
             ref={ref}
             id={inputId}
@@ -146,7 +194,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             aria-required={required}
             {...props}
           />
-          
+
           {endIcon && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-privacy-text-muted">
               {endIcon}
@@ -169,7 +217,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {helperText}
             </p>
           )}
-          
+
           {showCharCount && maxLength && (
             <span
               id={charCountId}
@@ -198,10 +246,14 @@ const textareaVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-privacy-border/40 shadow-neumorphic-inset focus:shadow-neumorphic-raised',
-        ghost: 'border-transparent bg-transparent hover:bg-privacy-muted/20 focus:bg-privacy-dark focus:border-privacy-border/40',
-        filled: 'border-privacy-border/60 bg-privacy-muted/20 focus:bg-privacy-dark',
-        outline: 'border-privacy-border bg-transparent hover:border-privacy-accent/50',
+        default:
+          'border-privacy-border/40 shadow-neumorphic-inset focus:shadow-neumorphic-raised',
+        ghost:
+          'border-transparent bg-transparent hover:bg-privacy-muted/20 focus:bg-privacy-dark focus:border-privacy-border/40',
+        filled:
+          'border-privacy-border/60 bg-privacy-muted/20 focus:bg-privacy-dark',
+        outline:
+          'border-privacy-border bg-transparent hover:border-privacy-accent/50',
       },
       size: {
         sm: 'px-3 py-2 text-sm min-h-[80px]',
@@ -281,7 +333,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const inputId = id || generatedId;
     const helperTextId = `${inputId}-helper`;
     const charCountId = `${inputId}-char-count`;
-    
+
     const currentLength = typeof value === 'string' ? value.length : 0;
 
     // Auto-resize functionality
@@ -295,7 +347,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       onChange?.(event);
-      
+
       if (autoResize) {
         const textarea = event.target;
         textarea.style.height = 'auto';
@@ -322,7 +374,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             {required && <span className="text-privacy-danger ml-1">*</span>}
           </label>
         )}
-        
+
         <textarea
           ref={(node) => {
             if (typeof ref === 'function') {
@@ -330,7 +382,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             } else if (ref) {
               ref.current = node;
             }
-            textareaRef.current = node;
+            (textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
           }}
           id={inputId}
           className={cn(
@@ -362,7 +414,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               {helperText}
             </p>
           )}
-          
+
           {showCharCount && maxLength && (
             <span
               id={charCountId}

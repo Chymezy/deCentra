@@ -38,9 +38,15 @@ if [ "$NETWORK" == "local" ]; then
 fi
 
 # --- Backend Deployment ---
-echo "Building and deploying Motoko backend canisters to $NETWORK..."
+echo "Building and deploying Rust backend canister to $NETWORK..."
+
+
 # This will create/reinstall canisters and deploy code
 dfx deploy --network "$NETWORK"
+
+# --- Generate Updated Declarations ---
+echo "Generating updated frontend declarations..."
+dfx generate backend --network "$NETWORK"
 
 # --- Frontend Build & Deployment ---
 echo "Building Next.js frontend..."

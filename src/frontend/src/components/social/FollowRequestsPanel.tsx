@@ -242,7 +242,10 @@ export default function FollowRequestsPanel() {
                         {requesterProfile.avatar}
                       </span>
                     ) : (
-                      <icons.user className="w-6 h-6 text-white" aria-hidden={true} />
+                      <icons.user
+                        className="w-6 h-6 text-white"
+                        aria-hidden={true}
+                      />
                     )}
                   </div>
 

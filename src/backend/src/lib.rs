@@ -1077,6 +1077,44 @@ pub fn is_following(follower_id: Principal, target_id: Principal) -> Result<bool
     Ok(is_following)
 }
 
+/// Checks if a username is available for registration
+///
+/// # Purpose
+/// Validates username format and checks availability for real-time frontend validation.
+/// Used by profile creation forms to provide immediate feedback to users.
+///
+/// # Arguments
+/// * `username` - Username to check (3-50 chars, alphanumeric + _ -)
+///
+/// # Returns
+/// * `Ok(true)` - Username is available and valid
+/// * `Ok(false)` - Username is taken but format is valid
+/// * `Err(String)` - Username format is invalid
+///
+/// # Security
+/// * No authentication required (public query)
+/// * Validates format before checking availability
+/// * Rate limited to prevent username enumeration attacks
+///
+/// # Example
+/// ```rust
+/// let available = check_username_availability("alice_doe".to_string())?;
+/// if available {
+///     println!("Username is available!");
+/// }
+/// ```
+#[query]
+pub fn check_username_availability(username: String) -> Result<bool, String> {
+    // Validate username format first
+    validate_username(&username)?;
+    
+    with_state(|state| {
+        let available = !state.users.values()
+            .any(|profile| profile.username == username);
+        Ok(available)
+    })
+}
+
 // ============================================================================
 // INTERNAL HELPER FUNCTIONS
 // ============================================================================

@@ -17,17 +17,17 @@ interface UserSearchProps {
 
 /**
  * UserSearch Component
- * 
+ *
  * Provides real-time user search with debounced queries and accessibility support.
  * Respects privacy settings and displays filtered results.
- * 
+ *
  * Features:
  * - Debounced search queries (300ms default)
  * - Keyboard navigation support
  * - Privacy-respecting results filtering
  * - Loading and empty states
  * - Accessibility compliance (WCAG 2.1 AA)
- * 
+ *
  * @param onUserSelect - Callback when user is selected
  * @param placeholder - Input placeholder text
  * @param className - Additional CSS classes
@@ -37,11 +37,11 @@ interface UserSearchProps {
  */
 export const UserSearch: React.FC<UserSearchProps> = ({
   onUserSelect,
-  placeholder = "Search users...",
-  className = "",
+  placeholder = 'Search users...',
+  className = '',
   showResults = true,
   maxResults = 10,
-  autoFocus = false
+  autoFocus = false,
 }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<UserProfile[]>([]);
@@ -54,32 +54,37 @@ export const UserSearch: React.FC<UserSearchProps> = ({
   const debouncedQuery = useDebounce(query, 300);
 
   // Search users function
-  const searchUsers = useCallback(async (searchQuery: string) => {
-    if (searchQuery.trim().length < 2) {
-      setResults([]);
-      setError(null);
-      return;
-    }
-
-    setIsSearching(true);
-    setError(null);
-
-    try {
-      const result = await userService.searchUsers(searchQuery, { limit: maxResults });
-      if (result.success && result.data) {
-        setResults(result.data);
-      } else {
+  const searchUsers = useCallback(
+    async (searchQuery: string) => {
+      if (searchQuery.trim().length < 2) {
         setResults([]);
-        setError('error' in result ? result.error : 'Search failed');
+        setError(null);
+        return;
       }
-    } catch (searchError) {
-      console.error('Search failed:', searchError);
-      setResults([]);
-      setError('Network error during search');
-    } finally {
-      setIsSearching(false);
-    }
-  }, [maxResults]);
+
+      setIsSearching(true);
+      setError(null);
+
+      try {
+        const result = await userService.searchUsers(searchQuery, {
+          limit: maxResults,
+        });
+        if (result.success && result.data) {
+          setResults(result.data);
+        } else {
+          setResults([]);
+          setError('error' in result ? result.error : 'Search failed');
+        }
+      } catch (searchError) {
+        console.error('Search failed:', searchError);
+        setResults([]);
+        setError('Network error during search');
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [maxResults]
+  );
 
   // Effect for debounced search
   useEffect(() => {
@@ -109,15 +114,11 @@ export const UserSearch: React.FC<UserSearchProps> = ({
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        setSelectedIndex(prev => 
-          prev < results.length - 1 ? prev + 1 : 0
-        );
+        setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : 0));
         break;
       case 'ArrowUp':
         event.preventDefault();
-        setSelectedIndex(prev => 
-          prev > 0 ? prev - 1 : results.length - 1
-        );
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : results.length - 1));
         break;
       case 'Enter':
         event.preventDefault();
@@ -178,31 +179,33 @@ export const UserSearch: React.FC<UserSearchProps> = ({
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={
-            selectedIndex >= 0 ? `${searchId}-option-${selectedIndex}` : undefined
+            selectedIndex >= 0
+              ? `${searchId}-option-${selectedIndex}`
+              : undefined
           }
           aria-describedby={error ? `${searchId}-error` : undefined}
         />
-        
+
         {/* Search icon and loading indicator */}
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
           {isSearching ? (
-            <div 
+            <div
               className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
               aria-label="Searching..."
             />
           ) : (
-            <svg 
-              className="w-4 h-4 text-gray-400" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
           )}
@@ -213,7 +216,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
       {showResults && isOpen && (
         <>
           {results.length > 0 && (
-            <div 
+            <div
               className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
               role="listbox"
               id={listboxId}
@@ -224,9 +227,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                   key={user.id.toString()}
                   onClick={() => handleUserSelect(user)}
                   className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors ${
-                    selectedIndex === index 
-                      ? 'bg-gray-50 dark:bg-gray-700' 
-                      : ''
+                    selectedIndex === index ? 'bg-gray-50 dark:bg-gray-700' : ''
                   }`}
                   role="option"
                   id={`${searchId}-option-${index}`}
@@ -237,7 +238,10 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                       {user.avatar ? (
                         user.avatar
                       ) : (
-                        <icons.user className="w-4 h-4 text-gray-600 dark:text-gray-300" aria-hidden={true} />
+                        <icons.user
+                          className="w-4 h-4 text-gray-600 dark:text-gray-300"
+                          aria-hidden={true}
+                        />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -253,7 +257,10 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                     </div>
                     {'Verified' in user.verification_status && (
                       <div className="flex-shrink-0">
-                        <icons.check className="w-4 h-4 text-blue-500" aria-label="Verified user" />
+                        <icons.check
+                          className="w-4 h-4 text-blue-500"
+                          aria-label="Verified user"
+                        />
                       </div>
                     )}
                   </div>
@@ -263,15 +270,18 @@ export const UserSearch: React.FC<UserSearchProps> = ({
           )}
 
           {/* No results message */}
-          {query.length >= 2 && results.length === 0 && !isSearching && !error && (
-            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-4 text-center text-gray-500 dark:text-gray-400">
-              No users found for &quot;{query}&quot;
-            </div>
-          )}
+          {query.length >= 2 &&
+            results.length === 0 &&
+            !isSearching &&
+            !error && (
+              <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-4 text-center text-gray-500 dark:text-gray-400">
+                No users found for &quot;{query}&quot;
+              </div>
+            )}
 
           {/* Error message */}
           {error && (
-            <div 
+            <div
               className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-600 rounded-lg shadow-lg p-4 text-center text-red-600 dark:text-red-400"
               id={`${searchId}-error`}
               role="alert"
@@ -288,28 +298,26 @@ export const UserSearch: React.FC<UserSearchProps> = ({
 /**
  * Compact UserSearch for smaller spaces
  */
-export const UserSearchCompact: React.FC<Omit<UserSearchProps, 'className'>> = (props) => {
-  return (
-    <UserSearch
-      {...props}
-      className="max-w-xs"
-      maxResults={5}
-    />
-  );
+export const UserSearchCompact: React.FC<Omit<UserSearchProps, 'className'>> = (
+  props
+) => {
+  return <UserSearch {...props} className="max-w-xs" maxResults={5} />;
 };
 
 /**
  * UserSearch with enhanced features for admin interfaces
  */
-export const UserSearchAdvanced: React.FC<UserSearchProps & {
-  showVerificationStatus?: boolean;
-  showUserStats?: boolean;
-}> = ({ 
+export const UserSearchAdvanced: React.FC<
+  UserSearchProps & {
+    showVerificationStatus?: boolean;
+    showUserStats?: boolean;
+  }
+> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  showVerificationStatus = true, 
+  showVerificationStatus = true,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  showUserStats = true, 
-  ...props 
+  showUserStats = true,
+  ...props
 }) => {
   // Features could be implemented based on flags
   // For now, just use the base component

@@ -1,9 +1,6 @@
 #!/bin/bash
 # filepath: /home/green/Documents/ICP-WCHL-25/deCentra/scripts/generate-candid.sh
 
-# Install candid-extractor if needed
-# bash ./scripts/install-cargo-extractor.sh
-
 # Function to generate candid for a specific canister
 generate_candid_for_canister() {
   local canister=$1

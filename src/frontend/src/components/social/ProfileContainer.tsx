@@ -16,7 +16,9 @@ export function ProfileContainer({
   className = '',
 }: ProfileContainerProps) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'posts' | 'replies' | 'media' | 'likes'>('posts');
+  const [activeTab, setActiveTab] = useState<
+    'posts' | 'replies' | 'media' | 'likes'
+  >('posts');
 
   // Mock profile data - TODO: Replace with actual API calls
   const profileData = {
@@ -44,7 +46,7 @@ export function ProfileContainer({
       <div className="bg-dark-background-secondary border-b border-dark-background-tertiary">
         {/* Cover Image Area */}
         <div className="h-48 bg-gradient-to-r from-deep-indigo to-electric-blue"></div>
-        
+
         {/* Profile Info */}
         <div className="px-4 pb-4">
           <div className="flex justify-between items-start -mt-16 mb-4">
@@ -55,28 +57,28 @@ export function ProfileContainer({
               size="xl"
               className="border-4 border-dark-background-secondary"
             />
-            
+
             {!profileData.isOwnProfile && (
               <button className="bg-electric-blue text-white px-6 py-2 rounded-full font-semibold hover:bg-electric-blue/90 transition-colors mt-16">
                 {profileData.isFollowing ? 'Following' : 'Follow'}
               </button>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <h1 className="text-xl font-bold text-dark-text-primary">
               {profileData.displayName}
             </h1>
             <p className="text-dark-text-secondary">@{profileData.username}</p>
             <p className="text-dark-text-primary">{profileData.bio}</p>
-            
+
             <div className="flex items-center space-x-4 text-sm text-dark-text-secondary">
               <span className="flex items-center">
                 <icons.calendar className="w-4 h-4 mr-1" aria-hidden={true} />
                 Joined {profileData.joinedDate}
               </span>
             </div>
-            
+
             <div className="flex items-center space-x-6 text-sm">
               <span className="text-dark-text-primary">
                 <span className="font-bold">{profileData.followingCount}</span>{' '}
@@ -125,7 +127,7 @@ export function ProfileContainer({
             className="!max-w-none"
           />
         )}
-        
+
         {activeTab !== 'posts' && (
           <div className="text-center py-12">
             <p className="text-dark-text-secondary text-lg mb-2">

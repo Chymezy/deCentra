@@ -14,7 +14,9 @@ interface Notification {
 }
 
 export function NotificationsContainer() {
-  const [filter, setFilter] = useState<'all' | 'mentions' | 'likes' | 'follows'>('all');
+  const [filter, setFilter] = useState<
+    'all' | 'mentions' | 'likes' | 'follows'
+  >('all');
 
   // Mock notifications data
   const notifications: Notification[] = [
@@ -22,7 +24,8 @@ export function NotificationsContainer() {
       id: '1',
       type: 'like',
       title: 'alice_crypto liked your post',
-      description: 'Privacy isn\'t about hiding something. It\'s about protecting...',
+      description:
+        "Privacy isn't about hiding something. It's about protecting...",
       time: '2 hours ago',
       read: false,
     },
@@ -54,7 +57,7 @@ export function NotificationsContainer() {
       id: '5',
       type: 'mention',
       title: 'You were mentioned in a post',
-      description: 'charlie_crypto: "@your_username check this out..."',
+      description: 'charlie_crypto: "@Enter a username check this out..."',
       time: '3 days ago',
       read: true,
     },
@@ -69,12 +72,12 @@ export function NotificationsContainer() {
       mention: icons.megaphone,
       repost: icons.repost,
     };
-    
+
     const IconComponent = iconMapping[type] || icons.notifications;
     return <IconComponent className="w-5 h-5" aria-hidden="true" />;
   };
 
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification) => {
     if (filter === 'all') return true;
     if (filter === 'mentions') return notification.type === 'mention';
     if (filter === 'likes') return notification.type === 'like';
@@ -82,13 +85,15 @@ export function NotificationsContainer() {
     return true;
   });
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="p-4 border-b border-dark-background-tertiary">
-        <h1 className="text-xl font-bold text-dark-text-primary">Notifications</h1>
+        <h1 className="text-xl font-bold text-dark-text-primary">
+          Notifications
+        </h1>
         {unreadCount > 0 && (
           <p className="text-sm text-dark-text-secondary mt-1">
             {unreadCount} unread notification{unreadCount === 1 ? '' : 's'}
@@ -127,7 +132,9 @@ export function NotificationsContainer() {
       <div className="divide-y divide-dark-background-tertiary">
         {filteredNotifications.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-dark-text-secondary text-lg mb-2">No notifications</p>
+            <p className="text-dark-text-secondary text-lg mb-2">
+              No notifications
+            </p>
             <p className="text-dark-text-tertiary">
               We&apos;ll notify you when something happens!
             </p>
@@ -148,12 +155,18 @@ export function NotificationsContainer() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className={`text-sm font-medium ${
-                      notification.read ? 'text-dark-text-primary' : 'text-dark-text-primary font-semibold'
-                    }`}>
+                    <p
+                      className={`text-sm font-medium ${
+                        notification.read
+                          ? 'text-dark-text-primary'
+                          : 'text-dark-text-primary font-semibold'
+                      }`}
+                    >
                       {notification.title}
                     </p>
-                    <span className="text-xs text-dark-text-tertiary">{notification.time}</span>
+                    <span className="text-xs text-dark-text-tertiary">
+                      {notification.time}
+                    </span>
                   </div>
                   <p className="text-sm text-dark-text-secondary mt-1 line-clamp-2">
                     {notification.description}

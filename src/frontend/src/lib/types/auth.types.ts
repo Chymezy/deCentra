@@ -111,12 +111,13 @@ export interface NavigationItem {
 // =============================================================================
 
 /**
- * Profile creation form data
+ * Profile creation form data with privacy mode support
  */
 export interface ProfileCreationData {
   username: string;
   bio?: string;
   avatar?: string;
+  privacyMode?: PrivacyMode;
 }
 
 /**
@@ -126,6 +127,7 @@ export interface ProfileUpdateData {
   username: string;
   bio?: string;
   avatar?: string;
+  privacyMode?: PrivacyMode;
 }
 
 // =============================================================================
@@ -161,14 +163,16 @@ export function toComponentAuthState(authState: AuthState): ComponentAuthState {
   return {
     isAuthenticated: authState.isAuthenticated,
     isLoading: authState.isLoading,
-    user: authState.user ? {
-      id: authState.user.id?.toString() || '',
-      username: authState.user.username || '',
-      displayName: authState.user.username || '', // Note: backend doesn't have display_name field
-      avatar: authState.user.avatar || '👤',
-      verified: 'Verified' in authState.user.verification_status,
-      privacyMode: authState.privacyMode || 'normal',
-    } : undefined,
+    user: authState.user
+      ? {
+          id: authState.user.id?.toString() || '',
+          username: authState.user.username || '',
+          displayName: authState.user.username || '', // Note: backend doesn't have display_name field
+          avatar: authState.user.avatar || '👤',
+          verified: 'Verified' in authState.user.verification_status,
+          privacyMode: authState.privacyMode || 'normal',
+        }
+      : undefined,
     error: authState.error || undefined,
   };
 }
@@ -194,13 +198,45 @@ export function toSidebarUserProfile(user: UserProfile): SidebarUserProfile {
 /**
  * Navigation items configuration (icons should be provided by consuming component)
  */
-export const getNavigationItemsConfig = (currentPath: string): Omit<NavigationItem, 'icon'>[] => [
+export const getNavigationItemsConfig = (
+  currentPath: string
+): Omit<NavigationItem, 'icon'>[] => [
   { id: 'home', label: 'Home', href: '/', active: currentPath === '/' },
   { id: 'feed', label: 'Feed', href: '/feed', active: currentPath === '/feed' },
-  { id: 'discover', label: 'Discover', href: '/discover', active: currentPath === '/discover' },
-  { id: 'notifications', label: 'Notifications', href: '/notifications', active: currentPath === '/notifications' },
-  { id: 'messages', label: 'Messages', href: '/messages', active: currentPath === '/messages' },
-  { id: 'profile', label: 'Profile', href: '/profile', active: currentPath === '/profile' },
-  { id: 'creator', label: 'Creator Hub', href: '/creator', active: currentPath === '/creator' },
-  { id: 'settings', label: 'Settings', href: '/settings', active: currentPath === '/settings' },
+  {
+    id: 'discover',
+    label: 'Discover',
+    href: '/discover',
+    active: currentPath === '/discover',
+  },
+  {
+    id: 'notifications',
+    label: 'Notifications',
+    href: '/notifications',
+    active: currentPath === '/notifications',
+  },
+  {
+    id: 'messages',
+    label: 'Messages',
+    href: '/messages',
+    active: currentPath === '/messages',
+  },
+  {
+    id: 'profile',
+    label: 'Profile',
+    href: '/profile',
+    active: currentPath === '/profile',
+  },
+  {
+    id: 'creator',
+    label: 'Creator Hub',
+    href: '/creator',
+    active: currentPath === '/creator',
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    href: '/settings',
+    active: currentPath === '/settings',
+  },
 ];

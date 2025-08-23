@@ -19,7 +19,7 @@
         "backend"
       ],
       "source": [
-        "src/frontend/dist"
+        "src/frontend/.next"
       ],
       "type": "assets",
       "workspace": "frontend"

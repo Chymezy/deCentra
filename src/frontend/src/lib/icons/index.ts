@@ -59,7 +59,7 @@ export const icons = {
   profile: UserIcon,
   creator: StarIcon,
   settings: CogIcon,
-  
+
   // Social
   like: HeartIcon,
   repost: ArrowPathRoundedSquareIcon,
@@ -68,13 +68,13 @@ export const icons = {
   chart: ChartBarIcon,
   emoji: FaceSmileIcon,
   location: MapPinIcon,
-  
+
   // Visibility & Privacy
   public: GlobeAltIcon,
   followers: UserGroupIcon,
   unlisted: LinkIcon,
   lock: LockClosedIcon,
-  
+
   // General UI
   sparkles: SparklesIcon,
   bolt: BoltIcon,
@@ -97,7 +97,7 @@ export const icons = {
   target: TagIcon,
   shield: ShieldCheckIcon,
   check: CheckIcon,
-  
+
   // New additions for CTA and other sections
   user: UserIcon, // Avatar fallback
   developer: CodeBracketIcon, // 👨‍💻

@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 /**
  * Utility function to merge Tailwind CSS classes with conflict resolution.
  * Uses clsx for conditional classes and tailwind-merge for conflict resolution.
- * 
+ *
  * @param inputs - Class values to merge
  * @returns Merged class string
  */
@@ -73,4 +73,46 @@ export function formatBytes(bytes: number, decimals = 2): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+/**
+ * Format a date to a human-readable string
+ * @param date - Date object or string or timestamp
+ * @returns Formatted date string
+ */
+export function formatDate(date: Date | string | number): string {
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/**
+ * Format a date to a relative time string
+ * @param date - Date object or string or timestamp
+ * Formats a date to a relative time string (e.g., "5m ago", "2h ago", "3d ago", etc.)
+ * If the date is more than a week old, it formats it to a full date string.
+ * @returns
+ */
+export function formatRelativeTime(date: Date | string | number): string {
+  const now = new Date();
+  const then = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
+
+  if (diffInSeconds < 60) {
+    return 'just now';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes}m ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours}h ago`;
+  } else if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days}d ago`;
+  } else {
+    return formatDate(then);
+  }
 }

@@ -67,14 +67,14 @@ export function PostComposer({
     <Card className={`border-b border-dark-background-tertiary ${className}`}>
       <div className="p-4">
         <div className="flex space-x-3">
-          <UserAvatar 
+          <UserAvatar
             src={user?.avatar}
             alt={user?.username || 'User'}
             fallback={user?.username?.substring(0, 2).toUpperCase() || 'US'}
             size="default"
             className="flex-shrink-0"
           />
-          
+
           <div className="flex-1 min-w-0">
             <Textarea
               ref={textareaRef}
@@ -90,31 +90,39 @@ export function PostComposer({
               maxLength={10000}
               disabled={isPosting}
             />
-            
+
             <div className="flex justify-between items-center mt-3">
               <div className="flex space-x-3">
-                <PostComposerButton 
-                  icon={icons.camera} 
+                <PostComposerButton
+                  icon={icons.camera}
                   tooltip="Add media"
-                  onClick={() => {/* TODO: Implement media upload */}}
+                  onClick={() => {
+                    /* TODO: Implement media upload */
+                  }}
                 />
-                <PostComposerButton 
-                  icon={icons.chart} 
+                <PostComposerButton
+                  icon={icons.chart}
                   tooltip="Add poll"
-                  onClick={() => {/* TODO: Implement polls */}}
+                  onClick={() => {
+                    /* TODO: Implement polls */
+                  }}
                 />
-                <PostComposerButton 
-                  icon={icons.emoji} 
+                <PostComposerButton
+                  icon={icons.emoji}
                   tooltip="Add emoji"
-                  onClick={() => {/* TODO: Implement emoji picker */}}
+                  onClick={() => {
+                    /* TODO: Implement emoji picker */
+                  }}
                 />
-                <PostComposerButton 
-                  icon={icons.location} 
+                <PostComposerButton
+                  icon={icons.location}
                   tooltip="Add location"
-                  onClick={() => {/* TODO: Implement location */}}
+                  onClick={() => {
+                    /* TODO: Implement location */
+                  }}
                 />
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="text-sm text-dark-text-tertiary">
                   {content.length}/10000
@@ -138,17 +146,17 @@ export function PostComposer({
 }
 
 interface PostComposerButtonProps {
-  icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   tooltip: string;
   onClick: () => void;
   disabled?: boolean;
 }
 
-function PostComposerButton({ 
-  icon: IconComponent, 
-  tooltip, 
-  onClick, 
-  disabled = false 
+function PostComposerButton({
+  icon: IconComponent,
+  tooltip,
+  onClick,
+  disabled = false,
 }: PostComposerButtonProps) {
   return (
     <button

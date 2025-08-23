@@ -28,6 +28,12 @@ const spinnerVariants = cva(
         warning: 'text-privacy-warning',
         danger: 'text-privacy-danger',
         white: 'text-white',
+        // Enhanced glassmorphism variants for premium loading states
+        'glass-primary': 'text-indigo-400 glow-social',
+        'glass-secondary': 'text-blue-400 glow-social-strong',
+        'glass-accent': 'text-orange-400 glow-accent',
+        'glass-interactive': 'text-indigo-300 animate-social-pulse',
+        'glass-premium': 'text-transparent bg-gradient-to-r from-indigo-400 via-blue-400 to-orange-400 bg-clip-text animate-gradient-shift',
       },
       thickness: {
         thin: 'border-[1px]',
@@ -47,43 +53,37 @@ const spinnerVariants = cva(
 /**
  * Pulsing dot variants for alternative loading style
  */
-const pulseVariants = cva(
-  'inline-flex space-x-1',
-  {
-    variants: {
-      size: {
-        xs: 'space-x-0.5',
-        sm: 'space-x-1',
-        default: 'space-x-1.5',
-        lg: 'space-x-2',
-        xl: 'space-x-2.5',
-        '2xl': 'space-x-3',
-      },
+const pulseVariants = cva('inline-flex space-x-1', {
+  variants: {
+    size: {
+      xs: 'space-x-0.5',
+      sm: 'space-x-1',
+      default: 'space-x-1.5',
+      lg: 'space-x-2',
+      xl: 'space-x-2.5',
+      '2xl': 'space-x-3',
     },
-    defaultVariants: {
-      size: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
 
-const dotVariants = cva(
-  'rounded-full bg-current animate-pulse',
-  {
-    variants: {
-      size: {
-        xs: 'h-1 w-1',
-        sm: 'h-1.5 w-1.5',
-        default: 'h-2 w-2',
-        lg: 'h-2.5 w-2.5',
-        xl: 'h-3 w-3',
-        '2xl': 'h-4 w-4',
-      },
+const dotVariants = cva('rounded-full bg-current animate-pulse', {
+  variants: {
+    size: {
+      xs: 'h-1 w-1',
+      sm: 'h-1.5 w-1.5',
+      default: 'h-2 w-2',
+      lg: 'h-2.5 w-2.5',
+      xl: 'h-3 w-3',
+      '2xl': 'h-4 w-4',
     },
-    defaultVariants: {
-      size: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
 
 export interface LoadingSpinnerProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -157,7 +157,7 @@ const LoadingSpinner = React.forwardRef<HTMLDivElement, LoadingSpinnerProps>(
               ))}
             </div>
           );
-        
+
         case 'bars':
           return (
             <div className={cn(pulseVariants({ size }))}>
@@ -189,7 +189,7 @@ const LoadingSpinner = React.forwardRef<HTMLDivElement, LoadingSpinnerProps>(
               ))}
             </div>
           );
-        
+
         default:
           return (
             <div

@@ -34,8 +34,9 @@ export function FeedContainer({
   const mockPosts: Post[] = [
     {
       id: BigInt(1),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
-      content: 'Just launched my first dApp on the Internet Computer! The future of web3 is truly decentralized. 🚀 #ICP #Web3 #Decentralization',
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
+      content:
+        'Just launched my first dApp on the Internet Computer! The future of web3 is truly decentralized. 🚀 #ICP #Web3 #Decentralization',
       created_at: BigInt(Date.now() - 3600000), // 1 hour ago
       updated_at: BigInt(Date.now() - 3600000),
       like_count: BigInt(42),
@@ -49,8 +50,9 @@ export function FeedContainer({
     },
     {
       id: BigInt(2),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
-      content: 'Privacy isn\'t about hiding something. It\'s about protecting what makes us human - our thoughts, our relationships, our freedom to be ourselves. That\'s why we need truly decentralized social networks.',
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
+      content:
+        "Privacy isn't about hiding something. It's about protecting what makes us human - our thoughts, our relationships, our freedom to be ourselves. That's why we need truly decentralized social networks.",
       created_at: BigInt(Date.now() - 7200000), // 2 hours ago
       updated_at: BigInt(Date.now() - 7200000),
       like_count: BigInt(128),
@@ -64,8 +66,9 @@ export function FeedContainer({
     },
     {
       id: BigInt(3),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
-      content: 'Reminder: Your data is your property. Don\'t let corporations profit from your thoughts and connections. Choose platforms that respect your digital rights. 💪 #DataRights #Privacy',
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
+      content:
+        "Reminder: Your data is your property. Don't let corporations profit from your thoughts and connections. Choose platforms that respect your digital rights. 💪 #DataRights #Privacy",
       created_at: BigInt(Date.now() - 10800000), // 3 hours ago
       updated_at: BigInt(Date.now() - 10800000),
       like_count: BigInt(89),
@@ -85,7 +88,7 @@ export function FeedContainer({
     // Optimistic update
     const optimisticPost: Post = {
       id: BigInt(Date.now()),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
       content,
       created_at: BigInt(Date.now()),
       updated_at: BigInt(Date.now()),
@@ -99,20 +102,24 @@ export function FeedContainer({
       likes_count: 0,
     };
 
-    setOptimisticPosts(prev => [optimisticPost, ...prev]);
+    setOptimisticPosts((prev) => [optimisticPost, ...prev]);
 
     try {
       // TODO: Implement actual post creation
       console.log('Creating post:', content);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Remove optimistic post after successful creation
-      setOptimisticPosts(prev => prev.filter(p => p.id !== optimisticPost.id));
+      setOptimisticPosts((prev) =>
+        prev.filter((p) => p.id !== optimisticPost.id)
+      );
     } catch (error) {
       // Remove optimistic post on error
-      setOptimisticPosts(prev => prev.filter(p => p.id !== optimisticPost.id));
+      setOptimisticPosts((prev) =>
+        prev.filter((p) => p.id !== optimisticPost.id)
+      );
       console.error('Failed to create post:', error);
     }
   };
@@ -138,7 +145,9 @@ export function FeedContainer({
       <div className="space-y-0">
         {allPosts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-dark-text-secondary text-lg mb-2">No posts yet</p>
+            <p className="text-dark-text-secondary text-lg mb-2">
+              No posts yet
+            </p>
             <p className="text-dark-text-tertiary">
               {feedType === FeedType.FOLLOWING
                 ? 'Follow some users to see their posts here'
@@ -167,7 +176,9 @@ interface SimplePostCardProps {
 
 function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
   return (
-    <div className={`p-4 ${showBorder ? 'border-b border-dark-background-tertiary' : ''}`}>
+    <div
+      className={`p-4 ${showBorder ? 'border-b border-dark-background-tertiary' : ''}`}
+    >
       <div className="flex space-x-3">
         <div className="w-10 h-10 bg-deep-indigo rounded-full flex items-center justify-center flex-shrink-0">
           <icons.user className="w-5 h-5 text-white" aria-hidden={true} />
@@ -179,7 +190,9 @@ function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
               {new Date(Number(post.created_at) / 1000000).toLocaleDateString()}
             </span>
           </div>
-          <p className="text-dark-text-primary whitespace-pre-wrap">{post.content}</p>
+          <p className="text-dark-text-primary whitespace-pre-wrap">
+            {post.content}
+          </p>
           <div className="flex items-center space-x-6 mt-3 text-dark-text-tertiary">
             <button className="flex items-center space-x-1 hover:text-electric-blue transition-colors">
               <icons.messages className="w-4 h-4" aria-hidden="true" />
