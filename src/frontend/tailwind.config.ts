@@ -1,26 +1,44 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        // Brand Colors
-        'deep-indigo': '#4B0082',
-        'electric-blue': '#0F62FE',
-        'vibrant-orange': '#FF6F00',
-        'charcoal-black': '#1A1A1A',
-
-        // Semantic colors
-        primary: '#4B0082',
-        secondary: '#0F62FE',
-        accent: '#FF6F00',
-        dark: '#1A1A1A',
-        light: '#FFFFFF',
+        // Brand colors
+        "deep-indigo": "#4B0082",
+        "electric-blue": "#0F62FE", 
+        "vibrant-orange": "#FF6F00",
+        "charcoal-black": "#1A1A1A",
+        
+        primary: {
+          "deep-indigo": "#4B0082",
+          "electric-blue": "#0F62FE",
+          "vibrant-orange": "#FF6F00",
+          'charcoal-black': '#1A1A1A',
+        },
+        neutral: {
+          white: "#FFFFFF",
+          "charcoal-black": "#1A1A1A",
+        },
+        gray: {
+          50: "#F9FAFB",
+          100: "#F3F4F6",
+          200: "#E5E7EB",
+          300: "#D1D5DB",
+          400: "#9CA3AF",
+          500: "#6B7280",
+          600: "#4B5563",
+          700: "#374151",
+          800: "#1F2937",
+          900: "#111827",
+          950: "#0F172A",
+        },
 
         // Dark Mode Palette (Enhanced for neumorphic design)
         'dark-background': {
@@ -56,11 +74,81 @@ const config: Config = {
         'privacy-danger': '#EF4444',
       },
       fontFamily: {
-        heading: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
-        body: ['Roboto', 'Open Sans', 'system-ui', 'sans-serif'],
-        code: ['JetBrains Mono', 'monospace'],
+        headline: ["Inter", "Poppins", "sans-serif"],
+        body: ["Roboto", "Open Sans", "sans-serif"],
+        code: ["JetBrains Mono", "monospace"],
+      },
+      fontSize: {
+        xs: "0.75rem",
+        sm: "0.875rem",
+        base: "1rem",
+        lg: "1.125rem",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem",
+        "6xl": "3.75rem",
+        "7xl": "4.5rem",
+        "8xl": "6rem",
+        "9xl": "8rem",
+      },
+      spacing: {
+        xs: "0.25rem",
+        sm: "0.5rem",
+        md: "1rem",
+        lg: "1.5rem",
+        xl: "2rem",
+        "2xl": "3rem",
+        "3xl": "4rem",
+      },
+      borderRadius: {
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+      },
+      animation: {
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "fade-in-up": "fadeInUp 0.6s ease-out",
+        "fade-in-left": "fadeInLeft 0.8s ease-out",
+        "fade-in-right": "fadeInRight 0.8s ease-out",
+        "scale-in": "scaleIn 0.5s ease-out",
+        "slide-up": "slideUp 0.3s ease-out",
+        "pulse-slow": "pulse 3s infinite",
+        float: "float 6s ease-in-out infinite",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(30px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeInLeft: {
+          "0%": { opacity: "0", transform: "translateX(-50px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        fadeInRight: {
+          "0%": { opacity: "0", transform: "translateX(50px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(40px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.8)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
       },
       boxShadow: {
+        "3xl": "0 35px 60px -12px rgba(0, 0, 0, 0.25)",
         'glow': '0 0 20px rgba(79, 0, 130, 0.3)',
         'glow-blue': '0 0 20px rgba(15, 98, 254, 0.3)',
         'glow-orange': '0 0 20px rgba(255, 111, 0, 0.3)',
@@ -79,24 +167,14 @@ const config: Config = {
         'neumorphic-raised': '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
         'neumorphic-raised-hover': '6px 6px 12px rgba(0,0,0,0.3), -6px -6px 12px rgba(255,255,255,0.08)',
       },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-      },
     },
   },
-  plugins: [],
-};
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/aspect-ratio"),
+    require("tailwindcss-animate"),
+  ],
+}
 
-export default config;
+export default config
