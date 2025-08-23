@@ -55,7 +55,7 @@ Thank you for your interest in contributing to this project! We welcome develope
 
 ## Join the Community
 - **Discussions:** Use GitHub Discussions or open issues for questions and brainstorming.
-- **Chat:** [Add your Discord/Telegram/Matrix link here]
+- **Chat:** [Telegram](https://t.me/x17green)
 - **Events:** Watch for hackathons, sprints, and community calls.
 
 ---

@@ -751,7 +751,7 @@ This project is licensed under the [Apache License 2.0](./LICENSE).
 
 **Decentralized Social Media:**
 - [Web3 Social Protocols](https://ethereum.org/en/dapps/#social-networks)
-- [Censorship Resistance](https://freedom.press/training/digital-security/)
+- [Censorship Resistance](https://freedom.press/digisec/guides/)
 - [Privacy-First Design](https://privacybydesign.ca/)
 
 **Technical Resources:**
