@@ -42,10 +42,10 @@ install_system_packages() {
         
         # Update package lists
         if command -v apt-get &> /dev/null; then
-            sudo apt-get update
+            apt-get update
             
             # Install essential development tools
-            sudo apt-get install -y \
+            apt-get install -y \
                 curl \
                 wget \
                 git \
@@ -105,7 +105,8 @@ install_rust() {
     fi
     
     # Install other useful Rust tools
-    cargo install --locked trunk 2>/dev/null || echo "⚠️ trunk installation skipped (optional)"
+    # cargo install --locked trunk 2>/dev/null || true
+    # echo "⚠️ trunk installation skipped (optional)"
     
     echo "✅ Rust toolchain setup complete"
 }
