@@ -21,6 +21,50 @@ const inputVariants = cva(
           'border-privacy-border/60 bg-privacy-muted/20 focus:bg-privacy-dark',
         outline:
           'border-privacy-border bg-transparent hover:border-privacy-accent/50',
+        // Glassmorphism variants
+        glass: `
+          glass-input backdrop-blur-lg
+          focus:glass-input focus:border-indigo-400/40
+          focus:shadow-glass-glow transition-all duration-300
+        `,
+        'glass-subtle': `
+          bg-gradient-to-r from-glass-dark to-glass-light backdrop-blur-xl
+          border border-glass-border hover:border-glass-border-strong
+          focus:border-indigo-400/40 focus:bg-glass-darker
+          focus:shadow-glass-glow transition-all duration-300
+        `,
+        'glass-elevated': `
+          bg-gradient-to-br from-glass-light/60 to-glass-dark/80 backdrop-blur-2xl
+          border border-glass-border-strong shadow-glass-soft
+          hover:border-indigo-400/30 focus:border-indigo-400/50
+          focus:shadow-glass-glow-blue transition-all duration-500
+        `,
+        // Enhanced glassmorphism input variants for social media forms
+        'glass-social': `
+          glass-input-enhanced backdrop-blur-xl border-social-border
+          hover:border-social-hover focus:border-indigo-400/50
+          focus:shadow-glass-glow focus:bg-social-glass/80
+          transition-all duration-300 ease-out
+        `,
+        'glass-premium': `
+          bg-gradient-to-br from-glass-light/70 to-glass-dark/85 backdrop-blur-2xl
+          border border-glass-border-strong shadow-glass-soft
+          hover:from-glass-light/80 hover:to-glass-dark/90 hover:border-glass-border-accent
+          focus:from-glass-light/90 focus:to-glass-dark/95 focus:border-indigo-400/60
+          focus:shadow-glass-glow-blue transition-all duration-500 ease-out
+        `,
+        'glass-floating': `
+          bg-gradient-to-r from-glass-dark/60 to-glass-light/70 backdrop-blur-lg
+          border border-glass-border animate-float-slow shadow-glass-soft
+          hover:border-glass-border-strong focus:border-indigo-400/40
+          focus:shadow-glass-glow focus:animate-none transition-all duration-400 ease-out
+        `,
+        'glass-interactive': `
+          glass-input-enhanced backdrop-blur-xl border-social-border
+          hover:glass-interactive focus:border-indigo-400/50
+          focus:shadow-glow-social focus:transform focus:scale-[1.01]
+          transition-all duration-300 ease-out
+        `,
       },
       size: {
         sm: 'h-8 px-3 py-1 text-sm',

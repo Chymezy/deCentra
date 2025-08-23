@@ -58,7 +58,7 @@ const config: Config = {
           strong: '#666666', // Strong borders
         },
 
-        // Privacy-focused component colors
+        // Privacy-focused component colors (existing)
         'privacy-dark': '#1A1A1A',
         'privacy-background': '#0F0F0F',
         'privacy-background-secondary': '#1A1A1A',
@@ -72,6 +72,30 @@ const config: Config = {
         'privacy-success': '#10B981',
         'privacy-warning': '#F59E0B',
         'privacy-danger': '#EF4444',
+
+        // Glassmorphism color variants
+        'glass-dark': 'rgba(15, 23, 42, 0.8)',
+        'glass-darker': 'rgba(15, 23, 42, 0.9)',
+        'glass-light': 'rgba(30, 41, 59, 0.7)',
+        'glass-lighter': 'rgba(30, 41, 59, 0.5)',
+        'glass-border': 'rgba(79, 70, 229, 0.1)',
+        'glass-border-strong': 'rgba(79, 70, 229, 0.2)',
+        'glass-border-accent': 'rgba(79, 70, 229, 0.3)',
+        'glass-highlight': 'rgba(255, 255, 255, 0.1)',
+        'glass-shadow': 'rgba(0, 0, 0, 0.25)',
+
+        // Gradient color stops for glassmorphism
+        'gradient-start': 'rgba(79, 70, 229, 0.15)',
+        'gradient-middle': 'rgba(30, 64, 175, 0.10)',
+        'gradient-end': 'rgba(249, 115, 22, 0.05)',
+        'gradient-social': 'rgba(79, 70, 229, 0.08)',
+        'gradient-accent': 'rgba(249, 115, 22, 0.12)',
+
+        // Enhanced social network color palette
+        'social-glass': 'rgba(26, 26, 26, 0.85)',
+        'social-border': 'rgba(79, 70, 229, 0.12)',
+        'social-hover': 'rgba(79, 70, 229, 0.18)',
+        'social-glow': 'rgba(79, 70, 229, 0.25)',
       },
       fontFamily: {
         headline: ['Inter', 'Poppins', 'sans-serif'],
@@ -116,35 +140,74 @@ const config: Config = {
         'slide-up': 'slideUp 0.3s ease-out',
         'pulse-slow': 'pulse 3s infinite',
         float: 'float 6s ease-in-out infinite',
+        'gradient-x': 'gradientX 3s ease infinite',
+        'gradient-shift': 'gradientShift 8s ease infinite',
+        'glass-glow': 'glassGlow 2s ease-in-out infinite alternate',
+        'bounce-slow': 'bounce 3s infinite',
+        'spin-slow': 'spin 4s linear infinite',
+        'wiggle-slow': 'wiggle 3s ease-in-out infinite',
       },
       keyframes: {
+        // Enhanced animation keyframes for premium micro-interactions
         fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInUp: {
           '0%': { opacity: '0', transform: 'translateY(30px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         fadeInLeft: {
-          '0%': { opacity: '0', transform: 'translateX(-50px)' },
+          '0%': { opacity: '0', transform: 'translateX(-30px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         fadeInRight: {
-          '0%': { opacity: '0', transform: 'translateX(50px)' },
+          '0%': { opacity: '0', transform: 'translateX(30px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(40px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         slideUp: {
-          '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
         },
-        scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.8)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
+        gradientX: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+        gradientShift: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        glassGlow: {
+          '0%': { boxShadow: '0 0 20px rgba(79, 70, 229, 0.2)' },
+          '100%': { boxShadow: '0 0 40px rgba(79, 70, 229, 0.4)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+
+        // Social-specific animations
+        socialPulse: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(79, 70, 229, 0.4)' },
+          '50%': { boxShadow: '0 0 0 10px rgba(79, 70, 229, 0)' },
+        },
+        socialBounce: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
         },
       },
       boxShadow: {
@@ -174,6 +237,24 @@ const config: Config = {
           '4px 4px 8px rgba(0,0,0,0.25), -4px -4px 8px rgba(255,255,255,0.05)',
         'neumorphic-raised-hover':
           '6px 6px 12px rgba(0,0,0,0.3), -6px -6px 12px rgba(255,255,255,0.08)',
+
+        // Glassmorphism shadow variants
+        'glass-soft': '0 8px 32px rgba(0, 0, 0, 0.25)',
+        'glass-medium': '0 12px 40px rgba(0, 0, 0, 0.35)',
+        'glass-strong': '0 16px 48px rgba(0, 0, 0, 0.45)',
+        'glass-glow': '0 0 30px rgba(79, 70, 229, 0.3)',
+        'glass-glow-blue': '0 0 30px rgba(30, 64, 175, 0.3)',
+        'glass-glow-orange': '0 0 30px rgba(249, 115, 22, 0.3)',
+        'glass-border': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+      },
+      backdropBlur: {
+        xs: '2px',
+        sm: '4px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
+        '2xl': '24px',
+        '3xl': '40px',
       },
     },
   },

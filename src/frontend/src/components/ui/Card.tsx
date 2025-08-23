@@ -20,6 +20,56 @@ const cardVariants = cva(
           'bg-privacy-dark shadow-neumorphic-inset hover:shadow-neumorphic-raised cursor-pointer',
         flat: 'bg-privacy-dark border-privacy-border/40',
         ghost: 'bg-transparent border-transparent hover:bg-privacy-muted/50',
+        // Glassmorphism variants
+        glass: 'glass-card backdrop-blur-xl',
+        'glass-subtle': `
+          bg-gradient-to-br from-glass-dark to-glass-darker backdrop-blur-2xl
+          border border-glass-border shadow-glass-soft
+          hover:border-glass-border-strong hover:shadow-glass-medium
+          transition-all duration-300
+        `,
+        'glass-elevated': `
+          bg-gradient-to-br from-glass-light to-glass-dark backdrop-blur-3xl
+          border border-glass-border-strong shadow-glass-strong
+          hover:shadow-glass-glow hover:border-indigo-400/30
+          transition-all duration-500
+        `,
+        'glass-interactive': `
+          glass-card backdrop-blur-xl cursor-pointer
+          hover:bg-gradient-to-br hover:from-indigo-900/10 hover:to-blue-900/10
+          hover:border-indigo-400/30 hover:shadow-glass-glow
+          active:scale-[0.98] transition-all duration-300
+        `,
+        // Enhanced glassmorphism variants for social media components
+        'glass-social': `
+          glass-social-card backdrop-blur-2xl border-social-border
+          hover:border-social-hover hover:shadow-glass-glow hover:-translate-y-1
+          transition-all duration-300 ease-out
+        `,
+        'glass-premium': `
+          bg-gradient-to-br from-glass-light/90 to-glass-dark/95 backdrop-blur-3xl
+          border border-glass-border-accent shadow-glass-strong
+          hover:from-glass-light/95 hover:to-glass-dark/98 hover:border-indigo-400/40
+          hover:shadow-glass-glow hover:transform hover:scale-[1.01]
+          transition-all duration-500 ease-out
+        `,
+        'glass-post': `
+          glass-social-card backdrop-blur-xl border-social-border
+          hover:border-social-hover hover:shadow-glass-soft hover:bg-social-glass/90
+          focus-within:border-indigo-400/30 focus-within:shadow-glass-glow
+          transition-all duration-300 ease-out
+        `,
+        'glass-nav': `
+          glass-nav-enhanced backdrop-blur-2xl border-glass-border
+          hover:border-glass-border-strong hover:bg-gradient-to-r hover:from-glass-darker/80 hover:to-glass-dark/85
+          transition-all duration-200 ease-out
+        `,
+        'glass-floating': `
+          bg-gradient-to-br from-glass-light/70 to-glass-dark/80 backdrop-blur-2xl
+          border border-glass-border shadow-glass-medium animate-float-slow
+          hover:shadow-glass-glow hover:border-glass-border-accent
+          transition-all duration-400 ease-out
+        `,
       },
       size: {
         sm: 'p-3',

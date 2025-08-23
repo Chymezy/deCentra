@@ -28,6 +28,12 @@ const spinnerVariants = cva(
         warning: 'text-privacy-warning',
         danger: 'text-privacy-danger',
         white: 'text-white',
+        // Enhanced glassmorphism variants for premium loading states
+        'glass-primary': 'text-indigo-400 glow-social',
+        'glass-secondary': 'text-blue-400 glow-social-strong',
+        'glass-accent': 'text-orange-400 glow-accent',
+        'glass-interactive': 'text-indigo-300 animate-social-pulse',
+        'glass-premium': 'text-transparent bg-gradient-to-r from-indigo-400 via-blue-400 to-orange-400 bg-clip-text animate-gradient-shift',
       },
       thickness: {
         thin: 'border-[1px]',

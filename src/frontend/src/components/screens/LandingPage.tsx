@@ -1,27 +1,69 @@
 'use client';
+
 import { useState } from 'react';
-import { ArrowRight, Github, Twitter, ChevronDown } from 'lucide-react';
+import { ArrowRight, Github, Twitter, ChevronDown, X, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function LandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { 
+    isAuthenticated, 
+    isLoading: authLoading, 
+    login, 
+    logout,
+    error: authError,
+    clearAuthError,
+    privacyMode 
+  } = useAuth();
+  
+  const [selectedPrivacyMode, setSelectedPrivacyMode] = useState<'normal' | 'anonymous' | 'whistleblower'>('normal');
+  const [showPrivacyOptions, setShowPrivacyOptions] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoading(true);
-    // Mock authentication - replace with real auth logic
-    setTimeout(() => {
-      setIsAuthenticated(true);
-      setIsLoading(false);
-    }, 1000);
+  const handleLogin = async () => {
+    try {
+      clearAuthError?.(); // Clear any previous errors
+      await login(selectedPrivacyMode);
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
-  if (isLoading) {
+  const privacyModeOptions = [
+    {
+      id: 'normal' as const,
+      title: 'Standard Mode',
+      description: 'Regular social networking with full features',
+      icon: '🌟',
+      recommended: true
+    },
+    {
+      id: 'anonymous' as const,
+      title: 'Anonymous Mode',
+      description: 'Browse and post without revealing identity',
+      icon: '👤',
+      recommended: false
+    },
+    {
+      id: 'whistleblower' as const,
+      title: 'Whistleblower Mode',
+      description: 'Maximum security for sensitive information',
+      icon: '🛡️',
+      recommended: false
+    }
+  ];
+
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="relative">
-          <div className="w-8 h-8 border-2 border-gray-700 border-t-indigo-500 rounded-full animate-spin"></div>
+        <div className="text-center space-y-4">
+          <LoadingSpinner size="lg" variant="glass-primary" />
+          <div className="text-gray-300">
+            {privacyMode === 'whistleblower' ? 'Establishing secure connection...' :
+             privacyMode === 'anonymous' ? 'Connecting anonymously...' :
+             'Connecting to deCentra...'}
+          </div>
         </div>
       </div>
     );
@@ -68,23 +110,125 @@ export default function LandingPage() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-blue-500 group-hover:w-full transition-all duration-300"></span>
               </Link>
               {isAuthenticated ? (
-                <Link href="/feed">
-                  <button className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/25">
-                    Go to Feed
+                <div className="flex items-center space-x-3">
+                  <Link href="/feed">
+                    <button className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/25">
+                      Go to Feed
+                    </button>
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await logout();
+                      } catch (error) {
+                        console.error('Logout failed:', error);
+                      }
+                    }}
+                    className="bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-gray-600 text-gray-300 hover:text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
+                  >
+                    Sign Out
                   </button>
-                </Link>
+                </div>
               ) : (
-                <button
-                  onClick={handleLogin}
-                  className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/25"
-                >
-                  Sign in
-                </button>
+                <div className="flex items-center space-x-3">
+                  {/* Privacy Mode Selector */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowPrivacyOptions(!showPrivacyOptions)}
+                      className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 px-3 py-2 rounded-lg text-sm transition-all duration-300"
+                    >
+                      <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.icon}</span>
+                      <span className="text-gray-300">
+                        {privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.title}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    </button>
+                    
+                    {showPrivacyOptions && (
+                      <div className="absolute top-full right-0 mt-2 w-80 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl z-50">
+                        {privacyModeOptions.map((mode) => (
+                          <button
+                            key={mode.id}
+                            onClick={() => {
+                              setSelectedPrivacyMode(mode.id);
+                              setShowPrivacyOptions(false);
+                            }}
+                            className={`w-full p-4 text-left hover:bg-gray-800/50 transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
+                              selectedPrivacyMode === mode.id ? 'bg-indigo-900/30 border-l-2 border-indigo-500' : ''
+                            }`}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <span className="text-xl">{mode.icon}</span>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                  <h4 className="font-medium text-white">{mode.title}</h4>
+                                  {mode.recommended && (
+                                    <span className="bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                      Recommended
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-400 mt-1">{mode.description}</p>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={handleLogin}
+                    disabled={authLoading}
+                    className={`bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/25 flex items-center space-x-2 ${
+                      authError ? 'ring-2 ring-red-500/50' : ''
+                    }`}
+                  >
+                    {authLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>
+                          {selectedPrivacyMode === 'whistleblower' ? 'Securing connection...' :
+                           selectedPrivacyMode === 'anonymous' ? 'Connecting anonymously...' :
+                           'Connecting...'}
+                        </span>
+                      </>
+                    ) : (
+                      <span>
+                        {selectedPrivacyMode === 'whistleblower' ? 'Secure Login' :
+                         selectedPrivacyMode === 'anonymous' ? 'Anonymous Login' :
+                         'Sign in with Internet Identity'}
+                      </span>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Authentication Error Banner */}
+      {authError && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto px-6">
+          <div className="bg-red-900/90 backdrop-blur-xl border border-red-800/50 rounded-xl p-4 shadow-2xl animate-slide-down">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-red-100">Authentication Error</h4>
+                <p className="text-sm text-red-200 mt-1 break-words">{authError}</p>
+              </div>
+              <button
+                onClick={() => clearAuthError?.()}
+                className="text-red-400 hover:text-red-300 transition-colors duration-200 flex-shrink-0"
+                aria-label="Dismiss error"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-6 pt-20 relative">
@@ -117,17 +261,45 @@ export default function LandingPage() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in-up animation-delay-500">
             {!isAuthenticated ? (
-              <>
+              <div className="flex flex-col items-center space-y-4">
                 <button
                   onClick={handleLogin}
-                  className="group relative bg-gradient-to-r from-indigo-600 via-blue-600 to-blue-700 hover:from-indigo-700 hover:via-blue-700 hover:to-blue-800 text-white px-10 py-4 rounded-2xl text-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-indigo-500/25 overflow-hidden"
+                  disabled={authLoading}
+                  className={`group relative bg-gradient-to-r from-indigo-600 via-blue-600 to-blue-700 hover:from-indigo-700 hover:via-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-10 py-4 rounded-2xl text-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-indigo-500/25 overflow-hidden ${
+                    authError ? 'ring-2 ring-red-500/50' : ''
+                  }`}
                 >
                   <span className="relative z-10 flex items-center">
-                    Join deCentra
-                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    {authLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                        {selectedPrivacyMode === 'whistleblower' ? 'Securing...' :
+                         selectedPrivacyMode === 'anonymous' ? 'Connecting anonymously...' :
+                         'Connecting...'}
+                      </>
+                    ) : (
+                      <>
+                        {selectedPrivacyMode === 'whistleblower' ? 'Join Securely' :
+                         selectedPrivacyMode === 'anonymous' ? 'Join Anonymously' :
+                         'Join deCentra'}
+                        <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      </>
+                    )}
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
                 </button>
+                
+                {/* Privacy Mode Indicator */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-400">
+                    <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.icon}</span>
+                    <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.title}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 max-w-xs">
+                    {privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.description}
+                  </p>
+                </div>
+                
                 <Link
                   href="/about"
                   className="text-gray-400 hover:text-white transition-all duration-300 text-lg font-light group relative"
@@ -136,7 +308,7 @@ export default function LandingPage() {
                     Learn more
                   </span>
                 </Link>
-              </>
+              </div>
             ) : (
               <Link href="/feed">
                 <button className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-10 py-4 rounded-2xl text-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center">

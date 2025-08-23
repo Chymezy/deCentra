@@ -16,9 +16,15 @@ const overlayVariants = cva(
         open: 'opacity-100',
         closed: 'opacity-0 pointer-events-none',
       },
+      overlayStyle: {
+        default: 'bg-privacy-dark/80 backdrop-blur-sm',
+        glass: 'bg-gray-950/60 backdrop-blur-xl',
+        'glass-heavy': 'bg-gray-950/40 backdrop-blur-3xl',
+      },
     },
     defaultVariants: {
       state: 'closed',
+      overlayStyle: 'default',
     },
   }
 );
@@ -44,10 +50,54 @@ const contentVariants = cva(
         open: 'opacity-100 scale-100',
         closed: 'opacity-0 scale-95 pointer-events-none',
       },
+      variant: {
+        default: 'bg-privacy-dark shadow-neumorphic-raised border-privacy-border/20',
+        glass: `
+          glass-modal backdrop-blur-3xl
+          border-glass-border-strong shadow-glass-strong
+        `,
+        'glass-subtle': `
+          bg-gradient-to-br from-glass-dark to-glass-darker backdrop-blur-2xl
+          border border-glass-border shadow-glass-medium
+        `,
+        'glass-elevated': `
+          bg-gradient-to-br from-glass-light/80 to-glass-dark/90 backdrop-blur-3xl
+          border border-glass-border-strong shadow-glass-strong
+          before:absolute before:inset-0 before:rounded-xl
+          before:bg-gradient-to-br before:from-indigo-500/5 before:to-blue-500/5
+          before:pointer-events-none
+        `,
+        // Enhanced glassmorphism modal variants for premium social interactions
+        'glass-premium': `
+          glass-modal-enhanced backdrop-blur-3xl
+          border-glass-border-accent shadow-glass-strong
+          animate-scale-in transition-all duration-500 ease-out
+        `,
+        'glass-social': `
+          bg-gradient-to-br from-social-glass/90 to-glass-darker/95 backdrop-blur-2xl
+          border border-social-border shadow-glass-medium
+          hover:border-social-hover transition-all duration-300 ease-out
+        `,
+        'glass-floating': `
+          bg-gradient-to-br from-glass-light/85 to-glass-dark/90 backdrop-blur-3xl
+          border border-glass-border-strong shadow-glass-strong animate-float-slow
+          before:absolute before:inset-0 before:rounded-xl before:opacity-50
+          before:bg-gradient-to-br before:from-indigo-500/10 before:to-blue-500/5
+          before:pointer-events-none
+        `,
+        'glass-enhanced': `
+          glass-modal-enhanced backdrop-blur-3xl border-glass-border-accent
+          shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_40px_rgba(79,70,229,0.2)]
+          before:absolute before:inset-0 before:rounded-xl before:opacity-30
+          before:bg-gradient-to-br before:from-glass-highlight before:to-transparent
+          before:pointer-events-none
+        `,
+      },
     },
     defaultVariants: {
       size: 'default',
       state: 'closed',
+      variant: 'default',
     },
   }
 );
