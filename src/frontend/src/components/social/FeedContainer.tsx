@@ -34,7 +34,7 @@ export function FeedContainer({
   const mockPosts: Post[] = [
     {
       id: BigInt(1),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
       content:
         'Just launched my first dApp on the Internet Computer! The future of web3 is truly decentralized. 🚀 #ICP #Web3 #Decentralization',
       created_at: BigInt(Date.now() - 3600000), // 1 hour ago
@@ -50,7 +50,7 @@ export function FeedContainer({
     },
     {
       id: BigInt(2),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
       content:
         "Privacy isn't about hiding something. It's about protecting what makes us human - our thoughts, our relationships, our freedom to be ourselves. That's why we need truly decentralized social networks.",
       created_at: BigInt(Date.now() - 7200000), // 2 hours ago
@@ -66,7 +66,7 @@ export function FeedContainer({
     },
     {
       id: BigInt(3),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
       content:
         "Reminder: Your data is your property. Don't let corporations profit from your thoughts and connections. Choose platforms that respect your digital rights. 💪 #DataRights #Privacy",
       created_at: BigInt(Date.now() - 10800000), // 3 hours ago
@@ -88,7 +88,7 @@ export function FeedContainer({
     // Optimistic update
     const optimisticPost: Post = {
       id: BigInt(Date.now()),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaah-qcaiq-cai'),
+      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
       content,
       created_at: BigInt(Date.now()),
       updated_at: BigInt(Date.now()),

@@ -153,11 +153,11 @@ export default function PostCard({
   };
 
   return (
-    <article className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm hover:shadow-md transition-shadow">
+    <article className="glass-social-card rounded-2xl p-6 mb-6 animate-fade-in-up hover:shadow-glass-glow transition-all duration-300 ease-out">
       {/* Post Header */}
       <header className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-glass-soft animate-social-pulse">
             {post.author.avatar ? (
               <span className="text-white font-bold text-lg">
                 {post.author.avatar}
@@ -171,22 +171,23 @@ export default function PostCard({
           </div>
 
           <div>
-            <h3 className="font-semibold text-charcoal-black">
+            <h3 className="font-semibold text-white gradient-text-social">
               {post.author.username}
             </h3>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
+            <div className="flex items-center space-x-2 text-sm text-gray-300">
               <time
                 dateTime={new Date(
                   Number(post.post.created_at) / 1_000_000
                 ).toISOString()}
+                className="hover:text-indigo-300 transition-colors"
               >
                 {formatDate(post.post.created_at)}
               </time>
               {post.author.verification_status &&
                 'Verified' in post.author.verification_status && (
-                  <span className="text-blue-500" title="Verified user">
+                  <span className="text-blue-400 glow-social" title="Verified user">
                     <icons.check
-                      className="w-4 h-4 inline"
+                      className="w-4 h-4 inline animate-social-bounce"
                       aria-hidden={true}
                     />
                   </span>
@@ -201,28 +202,30 @@ export default function PostCard({
 
       {/* Post Content */}
       <div className="mb-4">
-        <p className="text-charcoal-black leading-relaxed whitespace-pre-wrap">
+        <p className="text-gray-100 leading-relaxed whitespace-pre-wrap tracking-wide">
           {post.post.content}
         </p>
       </div>
 
       {/* Engagement Bar */}
-      <footer className="border-t border-gray-100 pt-4">
+      <footer className="border-t border-glass-border/40 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             {/* Like Button */}
             <button
               onClick={handleLike}
               disabled={isLiking || !isAuthenticated}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl transition-all ${
+              className={`glass-button-primary flex items-center space-x-2 px-3 py-1.5 rounded-xl transition-all duration-300 ease-out ${
                 post.is_liked
-                  ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'from-red-500/20 to-pink-500/20 text-red-300 border-red-400/30 glow-accent'
+                  : 'text-gray-300 hover:text-white hover:glow-social'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
               aria-label={post.is_liked ? 'Unlike post' : 'Like post'}
             >
               <icons.like
-                className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`}
+                className={`w-5 h-5 transition-transform duration-200 ${
+                  post.is_liked ? 'fill-current scale-110 animate-social-bounce' : 'hover:scale-110'
+                }`}
                 aria-hidden="true"
               />
               <span className="text-sm font-medium">
@@ -233,10 +236,13 @@ export default function PostCard({
             {/* Comment Button */}
             <button
               onClick={toggleComments}
-              className="flex items-center space-x-2 px-3 py-1.5 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+              className="glass-button-secondary flex items-center space-x-2 px-3 py-1.5 text-gray-300 hover:text-white rounded-xl transition-all duration-300 ease-out hover:glow-social"
               aria-label="View comments"
             >
-              <icons.messages className="w-5 h-5" aria-hidden="true" />
+              <icons.messages 
+                className="w-5 h-5 hover:scale-110 transition-transform duration-200" 
+                aria-hidden="true" 
+              />
               <span className="text-sm font-medium">
                 {Number(post.post.comment_count)}
               </span>
@@ -244,23 +250,23 @@ export default function PostCard({
           </div>
 
           {/* Post Visibility Indicator */}
-          <div className="flex items-center text-xs text-gray-400">
+          <div className="flex items-center text-xs text-gray-400 glass-interactive px-2 py-1 rounded-lg">
             {'Public' in post.post.visibility && (
               <>
-                <icons.public className="w-3 h-3 mr-1" aria-hidden="true" />
-                Public
+                <icons.public className="w-3 h-3 mr-1 text-indigo-400" aria-hidden="true" />
+                <span className="text-indigo-300">Public</span>
               </>
             )}
             {'FollowersOnly' in post.post.visibility && (
               <>
-                <icons.followers className="w-3 h-3 mr-1" aria-hidden="true" />
-                Followers
+                <icons.followers className="w-3 h-3 mr-1 text-blue-400" aria-hidden="true" />
+                <span className="text-blue-300">Followers</span>
               </>
             )}
             {'Unlisted' in post.post.visibility && (
               <>
-                <icons.unlisted className="w-3 h-3 mr-1" aria-hidden="true" />
-                Unlisted
+                <icons.unlisted className="w-3 h-3 mr-1 text-orange-400" aria-hidden="true" />
+                <span className="text-orange-300">Unlisted</span>
               </>
             )}
           </div>
@@ -268,12 +274,12 @@ export default function PostCard({
 
         {/* Comments Section */}
         {showComments && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-4 border-t border-glass-border/30 glass-card rounded-xl p-4 animate-fade-in-up">
             {/* Comment Input */}
             {isAuthenticated && (
               <div className="mb-4">
                 <div className="flex space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-full flex items-center justify-center shadow-glass-soft">
                     <icons.user
                       className="w-4 h-4 text-white"
                       aria-hidden={true}
@@ -286,14 +292,14 @@ export default function PostCard({
                       onKeyPress={handleKeyPress}
                       placeholder="Add a comment..."
                       rows={2}
-                      className="w-full p-3 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-deep-indigo focus:border-transparent text-sm"
+                      className="w-full p-3 glass-input-enhanced rounded-xl resize-none text-sm text-gray-100 placeholder-gray-400 transition-all duration-300"
                       disabled={isSubmittingComment}
                     />
                     <div className="flex justify-end mt-2">
                       <button
                         onClick={submitComment}
                         disabled={isSubmittingComment || !newComment.trim()}
-                        className="px-4 py-1.5 bg-deep-indigo text-white text-sm rounded-lg hover:bg-deep-indigo/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="glass-button-primary px-4 py-1.5 text-sm rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isSubmittingComment ? 'Posting...' : 'Comment'}
                       </button>
@@ -307,28 +313,28 @@ export default function PostCard({
             <div className="space-y-3">
               {isLoadingComments ? (
                 <div className="flex justify-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-deep-indigo"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-400 glow-social"></div>
                 </div>
               ) : comments.length > 0 ? (
                 comments.map((comment) => (
-                  <div key={comment.id.toString()} className="flex space-x-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div key={comment.id.toString()} className="flex space-x-3 animate-fade-in">
+                    <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center shadow-glass-soft">
                       <icons.user
-                        className="w-4 h-4 text-gray-600"
+                        className="w-4 h-4 text-gray-300"
                         aria-hidden={true}
                       />
                     </div>
                     <div className="flex-1">
-                      <div className="bg-gray-50 rounded-xl p-3">
+                      <div className="glass-subtle rounded-xl p-3 transition-all duration-300 hover:glass-interactive">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-sm text-charcoal-black">
+                          <span className="font-medium text-sm text-gray-200 gradient-text-social">
                             User {comment.author_id.toString().slice(0, 8)}...
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-400 hover:text-gray-300 transition-colors">
                             {formatDate(comment.created_at)}
                           </span>
                         </div>
-                        <p className="text-sm text-charcoal-black">
+                        <p className="text-sm text-gray-200 leading-relaxed">
                           {comment.content}
                         </p>
                       </div>
@@ -336,7 +342,7 @@ export default function PostCard({
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500 text-center py-4">
+                <p className="text-sm text-gray-400 text-center py-4 glass-subtle rounded-lg">
                   No comments yet. Be the first to comment!
                 </p>
               )}

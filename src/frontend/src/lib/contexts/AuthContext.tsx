@@ -9,6 +9,7 @@ import {
   type ReactNode,
   useCallback,
 } from 'react';
+import { useRouter } from 'next/navigation';
 import { AuthClient } from '@dfinity/auth-client';
 import { icpConfig } from '@/lib/config/icp.config';
 import { authService } from '@/lib/services/auth.service';
@@ -38,6 +39,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     identity: null,
@@ -198,9 +200,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               }));
 
               // Redirect to feed after successful login with profile
-              if (typeof window !== 'undefined') {
-                window.location.href = '/feed';
-              }
+              router.push('/feed');
             } catch (profileError) {
               console.warn(
                 'User profile not found, user may need to complete registration:',
@@ -246,7 +246,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }));
       }
     },
-    [authClient]
+    [authClient, router]
   );
 
   // Logout function

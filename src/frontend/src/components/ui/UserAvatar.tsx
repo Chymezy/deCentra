@@ -28,6 +28,17 @@ const avatarVariants = cva(
         warning: 'border-privacy-warning/60',
         danger: 'border-privacy-danger/60',
         ghost: 'border-transparent shadow-none',
+        // Enhanced glassmorphism variants for premium social avatars
+        'glass-primary':
+          'bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-700 border-indigo-400/30 shadow-glass-soft glow-social',
+        'glass-secondary':
+          'bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 border-blue-400/30 shadow-glass-soft glow-social-strong',
+        'glass-accent':
+          'bg-gradient-to-br from-orange-500 via-orange-600 to-indigo-600 border-orange-400/30 shadow-glass-soft glow-accent',
+        'glass-interactive':
+          'bg-gradient-to-br from-glass-light to-glass-dark border-glass-border shadow-glass-soft hover:glow-social transition-all duration-300',
+        'glass-premium':
+          'bg-gradient-to-br from-indigo-500/80 via-blue-600/90 to-blue-700/80 border-glass-border-accent shadow-glass-medium backdrop-blur-sm animate-social-pulse',
       },
       interactive: {
         true: 'cursor-pointer hover:shadow-neumorphic-raised hover:border-privacy-accent/40 focus:outline-none focus:ring-2 focus:ring-privacy-accent/50',
