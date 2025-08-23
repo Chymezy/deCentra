@@ -1,50 +1,77 @@
 {
-  "name": "ICP Vibe Coding Dev",
+  "name": "deCentra Development Environment",
   "image": "ghcr.io/dfinity/icp-dev-env:latest",
   "forwardPorts": [4943, 5173, 11434],
   "portsAttributes": {
     "4943": {
-      "label": "dfx",
+      "label": "DFX (Internet Computer)",
       "onAutoForward": "ignore"
     },
     "5173": {
-      "label": "vite",
+      "label": "Vite Dev Server",
       "onAutoForward": "openBrowser"
     },
     "11434": {
-      "label": "ollama",
+      "label": "Ollama (AI Assistant)",
       "onAutoForward": "notify"
     }
   },
-  "onCreateCommand": "chmod +x scripts/dev-container-setup.sh",
-  "postCreateCommand": "./scripts/dev-container-setup.sh",
+  "onCreateCommand": "chmod +x scripts/setup.sh",
+  "postCreateCommand": "./scripts/setup.sh",
   "customizations": {
     "vscode": {
       "extensions": [
         "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "vadimcn.vscode-lldb",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "tamasfe.even-better-toml",
-        "dfinity-foundation.vscode-motoko",
-        "motoko-lsp-client.motoko-lsp-client",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "dfinity-foundation.vscode-motoko"
       ],
       "settings": {
         "chat.promptFiles": true,
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "rust-analyzer.checkOnSave.command": "clippy",
+        "rust-analyzer.cargo.features": "all",
         "files.associations": {
-          "*.css": "tailwindcss"
+          "*.css": "tailwindcss",
+          "*.rs": "rust",
+          "*.did": "candid"
         },
         "editor.quickSuggestions": {
           "strings": "on"
+        },
+        "tailwindCSS.includeLanguages": {
+          "rust": "html",
+          "typescript": "javascript",
+          "typescriptreact": "javascript"
+        },
+        "typescript.preferences.includePackageJsonAutoImports": "on",
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash",
+            "args": ["-l"]
+          }
         },
         "github.copilot.chat.codeGeneration.instructions": [
           {
             "file": "general.instructions.md"
           },
           {
-            "file": "motoko.instructions.md"
+            "file": "error-handling.instructions.md"
+          },
+          {
+            "file": "security.instructions.md"
+          },
+          {
+            "file": "rust.instructions.md"
           },
           {
             "file": "typescript.instructions.md"
@@ -65,6 +92,11 @@
         ]
       },
       "codespaces": {
+        "openFiles": [
+          "README.md",
+          "src/backend/src/lib.rs",
+          "src/frontend/src/app/page.tsx"
+        ],
         "repositories": {
           "*": {
             "installRecommendedExtensions": false
@@ -73,7 +105,17 @@
       }
     }
   },
-
-  "features": {},
-  "mounts": []
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "latest",
+      "profile": "default"
+    }
+  },
+  "mounts": [],
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/home/vscode/.cargo/bin:/home/vscode/.local/bin"
+  }
 }
