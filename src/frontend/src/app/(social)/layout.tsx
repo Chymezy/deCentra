@@ -4,9 +4,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { SocialNetworkLayout } from '@/components/layout/SocialNetworkLayout';
 import Sidebar from '@/components/layout/Sidebar';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import {
-  getNavigationItemsConfig,
-} from '@/lib/types/auth.types';
+import { getNavigationItemsConfig } from '@/lib/types/auth.types';
 import { icons } from '@/lib/icons';
 import { usePathname } from 'next/navigation';
 
@@ -45,7 +43,8 @@ export default function SocialLayout({
       settings: icons.settings,
     };
 
-    const IconComponent = iconMapping[id as keyof typeof iconMapping] || icons.home;
+    const IconComponent =
+      iconMapping[id as keyof typeof iconMapping] || icons.home;
     return <IconComponent className="w-5 h-5" aria-hidden="true" />;
   };
 
@@ -61,32 +60,38 @@ export default function SocialLayout({
       authState={{
         isAuthenticated: authState.isAuthenticated,
         isLoading: authState.isLoading,
-        user: authState.user ? {
-          id: authState.user.id.toString(),
-          username: authState.user.username || '',
-          displayName: authState.user.bio, // Assuming bio can be used as displayName
-          avatar: authState.user.avatar,
-          verified: 'Verified' in authState.user.verification_status,
-          privacyMode: 'normal', // Updated to valid PrivacyMode string
-        } : undefined,
+        user: authState.user
+          ? {
+              id: authState.user.id.toString(),
+              username: authState.user.username || '',
+              displayName: authState.user.bio, // Assuming bio can be used as displayName
+              avatar: authState.user.avatar,
+              verified: 'Verified' in authState.user.verification_status,
+              privacyMode: 'normal', // Updated to valid PrivacyMode string
+            }
+          : undefined,
       }}
       onLogin={handleLogin}
     >
       <SocialNetworkLayout
         sidebar={
           <Sidebar
-            user={authState.user ? {
-              id: authState.user.id.toString(),
-              username: authState.user.username || '',
-              displayName: authState.user.bio, // Assuming bio can be used as displayName
-              avatar: authState.user.avatar,
-              verified: 'Verified' in authState.user.verification_status,
-              stats: {
-                followers: 1234,
-                following: 567,
-                posts: 89,
-              },
-            } : undefined}
+            user={
+              authState.user
+                ? {
+                    id: authState.user.id.toString(),
+                    username: authState.user.username || '',
+                    displayName: authState.user.bio, // Assuming bio can be used as displayName
+                    avatar: authState.user.avatar,
+                    verified: 'Verified' in authState.user.verification_status,
+                    stats: {
+                      followers: 1234,
+                      following: 567,
+                      posts: 89,
+                    },
+                  }
+                : undefined
+            }
             navigationItems={navigationItems}
             isAuthenticated={authState.isAuthenticated}
             onLogin={handleLogin}
@@ -99,7 +104,9 @@ export default function SocialLayout({
             <h3 className="text-lg font-semibold mb-4">Trending Topics</h3>
             <div className="space-y-2">
               <div className="p-3 bg-dark-background-secondary rounded-lg">
-                <p className="text-sm text-dark-text-secondary">#decentralization</p>
+                <p className="text-sm text-dark-text-secondary">
+                  #decentralization
+                </p>
                 <p className="text-xs text-dark-text-tertiary">12.5K posts</p>
               </div>
               <div className="p-3 bg-dark-background-secondary rounded-lg">
@@ -107,16 +114,16 @@ export default function SocialLayout({
                 <p className="text-xs text-dark-text-tertiary">8.2K posts</p>
               </div>
               <div className="p-3 bg-dark-background-secondary rounded-lg">
-                <p className="text-sm text-dark-text-secondary">#whistleblower</p>
+                <p className="text-sm text-dark-text-secondary">
+                  #whistleblower
+                </p>
                 <p className="text-xs text-dark-text-tertiary">3.1K posts</p>
               </div>
             </div>
           </div>
         }
       >
-        <main className="flex-1 min-h-screen">
-          {children}
-        </main>
+        <main className="flex-1 min-h-screen">{children}</main>
       </SocialNetworkLayout>
     </AuthGuard>
   );

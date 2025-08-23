@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState } from "react"
+import { useState } from 'react';
 import {
   Shield,
   Globe,
@@ -20,109 +20,112 @@ import {
   Share2,
   Star,
   ArrowLeft,
-} from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+} from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AboutPage() {
-  const [email, setEmail] = useState("")
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (email) {
-      setIsSubmitted(true)
+      setIsSubmitted(true);
     }
-  }
+  };
 
   const handleLogin = () => {
     // Mock authentication - replace with real auth logic
-    setIsAuthenticated(true)
-  }
+    setIsAuthenticated(true);
+  };
 
   const features = [
     {
       icon: <Shield className="h-8 w-8" />,
-      title: "Censorship Resistant",
+      title: 'Censorship Resistant',
       description:
         "Your voice can't be silenced by governments or corporations. Built on immutable blockchain infrastructure.",
-      color: "indigo",
+      color: 'indigo',
     },
     {
       icon: <Globe className="h-8 w-8" />,
-      title: "Truly Decentralized",
-      description: "No central authority. You own your data, identity, and digital presence completely.",
-      color: "blue",
+      title: 'Truly Decentralized',
+      description:
+        'No central authority. You own your data, identity, and digital presence completely.',
+      color: 'blue',
     },
     {
       icon: <Users className="h-8 w-8" />,
-      title: "Community Governed",
-      description: "Democratic moderation through decentralized voting. The community decides the rules.",
-      color: "indigo",
+      title: 'Community Governed',
+      description:
+        'Democratic moderation through decentralized voting. The community decides the rules.',
+      color: 'indigo',
     },
     {
       icon: <Zap className="h-8 w-8" />,
-      title: "Creator Economy",
-      description: "Direct monetization with crypto payments. No platform fees, no middlemen.",
-      color: "blue",
+      title: 'Creator Economy',
+      description:
+        'Direct monetization with crypto payments. No platform fees, no middlemen.',
+      color: 'blue',
     },
-  ]
+  ];
 
   const stats = [
-    { number: "100%", label: "Decentralized", color: "text-indigo-400" },
-    { number: "0%", label: "Platform Fees", color: "text-blue-400" },
-    { number: "∞", label: "Uptime", color: "text-indigo-400" },
-    { number: "24/7", label: "Censorship Free", color: "text-blue-400" },
-  ]
+    { number: '100%', label: 'Decentralized', color: 'text-indigo-400' },
+    { number: '0%', label: 'Platform Fees', color: 'text-blue-400' },
+    { number: '∞', label: 'Uptime', color: 'text-indigo-400' },
+    { number: '24/7', label: 'Censorship Free', color: 'text-blue-400' },
+  ];
 
   const problemStats = [
     {
-      number: "3.3B",
-      label: "People in censored regions",
+      number: '3.3B',
+      label: 'People in censored regions',
       icon: <Lock className="h-10 w-10" />,
-      color: "indigo",
+      color: 'indigo',
     },
     {
-      number: "45+",
-      label: "Countries with internet censorship",
+      number: '45+',
+      label: 'Countries with internet censorship',
       icon: <Globe className="h-10 w-10" />,
-      color: "blue",
+      color: 'blue',
     },
     {
-      number: "$104B",
-      label: "Creator economy controlled by platforms",
+      number: '$104B',
+      label: 'Creator economy controlled by platforms',
       icon: <TrendingUp className="h-10 w-10" />,
-      color: "orange",
+      color: 'orange',
     },
-  ]
+  ];
 
   const communityStats = [
     {
       icon: <Users className="h-10 w-10" />,
-      label: "Growing Community",
-      value: "Join Us",
-      color: "indigo",
+      label: 'Growing Community',
+      value: 'Join Us',
+      color: 'indigo',
     },
     {
       icon: <Github className="h-10 w-10" />,
-      label: "Open Source",
-      value: "100%",
-      color: "blue",
+      label: 'Open Source',
+      value: '100%',
+      color: 'blue',
     },
     {
       icon: <Shield className="h-10 w-10" />,
-      label: "Uptime",
-      value: "24/7",
-      color: "indigo",
+      label: 'Uptime',
+      value: '24/7',
+      color: 'indigo',
     },
     {
       icon: <Star className="h-10 w-10" />,
-      label: "Platform Fees",
-      value: "0%",
-      color: "blue",
+      label: 'Platform Fees',
+      value: '0%',
+      color: 'blue',
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
@@ -209,18 +212,30 @@ export default function AboutPage() {
               <div className="space-y-6">
                 <div className="inline-flex items-center space-x-2 bg-gray-900/50 border border-indigo-500/20 px-6 py-3 rounded-full backdrop-blur-sm">
                   <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                  <span className="text-indigo-300 font-medium">🚀 Built on Internet Computer Protocol</span>
+                  <span className="text-indigo-300 font-medium">
+                    🚀 Built on Internet Computer Protocol
+                  </span>
                 </div>
 
                 <h1 className="text-6xl md:text-8xl font-black leading-tight tracking-tight">
-                  <span className="block text-indigo-400 animate-fade-in">Social</span>
-                  <span className="block text-blue-400 animate-fade-in animation-delay-300">Freedom</span>
-                  <span className="block text-white animate-fade-in animation-delay-500">Unleashed</span>
+                  <span className="block text-indigo-400 animate-fade-in">
+                    Social
+                  </span>
+                  <span className="block text-blue-400 animate-fade-in animation-delay-300">
+                    Freedom
+                  </span>
+                  <span className="block text-white animate-fade-in animation-delay-500">
+                    Unleashed
+                  </span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-2xl animate-fade-in-up animation-delay-700">
-                  Break free from censorship. Own your data. Build communities without boundaries.
-                  <span className="text-indigo-400 font-semibold"> The revolution starts here.</span>
+                  Break free from censorship. Own your data. Build communities
+                  without boundaries.
+                  <span className="text-indigo-400 font-semibold">
+                    {' '}
+                    The revolution starts here.
+                  </span>
                 </p>
               </div>
 
@@ -276,8 +291,12 @@ export default function AboutPage() {
 
                 <div className="relative z-10 space-y-6">
                   <div className="text-center space-y-4">
-                    <h3 className="text-3xl font-bold text-indigo-400">Experience True Freedom</h3>
-                    <p className="text-gray-300">Join the decentralized revolution</p>
+                    <h3 className="text-3xl font-bold text-indigo-400">
+                      Experience True Freedom
+                    </h3>
+                    <p className="text-gray-300">
+                      Join the decentralized revolution
+                    </p>
                   </div>
 
                   {/* Mock Social Feed Preview */}
@@ -290,14 +309,20 @@ export default function AboutPage() {
                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-full blur opacity-30 animate-pulse"></div>
                       </div>
                       <div>
-                        <div className="font-semibold text-white">Anonymous Whistleblower</div>
-                        <div className="text-sm text-gray-400">@truth_seeker • 2m</div>
+                        <div className="font-semibold text-white">
+                          Anonymous Whistleblower
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          @truth_seeker • 2m
+                        </div>
                       </div>
                     </div>
 
                     <p className="text-gray-200 leading-relaxed">
-                      Finally, a platform where I can share important information without fear of censorship. The
-                      decentralized architecture gives me confidence that my voice will be heard. 🔒✨
+                      Finally, a platform where I can share important
+                      information without fear of censorship. The decentralized
+                      architecture gives me confidence that my voice will be
+                      heard. 🔒✨
                     </p>
 
                     <div className="flex items-center space-x-6 text-gray-400">
@@ -339,10 +364,10 @@ export default function AboutPage() {
                           {isSubmitted ? (
                             <>
                               <CheckCircle className="mr-2 h-5 w-5" />
-                              Thanks! We'll be in touch
+                              Thanks! We&apos;ll be in touch
                             </>
                           ) : (
-                            "Get Early Access"
+                            'Get Early Access'
                           )}
                         </button>
                       </form>
@@ -385,8 +410,8 @@ export default function AboutPage() {
               Built for <span className="text-indigo-400">Freedom</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Traditional platforms control your data, censor your voice, and profit from your content. We're building
-              something revolutionary.
+              Traditional platforms control your data, censor your voice, and
+              profit from your content. We&apos;re building something revolutionary.
             </p>
           </div>
 
@@ -401,33 +426,33 @@ export default function AboutPage() {
                   {/* Color-specific glow on hover */}
                   <div
                     className={`absolute inset-0 ${
-                      feature.color === "indigo"
-                        ? "bg-indigo-500/10"
-                        : feature.color === "blue"
-                          ? "bg-blue-500/10"
-                          : "bg-orange-500/10"
+                      feature.color === 'indigo'
+                        ? 'bg-indigo-500/10'
+                        : feature.color === 'blue'
+                          ? 'bg-blue-500/10'
+                          : 'bg-orange-500/10'
                     } rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                   ></div>
 
                   <div className="relative z-10 text-center">
                     <div
                       className={`w-20 h-20 ${
-                        feature.color === "indigo"
-                          ? "bg-indigo-600"
-                          : feature.color === "blue"
-                            ? "bg-blue-600"
-                            : "bg-orange-600"
+                        feature.color === 'indigo'
+                          ? 'bg-indigo-600'
+                          : feature.color === 'blue'
+                            ? 'bg-blue-600'
+                            : 'bg-orange-600'
                       } rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                     >
                       <div className="text-white">{feature.icon}</div>
                     </div>
                     <h3
                       className={`text-2xl font-bold mb-4 ${
-                        feature.color === "indigo"
-                          ? "text-indigo-400"
-                          : feature.color === "blue"
-                            ? "text-blue-400"
-                            : "text-orange-400"
+                        feature.color === 'indigo'
+                          ? 'text-indigo-400'
+                          : feature.color === 'blue'
+                            ? 'text-blue-400'
+                            : 'text-orange-400'
                       } group-hover:text-white transition-colors duration-300`}
                     >
                       {feature.title}
@@ -452,7 +477,8 @@ export default function AboutPage() {
               The Problem is <span className="text-orange-400">Real</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Censorship and control over digital communication is rising globally
+              Censorship and control over digital communication is rising
+              globally
             </p>
           </div>
 
@@ -465,23 +491,29 @@ export default function AboutPage() {
               >
                 <div
                   className={`w-24 h-24 ${
-                    stat.color === "indigo" ? "bg-indigo-600" : stat.color === "blue" ? "bg-blue-600" : "bg-orange-600"
+                    stat.color === 'indigo'
+                      ? 'bg-indigo-600'
+                      : stat.color === 'blue'
+                        ? 'bg-blue-600'
+                        : 'bg-orange-600'
                   } rounded-full flex items-center justify-center mx-auto mb-6 group-hover:shadow-2xl transition-all duration-300`}
                 >
                   <div className="text-white">{stat.icon}</div>
                 </div>
                 <div
                   className={`text-5xl font-black mb-2 ${
-                    stat.color === "indigo"
-                      ? "text-indigo-400"
-                      : stat.color === "blue"
-                        ? "text-blue-400"
-                        : "text-orange-400"
+                    stat.color === 'indigo'
+                      ? 'text-indigo-400'
+                      : stat.color === 'blue'
+                        ? 'text-blue-400'
+                        : 'text-orange-400'
                   } group-hover:scale-110 transition-transform duration-300`}
                 >
                   {stat.number}
                 </div>
-                <div className="text-gray-300 group-hover:text-white transition-colors duration-300">{stat.label}</div>
+                <div className="text-gray-300 group-hover:text-white transition-colors duration-300">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -496,7 +528,8 @@ export default function AboutPage() {
               Join the <span className="text-blue-400">Revolution</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Be part of building the future of social media. Decentralized, censorship-resistant, and community-owned.
+              Be part of building the future of social media. Decentralized,
+              censorship-resistant, and community-owned.
             </p>
 
             {!isAuthenticated && (
@@ -526,14 +559,16 @@ export default function AboutPage() {
               >
                 <div
                   className={`w-20 h-20 ${
-                    item.color === "indigo" ? "bg-indigo-600" : "bg-blue-600"
+                    item.color === 'indigo' ? 'bg-indigo-600' : 'bg-blue-600'
                   } rounded-2xl shadow-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-3xl transition-all duration-300`}
                 >
                   <div className="text-white">{item.icon}</div>
                 </div>
                 <div
                   className={`text-3xl font-black mb-1 ${
-                    item.color === "indigo" ? "text-indigo-400" : "text-blue-400"
+                    item.color === 'indigo'
+                      ? 'text-indigo-400'
+                      : 'text-blue-400'
                   } group-hover:scale-110 transition-transform duration-300`}
                 >
                   {item.value}
@@ -563,10 +598,13 @@ export default function AboutPage() {
                   />
                   <div className="absolute inset-0 bg-indigo-500/20 rounded-xl blur opacity-30 animate-pulse"></div>
                 </div>
-                <span className="text-3xl font-bold text-indigo-400">deCentra</span>
+                <span className="text-3xl font-bold text-indigo-400">
+                  deCentra
+                </span>
               </div>
               <p className="text-gray-400 leading-relaxed">
-                The decentralized social network for a free and open internet. Built on Internet Computer Protocol.
+                The decentralized social network for a free and open internet.
+                Built on Internet Computer Protocol.
               </p>
             </div>
 
@@ -574,22 +612,34 @@ export default function AboutPage() {
               <h4 className="font-bold mb-4 text-lg text-white">Platform</h4>
               <ul className="space-y-3 text-gray-400">
                 <li>
-                  <Link href="/feed" className="hover:text-indigo-400 transition-colors">
+                  <Link
+                    href="/feed"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
                     Feed
                   </Link>
                 </li>
                 <li>
-                  <a href="/creators" className="hover:text-indigo-400 transition-colors">
+                  <a
+                    href="/creators"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
                     Creators
                   </a>
                 </li>
                 <li>
-                  <a href="/dao" className="hover:text-blue-400 transition-colors">
+                  <a
+                    href="/dao"
+                    className="hover:text-blue-400 transition-colors"
+                  >
                     DAO
                   </a>
                 </li>
                 <li>
-                  <a href="/whistleblower" className="hover:text-blue-400 transition-colors">
+                  <a
+                    href="/whistleblower"
+                    className="hover:text-blue-400 transition-colors"
+                  >
                     Whistleblower
                   </a>
                 </li>
@@ -600,12 +650,18 @@ export default function AboutPage() {
               <h4 className="font-bold mb-4 text-lg text-white">Resources</h4>
               <ul className="space-y-3 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-indigo-400 transition-colors">
+                  <a
+                    href="#"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
                     Documentation
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-indigo-400 transition-colors">
+                  <a
+                    href="#"
+                    className="hover:text-indigo-400 transition-colors"
+                  >
                     API
                   </a>
                 </li>
@@ -625,24 +681,34 @@ export default function AboutPage() {
             <div>
               <h4 className="font-bold mb-4 text-lg text-white">Community</h4>
               <div className="flex space-x-4 mb-4">
-                <a href="#" className="text-gray-400 hover:text-indigo-400 transition-colors transform hover:scale-110">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-indigo-400 transition-colors transform hover:scale-110"
+                >
                   <Twitter className="h-6 w-6" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
+                >
                   <Github className="h-6 w-6" />
                 </a>
               </div>
               <p className="text-gray-400 text-sm">
-                Join our community of builders creating the future of social media.
+                Join our community of builders creating the future of social
+                media.
               </p>
             </div>
           </div>
 
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 deCentra. Built on Internet Computer Protocol. Open source and decentralized.</p>
+            <p>
+              &copy; 2025 deCentra. Built on Internet Computer Protocol. Open
+              source and decentralized.
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

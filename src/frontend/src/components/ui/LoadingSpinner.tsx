@@ -47,43 +47,37 @@ const spinnerVariants = cva(
 /**
  * Pulsing dot variants for alternative loading style
  */
-const pulseVariants = cva(
-  'inline-flex space-x-1',
-  {
-    variants: {
-      size: {
-        xs: 'space-x-0.5',
-        sm: 'space-x-1',
-        default: 'space-x-1.5',
-        lg: 'space-x-2',
-        xl: 'space-x-2.5',
-        '2xl': 'space-x-3',
-      },
+const pulseVariants = cva('inline-flex space-x-1', {
+  variants: {
+    size: {
+      xs: 'space-x-0.5',
+      sm: 'space-x-1',
+      default: 'space-x-1.5',
+      lg: 'space-x-2',
+      xl: 'space-x-2.5',
+      '2xl': 'space-x-3',
     },
-    defaultVariants: {
-      size: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
 
-const dotVariants = cva(
-  'rounded-full bg-current animate-pulse',
-  {
-    variants: {
-      size: {
-        xs: 'h-1 w-1',
-        sm: 'h-1.5 w-1.5',
-        default: 'h-2 w-2',
-        lg: 'h-2.5 w-2.5',
-        xl: 'h-3 w-3',
-        '2xl': 'h-4 w-4',
-      },
+const dotVariants = cva('rounded-full bg-current animate-pulse', {
+  variants: {
+    size: {
+      xs: 'h-1 w-1',
+      sm: 'h-1.5 w-1.5',
+      default: 'h-2 w-2',
+      lg: 'h-2.5 w-2.5',
+      xl: 'h-3 w-3',
+      '2xl': 'h-4 w-4',
     },
-    defaultVariants: {
-      size: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'default',
+  },
+});
 
 export interface LoadingSpinnerProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -157,7 +151,7 @@ const LoadingSpinner = React.forwardRef<HTMLDivElement, LoadingSpinnerProps>(
               ))}
             </div>
           );
-        
+
         case 'bars':
           return (
             <div className={cn(pulseVariants({ size }))}>
@@ -189,7 +183,7 @@ const LoadingSpinner = React.forwardRef<HTMLDivElement, LoadingSpinnerProps>(
               ))}
             </div>
           );
-        
+
         default:
           return (
             <div

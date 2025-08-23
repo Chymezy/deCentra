@@ -12,8 +12,16 @@ import {
 import { AuthClient } from '@dfinity/auth-client';
 import { icpConfig } from '@/lib/config/icp.config';
 import { authService } from '@/lib/services/auth.service';
-import { logAuthError, getAuthErrorMessage } from '@/lib/utils/auth-error-handler';
-import type { AuthState, AuthContextType, UserProfile, PrivacyMode } from '@/lib/types';
+import {
+  logAuthError,
+  getAuthErrorMessage,
+} from '@/lib/utils/auth-error-handler';
+import type {
+  AuthState,
+  AuthContextType,
+  UserProfile,
+  PrivacyMode,
+} from '@/lib/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -129,112 +137,117 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [isMounted]);
 
   // Login function
-  const login = useCallback(async (privacyModeParam?: PrivacyMode) => {
-    if (!authClient) {
-      console.error('Auth client not initialized');
-      return;
-    }
-
-    try {
-      setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-      // Set privacy mode
-      const selectedPrivacyMode = privacyModeParam || 'normal';
-      setPrivacyMode(selectedPrivacyMode);
-
-      // Implement privacy mode logic
-      const identityProvider = icpConfig.identityProvider;
-      let maxTimeToLive = BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000); // 7 days in nanoseconds
-
-      switch (selectedPrivacyMode) {
-        case 'anonymous':
-          // For anonymous mode, use shorter session and special derivation
-          maxTimeToLive = BigInt(24 * 60 * 60 * 1000 * 1000 * 1000); // 1 day
-          console.log('Anonymous mode: Using shorter session duration');
-          break;
-        case 'whistleblower':
-          // For whistleblower mode, use very short session and extra security
-          maxTimeToLive = BigInt(2 * 60 * 60 * 1000 * 1000 * 1000); // 2 hours
-          console.log('Whistleblower mode: Using enhanced security settings');
-          break;
-        default:
-          console.log('Normal mode: Using standard security settings');
+  const login = useCallback(
+    async (privacyModeParam?: PrivacyMode) => {
+      if (!authClient) {
+        console.error('Auth client not initialized');
+        return;
       }
 
-      await authClient.login({
-        identityProvider,
-        maxTimeToLive,
-        onSuccess: async () => {
-          const identity = authClient.getIdentity();
-          const principal = identity.getPrincipal();
+      try {
+        setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-          // Configure auth service with authenticated identity
-          authService.setIdentity(identity);
+        // Set privacy mode
+        const selectedPrivacyMode = privacyModeParam || 'normal';
+        setPrivacyMode(selectedPrivacyMode);
 
-          setAuthState((prev) => ({
-            ...prev,
-            isAuthenticated: true,
-            identity,
-            principal,
-            isLoading: false,
-          }));
+        // Implement privacy mode logic
+        const identityProvider = icpConfig.identityProvider;
+        let maxTimeToLive = BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000); // 7 days in nanoseconds
 
-          // Try to get existing user profile
-          try {
-            const user = await authService.getCurrentUser();
+        switch (selectedPrivacyMode) {
+          case 'anonymous':
+            // For anonymous mode, use shorter session and special derivation
+            maxTimeToLive = BigInt(24 * 60 * 60 * 1000 * 1000 * 1000); // 1 day
+            console.log('Anonymous mode: Using shorter session duration');
+            break;
+          case 'whistleblower':
+            // For whistleblower mode, use very short session and extra security
+            maxTimeToLive = BigInt(2 * 60 * 60 * 1000 * 1000 * 1000); // 2 hours
+            console.log('Whistleblower mode: Using enhanced security settings');
+            break;
+          default:
+            console.log('Normal mode: Using standard security settings');
+        }
+
+        await authClient.login({
+          identityProvider,
+          maxTimeToLive,
+          onSuccess: async () => {
+            const identity = authClient.getIdentity();
+            const principal = identity.getPrincipal();
+
+            // Configure auth service with authenticated identity
+            authService.setIdentity(identity);
 
             setAuthState((prev) => ({
               ...prev,
-              user,
-            }));
-
-            // Redirect to feed after successful login with profile
-            if (typeof window !== 'undefined') {
-              window.location.href = '/feed';
-            }
-          } catch (profileError) {
-            console.warn(
-              'User profile not found, user may need to complete registration:',
-              profileError
-            );
-
-            setAuthState({
               isAuthenticated: true,
               identity,
               principal,
-              user: null,
               isLoading: false,
-              error: null,
-            });
+            }));
 
-            // User is authenticated but doesn't have a profile yet
-            console.warn('User profile not found, user may need to complete registration.');
-          }
-        },
-        onError: (error) => {
-          const errorMessage = getAuthErrorMessage(error);
-          logAuthError(error, 'login');
-          console.error('Login error:', error);
-          authService.clearIdentity();
-          setAuthState((prev) => ({
-            ...prev,
-            isLoading: false,
-            error: errorMessage,
-          }));
-        },
-      });
-    } catch (error) {
-      const errorMessage = getAuthErrorMessage(error);
-      logAuthError(error, 'login_process');
-      console.error('Login process error:', error);
-      authService.clearIdentity();
-      setAuthState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }));
-    }
-  }, [authClient]);
+            // Try to get existing user profile
+            try {
+              const user = await authService.getCurrentUser();
+
+              setAuthState((prev) => ({
+                ...prev,
+                user,
+              }));
+
+              // Redirect to feed after successful login with profile
+              if (typeof window !== 'undefined') {
+                window.location.href = '/feed';
+              }
+            } catch (profileError) {
+              console.warn(
+                'User profile not found, user may need to complete registration:',
+                profileError
+              );
+
+              setAuthState({
+                isAuthenticated: true,
+                identity,
+                principal,
+                user: null,
+                isLoading: false,
+                error: null,
+              });
+
+              // User is authenticated but doesn't have a profile yet
+              console.warn(
+                'User profile not found, user may need to complete registration.'
+              );
+            }
+          },
+          onError: (error) => {
+            const errorMessage = getAuthErrorMessage(error);
+            logAuthError(error, 'login');
+            console.error('Login error:', error);
+            authService.clearIdentity();
+            setAuthState((prev) => ({
+              ...prev,
+              isLoading: false,
+              error: errorMessage,
+            }));
+          },
+        });
+      } catch (error) {
+        const errorMessage = getAuthErrorMessage(error);
+        logAuthError(error, 'login_process');
+        console.error('Login process error:', error);
+        authService.clearIdentity();
+        setAuthState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: errorMessage,
+        }));
+      }
+    },
+    [authClient]
+  );
 
   // Logout function
   const logout = useCallback(async () => {
@@ -243,10 +256,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authClient.logout();
       authService.clearIdentity();
-      
+
       // Reset privacy mode on logout
       setPrivacyMode('normal');
-      
+
       setAuthState({
         isAuthenticated: false,
         identity: null,
@@ -268,7 +281,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Enhanced profile creation with direct backend integration
   const createUserProfile = useCallback(
-    async (username: string, bio?: string, avatar?: string): Promise<UserProfile | null> => {
+    async (
+      username: string,
+      bio?: string,
+      avatar?: string
+    ): Promise<UserProfile | null> => {
       if (!authClient || !authState.isAuthenticated || !authState.identity) {
         console.error('User must be authenticated to create profile');
         return null;
@@ -291,7 +308,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState((prev) => ({
           ...prev,
           user: profile,
-          isLoading: false
+          isLoading: false,
         }));
 
         return profile;
@@ -302,9 +319,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState((prev) => ({
           ...prev,
           error: errorMessage,
-          isLoading: false
+          isLoading: false,
         }));
-        
+
         // Re-throw error for component handling
         throw error;
       }
@@ -329,7 +346,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Import UserService dynamically to avoid circular dependencies
         const { userService } = await import('@/lib/services/user.service');
-        
+
         // Initialize UserService with current identity
         await userService.initialize(authState.identity);
 
@@ -337,7 +354,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const result = await userService.updateProfile({
           username,
           bio: bio || '',
-          avatar: avatar || '' // Let UserAvatar component handle fallback display
+          avatar: avatar || '', // Let UserAvatar component handle fallback display
         });
 
         if (result.success && result.data) {
@@ -345,12 +362,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setAuthState((prev) => ({
             ...prev,
             user: result.data,
-            isLoading: false
+            isLoading: false,
           }));
 
           return result.data;
         } else {
-          throw new Error('error' in result ? result.error : 'Profile update failed');
+          throw new Error(
+            'error' in result ? result.error : 'Profile update failed'
+          );
         }
       } catch (error) {
         const errorMessage = getAuthErrorMessage(error);
@@ -359,9 +378,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthState((prev) => ({
           ...prev,
           error: errorMessage,
-          isLoading: false
+          isLoading: false,
         }));
-        
+
         return null;
       }
     },

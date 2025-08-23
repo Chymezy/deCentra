@@ -94,7 +94,7 @@ export interface ButtonProps
 
 /**
  * Button component with neumorphic styling and comprehensive accessibility support.
- * 
+ *
  * Features:
  * - Neumorphic design with soft shadows and hover effects
  * - Multiple variants (primary, secondary, ghost, outline, destructive, link)
@@ -102,7 +102,7 @@ export interface ButtonProps
  * - Icon support (left/right)
  * - Full accessibility compliance (WCAG 2.1 AA)
  * - Type-safe variants with class-variance-authority
- * 
+ *
  * @example
  * <Button variant="primary" size="md" leftIcon={<PlusIcon />} loading={isSubmitting}>
  *   Create Post
@@ -162,7 +162,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {/* Loading Spinner */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div 
+            <div
               className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
               aria-hidden="true"
             />
@@ -170,7 +170,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
 
         {/* Button Content */}
-        <div 
+        <div
           className={cn(
             'flex items-center justify-center gap-2',
             loading && 'opacity-0'
@@ -181,9 +181,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               {leftIcon}
             </span>
           )}
-          
+
           {children && <span className="truncate">{children}</span>}
-          
+
           {rightIcon && (
             <span className="flex-shrink-0" aria-hidden="true">
               {rightIcon}

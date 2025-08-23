@@ -2,7 +2,13 @@
 
 import React from 'react';
 import { Button } from './Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './Card';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -102,7 +108,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
             {message || 'An unexpected error occurred. Please try again.'}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2">
             <Button
@@ -113,7 +119,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
             >
               Try Again
             </Button>
-            
+
             <Button
               onClick={() => window.location.reload()}
               variant="ghost"
@@ -134,7 +140,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
               >
                 {detailsVisible ? 'Hide' : 'Show'} Error Details
               </Button>
-              
+
               {detailsVisible && (
                 <div className="bg-privacy-muted/20 rounded-lg p-3 text-xs space-y-2">
                   <div>
@@ -143,19 +149,23 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
                       {error.name}: {error.message}
                     </p>
                   </div>
-                  
+
                   {error.stack && (
                     <div>
-                      <p className="font-medium text-privacy-text mb-1">Stack Trace:</p>
+                      <p className="font-medium text-privacy-text mb-1">
+                        Stack Trace:
+                      </p>
                       <pre className="text-privacy-text-muted font-mono text-xs whitespace-pre-wrap break-all">
                         {error.stack}
                       </pre>
                     </div>
                   )}
-                  
+
                   {errorInfo?.componentStack && (
                     <div>
-                      <p className="font-medium text-privacy-text mb-1">Component Stack:</p>
+                      <p className="font-medium text-privacy-text mb-1">
+                        Component Stack:
+                      </p>
                       <pre className="text-privacy-text-muted font-mono text-xs whitespace-pre-wrap break-all">
                         {errorInfo.componentStack}
                       </pre>
@@ -205,12 +215,20 @@ export class ErrorBoundary extends React.Component<
     const { hasError } = this.state;
 
     if (hasError && prevProps.resetKeys !== resetKeys) {
-      if (resetKeys?.some((resetKey, idx) => prevProps.resetKeys?.[idx] !== resetKey)) {
+      if (
+        resetKeys?.some(
+          (resetKey, idx) => prevProps.resetKeys?.[idx] !== resetKey
+        )
+      ) {
         this.resetErrorBoundary();
       }
     }
 
-    if (hasError && resetOnPropsChange && prevProps.children !== this.props.children) {
+    if (
+      hasError &&
+      resetOnPropsChange &&
+      prevProps.children !== this.props.children
+    ) {
       this.resetErrorBoundary();
     }
   }
@@ -227,7 +245,11 @@ export class ErrorBoundary extends React.Component<
     }
 
     this.resetTimeoutId = window.setTimeout(() => {
-      this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+      this.setState({
+        hasError: false,
+        error: undefined,
+        errorInfo: undefined,
+      });
     }, 0);
   };
 

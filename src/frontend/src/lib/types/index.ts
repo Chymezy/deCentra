@@ -38,10 +38,10 @@ export type {
 } from './auth.types';
 
 // Export utility functions from auth.types
-export { 
-  toComponentAuthState, 
-  toSidebarUserProfile, 
-  getNavigationItemsConfig 
+export {
+  toComponentAuthState,
+  toSidebarUserProfile,
+  getNavigationItemsConfig,
 } from './auth.types';
 
 export type {

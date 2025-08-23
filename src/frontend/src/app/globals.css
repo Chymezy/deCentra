@@ -11,7 +11,7 @@
   :root {
     /* Keep dark theme as default even for light mode preference */
     --background: #0f172a;
-    --foreground: #FFFFFF;
+    --foreground: #ffffff;
   }
 }
 
@@ -264,7 +264,8 @@ input:focus {
 
 /* Subtle grid overlay */
 .grid-overlay {
-  background-image: linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
   background-size: 100px 100px;
 }

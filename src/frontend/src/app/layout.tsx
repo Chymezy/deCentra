@@ -1,30 +1,40 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from 'geist/font/sans'
+import type React from 'react';
+import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
 
-import "./globals.css"
+import './globals.css';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: "deCentra - Decentralized Social Media",
-  description: "The decentralized social network for a free and open internet. Built on blockchain technology.",
-  keywords: ["decentra", "decentralized", "social media", "blockchain", "web3", "censorship resistant"],
-  authors: [{ name: "Marksman Green" }],
-  creator: "Decentra Team",
-  publisher: "Decentra",
+  title: 'deCentra - Decentralized Social Media',
+  description:
+    'The decentralized social network for a free and open internet. Built on blockchain technology.',
+  keywords: [
+    'decentra',
+    'decentralized',
+    'social media',
+    'blockchain',
+    'web3',
+    'censorship resistant',
+  ],
+  authors: [{ name: 'Marksman Green' }],
+  creator: 'Decentra Team',
+  publisher: 'Decentra',
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://decentra.app",
-    title: "Decentra - Decentralized Social Media",
-    description: "The decentralized social network for a free and open internet",
-    siteName: "deCentra",
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://decentra.app',
+    title: 'Decentra - Decentralized Social Media',
+    description:
+      'The decentralized social network for a free and open internet',
+    siteName: 'deCentra',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "deCentra - Decentralized Social Media",
-    description: "The decentralized social network for a free and open internet",
-    creator: "@deCentra_ICP",
+    card: 'summary_large_image',
+    title: 'deCentra - Decentralized Social Media',
+    description:
+      'The decentralized social network for a free and open internet',
+    creator: '@deCentra_ICP',
   },
   robots: {
     index: true,
@@ -32,17 +42,17 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" className="dark">
@@ -50,5 +60,5 @@ export default function RootLayout({
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
-  )
+  );
 }

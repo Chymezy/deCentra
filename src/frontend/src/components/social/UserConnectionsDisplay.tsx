@@ -251,7 +251,10 @@ export default function UserConnectionsDisplay({
                       {user.avatar}
                     </span>
                   ) : (
-                    <icons.user className="w-5 h-5 text-white" aria-hidden={true} />
+                    <icons.user
+                      className="w-5 h-5 text-white"
+                      aria-hidden={true}
+                    />
                   )}
                 </div>
                 <div>

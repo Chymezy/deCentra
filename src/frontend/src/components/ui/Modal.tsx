@@ -149,14 +149,15 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     const modalRef = React.useRef<HTMLDivElement>(null);
     const titleId = React.useId();
     const descriptionId = React.useId();
-    const [lastActiveElement, setLastActiveElement] = React.useState<HTMLElement | null>(null);
+    const [lastActiveElement, setLastActiveElement] =
+      React.useState<HTMLElement | null>(null);
 
     // Focus management
     React.useEffect(() => {
       if (open) {
         // Store the currently focused element
         setLastActiveElement(document.activeElement as HTMLElement);
-        
+
         // Focus initial element or modal
         const elementToFocus = initialFocus?.current || modalRef.current;
         if (elementToFocus) {
@@ -182,7 +183,9 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
         const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
 
         if (event.shiftKey) {
           if (document.activeElement === firstElement) {
@@ -252,14 +255,19 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
             } else if (ref) {
               ref.current = node;
             }
-            modalRef.current = node;
+            (modalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
           }}
-          className={cn(contentVariants({ size, state: open ? 'open' : 'closed' }), className)}
+          className={cn(
+            contentVariants({ size, state: open ? 'open' : 'closed' }),
+            className
+          )}
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy || (title ? titleId : undefined)}
-          aria-describedby={ariaDescribedBy || (description ? descriptionId : undefined)}
+          aria-describedby={
+            ariaDescribedBy || (description ? descriptionId : undefined)
+          }
           tabIndex={-1}
           {...props}
         >
@@ -288,7 +296,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                   </div>
                 )}
               </div>
-              
+
               {showCloseButton && (
                 <Button
                   variant="ghost"
@@ -316,9 +324,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           )}
 
           {/* Body */}
-          <div className="px-6 pb-6">
-            {children}
-          </div>
+          <div className="px-6 pb-6">{children}</div>
 
           {/* Footer */}
           {footer && (
@@ -337,7 +343,8 @@ Modal.displayName = 'Modal';
 /**
  * Confirmation Modal component for destructive actions
  */
-export interface ConfirmModalProps extends Omit<ModalProps, 'children' | 'footer'> {
+export interface ConfirmModalProps
+  extends Omit<ModalProps, 'children' | 'footer'> {
   /**
    * Confirmation message
    */
@@ -353,7 +360,13 @@ export interface ConfirmModalProps extends Omit<ModalProps, 'children' | 'footer
   /**
    * Confirm button variant
    */
-  confirmVariant?: 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link';
+  confirmVariant?:
+    | 'primary'
+    | 'secondary'
+    | 'destructive'
+    | 'outline'
+    | 'ghost'
+    | 'link';
   /**
    * Whether the action is destructive
    */
@@ -394,11 +407,7 @@ const ConfirmModal = React.forwardRef<HTMLDivElement, ConfirmModalProps>(
         size="sm"
         footer={
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              onClick={onClose}
-              disabled={loading}
-            >
+            <Button variant="ghost" onClick={onClose} disabled={loading}>
               {cancelText}
             </Button>
             <Button
@@ -412,9 +421,7 @@ const ConfirmModal = React.forwardRef<HTMLDivElement, ConfirmModalProps>(
         }
         {...props}
       >
-        <p className="text-privacy-text leading-relaxed">
-          {message}
-        </p>
+        <p className="text-privacy-text leading-relaxed">{message}</p>
       </Modal>
     );
   }
@@ -430,7 +437,7 @@ export const useModal = (initialState = false) => {
 
   const open = React.useCallback(() => setIsOpen(true), []);
   const close = React.useCallback(() => setIsOpen(false), []);
-  const toggle = React.useCallback(() => setIsOpen(prev => !prev), []);
+  const toggle = React.useCallback(() => setIsOpen((prev) => !prev), []);
 
   return {
     isOpen,
@@ -440,9 +447,4 @@ export const useModal = (initialState = false) => {
   };
 };
 
-export {
-  Modal,
-  ConfirmModal,
-  overlayVariants,
-  contentVariants,
-};
+export { Modal, ConfirmModal, overlayVariants, contentVariants };

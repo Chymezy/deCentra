@@ -14,8 +14,10 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: 'bg-privacy-dark shadow-neumorphic-inset',
-        elevated: 'bg-privacy-dark shadow-neumorphic-raised hover:shadow-neumorphic-raised-hover',
-        interactive: 'bg-privacy-dark shadow-neumorphic-inset hover:shadow-neumorphic-raised cursor-pointer',
+        elevated:
+          'bg-privacy-dark shadow-neumorphic-raised hover:shadow-neumorphic-raised-hover',
+        interactive:
+          'bg-privacy-dark shadow-neumorphic-inset hover:shadow-neumorphic-raised cursor-pointer',
         flat: 'bg-privacy-dark border-privacy-border/40',
         ghost: 'bg-transparent border-transparent hover:bg-privacy-muted/50',
       },
@@ -97,7 +99,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           cardVariants({ variant, size, spacing }),
-          focusable && 'focus:outline-none focus:ring-2 focus:ring-privacy-accent/50',
+          focusable &&
+            'focus:outline-none focus:ring-2 focus:ring-privacy-accent/50',
           loading && 'animate-pulse cursor-wait opacity-70',
           className
         )}
@@ -179,11 +182,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('pt-0', className)}
-    {...props}
-  />
+  <div ref={ref} className={cn('pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
 
@@ -196,7 +195,10 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center pt-3 border-t border-privacy-border/20', className)}
+    className={cn(
+      'flex items-center pt-3 border-t border-privacy-border/20',
+      className
+    )}
     {...props}
   />
 ));

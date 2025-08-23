@@ -9,7 +9,9 @@ export default function FeedPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-dark-text-secondary">Redirecting to profile creation...</p>
+        <p className="text-dark-text-secondary">
+          Redirecting to profile creation...
+        </p>
       </div>
     );
   }

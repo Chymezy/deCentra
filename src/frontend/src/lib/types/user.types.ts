@@ -99,7 +99,10 @@ export interface UserServiceInterface {
   updateProfile(data: ProfileUpdateData): Promise<ServiceResult<UserProfile>>;
   getUserProfile(userId: string): Promise<ServiceResult<UserProfile | null>>;
   checkUsernameAvailability(username: string): Promise<ServiceResult<boolean>>;
-  searchUsers(query: string, options?: SearchOptions): Promise<ServiceResult<UserProfile[]>>;
+  searchUsers(
+    query: string,
+    options?: SearchOptions
+  ): Promise<ServiceResult<UserProfile[]>>;
   getCurrentUserProfile(): Promise<ServiceResult<UserProfile | null>>;
 }
 
@@ -203,7 +206,9 @@ export function getErrorMessage<T>(result: ServiceResult<T>): string {
 /**
  * Check if service result indicates success
  */
-export function isSuccess<T>(result: ServiceResult<T>): result is ServiceResult<T> & { success: true; data: T } {
+export function isSuccess<T>(
+  result: ServiceResult<T>
+): result is ServiceResult<T> & { success: true; data: T } {
   return result.success && result.data !== undefined;
 }
 

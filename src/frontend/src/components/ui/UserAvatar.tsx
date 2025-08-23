@@ -148,11 +148,11 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     // Generate fallback initials from username or alt text
     const getInitials = React.useCallback(() => {
       if (fallback) return fallback;
-      
+
       const text = username || alt || '';
       return text
         .split(' ')
-        .map(word => word.charAt(0))
+        .map((word) => word.charAt(0))
         .join('')
         .substring(0, 2)
         .toUpperCase();
@@ -302,7 +302,10 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
-  ({ className, max = 3, size = 'default', children, total, ...props }, ref) => {
+  (
+    { className, max = 3, size = 'default', children, total, ...props },
+    ref
+  ) => {
     const childrenArray = React.Children.toArray(children);
     const visibleChildren = childrenArray.slice(0, max);
     const remainingCount = total ? total - max : childrenArray.length - max;
@@ -326,7 +329,7 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
           }
           return child;
         })}
-        
+
         {remainingCount > 0 && (
           <div
             className={cn(
@@ -344,9 +347,4 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
 
 AvatarGroup.displayName = 'AvatarGroup';
 
-export {
-  UserAvatar,
-  AvatarGroup,
-  avatarVariants,
-  statusVariants,
-};
+export { UserAvatar, AvatarGroup, avatarVariants, statusVariants };

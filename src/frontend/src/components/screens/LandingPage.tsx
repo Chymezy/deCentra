@@ -1,21 +1,21 @@
-"use client"
-import { useState } from "react"
-import { ArrowRight, Github, Twitter, ChevronDown } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+'use client';
+import { useState } from 'react';
+import { ArrowRight, Github, Twitter, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     // Mock authentication - replace with real auth logic
     setTimeout(() => {
-      setIsAuthenticated(true)
-      setIsLoading(false)
-    }, 1000)
-  }
+      setIsAuthenticated(true);
+      setIsLoading(false);
+    }, 1000);
+  };
 
   if (isLoading) {
     return (
@@ -24,7 +24,7 @@ export default function LandingPage() {
           <div className="w-8 h-8 border-2 border-gray-700 border-t-indigo-500 rounded-full animate-spin"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -93,7 +93,9 @@ export default function LandingPage() {
           <div className="space-y-8 animate-fade-in">
             <div className="inline-flex items-center space-x-2 bg-gray-900/50 border border-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
               <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-gray-300 text-sm font-medium">Built on Internet Computer</span>
+              <span className="text-gray-300 text-sm font-medium">
+                Built on Internet Computer
+              </span>
             </div>
 
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-tight">
@@ -106,7 +108,9 @@ export default function LandingPage() {
             <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
               Share your thoughts freely. Connect authentically.
               <br />
-              <span className="text-gray-300">Own your digital identity completely.</span>
+              <span className="text-gray-300">
+                Own your digital identity completely.
+              </span>
             </p>
           </div>
 
@@ -146,7 +150,9 @@ export default function LandingPage() {
           {/* Scroll Indicator */}
           <div className="pt-20 animate-fade-in-up animation-delay-1000">
             <div className="flex flex-col items-center space-y-3 text-gray-500">
-              <span className="text-xs font-light tracking-widest uppercase">Scroll to explore</span>
+              <span className="text-xs font-light tracking-widest uppercase">
+                Scroll to explore
+              </span>
               <ChevronDown className="h-4 w-4 animate-bounce opacity-60" />
             </div>
           </div>
@@ -166,8 +172,9 @@ export default function LandingPage() {
                   <span className="text-gray-500">uncensored</span>
                 </h2>
                 <p className="text-lg text-gray-400 leading-relaxed font-light max-w-lg">
-                  Traditional platforms decide what you can say and who can hear it. We believe in a different
-                  approach—one where communities govern themselves and your content truly belongs to you.
+                  Traditional platforms decide what you can say and who can hear
+                  it. We believe in a different approach—one where communities
+                  govern themselves and your content truly belongs to you.
                 </p>
               </div>
               <div className="pt-6">
@@ -259,8 +266,9 @@ export default function LandingPage() {
                   <span className="text-gray-500">creators</span>
                 </h2>
                 <p className="text-lg text-gray-400 leading-relaxed font-light max-w-lg">
-                  Monetize your content directly without platform fees. Connect with your audience through tips,
-                  subscriptions, and community governance. Your creativity, your rules.
+                  Monetize your content directly without platform fees. Connect
+                  with your audience through tips, subscriptions, and community
+                  governance. Your creativity, your rules.
                 </p>
               </div>
               <div className="pt-6">
@@ -291,7 +299,8 @@ export default function LandingPage() {
               </span>
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
-              Join thousands who've already made the switch to truly decentralized social media.
+              Join thousands who&apos;ve already made the switch to truly
+              decentralized social media.
             </p>
           </div>
 
@@ -344,26 +353,43 @@ export default function LandingPage() {
                 />
                 <div className="absolute inset-0 bg-indigo-500/20 rounded-lg blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               </div>
-              <span className="text-sm font-medium text-gray-300">deCentra</span>
+              <span className="text-sm font-medium text-gray-300">
+                deCentra
+              </span>
             </div>
 
             <div className="flex items-center space-x-8">
-              <Link href="/about" className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light">
+              <Link
+                href="/about"
+                className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light"
+              >
                 About
               </Link>
-              <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light"
+              >
                 Privacy
               </a>
-              <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-300 transition-colors text-sm font-light"
+              >
                 Terms
               </a>
             </div>
 
             <div className="flex items-center space-x-4">
-              <a href="#" className="text-gray-500 hover:text-indigo-400 transition-colors transform hover:scale-110">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-indigo-400 transition-colors transform hover:scale-110"
+              >
                 <Twitter className="h-4 w-4" />
               </a>
-              <a href="#" className="text-gray-500 hover:text-blue-400 transition-colors transform hover:scale-110">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-blue-400 transition-colors transform hover:scale-110"
+              >
                 <Github className="h-4 w-4" />
               </a>
             </div>
@@ -373,11 +399,13 @@ export default function LandingPage() {
             <p className="text-xs text-gray-600 font-light leading-relaxed">
               © 2025 deCentra. Built on Internet Computer Protocol.
               <br />
-              <span className="text-gray-700 mt-1 block">Decentralized • Open Source • Community Owned</span>
+              <span className="text-gray-700 mt-1 block">
+                Decentralized • Open Source • Community Owned
+              </span>
             </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

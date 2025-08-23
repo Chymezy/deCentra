@@ -163,7 +163,10 @@ export default function PostCard({
                 {post.author.avatar}
               </span>
             ) : (
-              <icons.profile className="w-6 h-6 text-white" aria-hidden="true" />
+              <icons.profile
+                className="w-6 h-6 text-white"
+                aria-hidden="true"
+              />
             )}
           </div>
 
@@ -182,7 +185,10 @@ export default function PostCard({
               {post.author.verification_status &&
                 'Verified' in post.author.verification_status && (
                   <span className="text-blue-500" title="Verified user">
-                    <icons.check className="w-4 h-4 inline" aria-hidden={true} />
+                    <icons.check
+                      className="w-4 h-4 inline"
+                      aria-hidden={true}
+                    />
                   </span>
                 )}
             </div>
@@ -215,9 +221,9 @@ export default function PostCard({
               } disabled:opacity-50 disabled:cursor-not-allowed`}
               aria-label={post.is_liked ? 'Unlike post' : 'Like post'}
             >
-              <icons.like 
-                className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`} 
-                aria-hidden="true" 
+              <icons.like
+                className={`w-5 h-5 ${post.is_liked ? 'fill-current' : ''}`}
+                aria-hidden="true"
               />
               <span className="text-sm font-medium">
                 {Number(post.post.like_count)}
@@ -268,7 +274,10 @@ export default function PostCard({
               <div className="mb-4">
                 <div className="flex space-x-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-deep-indigo to-electric-blue rounded-full flex items-center justify-center">
-                    <icons.user className="w-4 h-4 text-white" aria-hidden={true} />
+                    <icons.user
+                      className="w-4 h-4 text-white"
+                      aria-hidden={true}
+                    />
                   </div>
                   <div className="flex-1">
                     <textarea
@@ -304,7 +313,10 @@ export default function PostCard({
                 comments.map((comment) => (
                   <div key={comment.id.toString()} className="flex space-x-3">
                     <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                      <icons.user className="w-4 h-4 text-gray-600" aria-hidden={true} />
+                      <icons.user
+                        className="w-4 h-4 text-gray-600"
+                        aria-hidden={true}
+                      />
                     </div>
                     <div className="flex-1">
                       <div className="bg-gray-50 rounded-xl p-3">

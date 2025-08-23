@@ -3,14 +3,14 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     unoptimized: true,
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

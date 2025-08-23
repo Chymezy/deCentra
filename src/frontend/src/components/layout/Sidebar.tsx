@@ -134,7 +134,8 @@ const NavigationLink: React.FC<NavigationLinkProps> = ({ item }) => {
       className={cn(
         'flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200',
         'hover:bg-privacy-muted/20 focus:bg-privacy-muted/20 focus:outline-none focus:ring-2 focus:ring-privacy-accent/50',
-        item.active && 'bg-privacy-accent/10 text-privacy-accent border border-privacy-accent/20',
+        item.active &&
+          'bg-privacy-accent/10 text-privacy-accent border border-privacy-accent/20',
         item.disabled && 'opacity-50 cursor-not-allowed'
       )}
       role="button"
@@ -149,12 +150,8 @@ const NavigationLink: React.FC<NavigationLinkProps> = ({ item }) => {
       aria-label={item.label}
       aria-current={item.active ? 'page' : undefined}
     >
-      <div className="flex-shrink-0">
-        {item.icon}
-      </div>
-      <span className="flex-1 font-medium text-privacy-text">
-        {item.label}
-      </span>
+      <div className="flex-shrink-0">{item.icon}</div>
+      <span className="flex-1 font-medium text-privacy-text">{item.label}</span>
       {item.badge && (
         <span className="bg-privacy-accent text-privacy-dark text-xs font-bold px-2 py-1 rounded-full">
           {item.badge}
@@ -223,7 +220,12 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </div>
 

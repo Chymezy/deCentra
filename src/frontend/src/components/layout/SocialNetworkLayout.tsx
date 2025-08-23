@@ -46,7 +46,10 @@ export interface SocialNetworkLayoutProps {
   mobileNavigation?: React.ReactNode;
 }
 
-const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayoutProps>(
+const SocialNetworkLayout = React.forwardRef<
+  HTMLDivElement,
+  SocialNetworkLayoutProps
+>(
   (
     {
       sidebar,
@@ -73,7 +76,8 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
                   Profile Creation Error
                 </h2>
                 <p className="text-dark-text-secondary mb-4">
-                  Something went wrong while creating your profile. Please try again.
+                  Something went wrong while creating your profile. Please try
+                  again.
                 </p>
                 <button
                   onClick={resetError}
@@ -91,7 +95,10 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
                 try {
                   await refreshAuth();
                 } catch (error) {
-                  console.error('Failed to refresh auth after profile creation:', error);
+                  console.error(
+                    'Failed to refresh auth after profile creation:',
+                    error
+                  );
                   // Fallback to reload only if refresh fails
                   window.location.reload();
                 }
@@ -155,9 +162,7 @@ const SocialNetworkLayout = React.forwardRef<HTMLDivElement, SocialNetworkLayout
             role="main"
             aria-label="Main content"
           >
-            <div className="min-h-screen">
-              {children}
-            </div>
+            <div className="min-h-screen">{children}</div>
           </main>
 
           {/* Right Panel - Desktop Only */}
@@ -205,13 +210,7 @@ export interface ContentWrapperProps {
 
 const ContentWrapper = React.forwardRef<HTMLDivElement, ContentWrapperProps>(
   (
-    {
-      children,
-      className,
-      padded = true,
-      header,
-      stickyHeader = false,
-    },
+    { children, className, padded = true, header, stickyHeader = false },
     ref
   ) => {
     return (
@@ -227,9 +226,7 @@ const ContentWrapper = React.forwardRef<HTMLDivElement, ContentWrapperProps>(
             {header}
           </div>
         )}
-        <div className={cn(padded && 'px-4 py-2')}>
-          {children}
-        </div>
+        <div className={cn(padded && 'px-4 py-2')}>{children}</div>
       </div>
     );
   }
@@ -254,15 +251,7 @@ export interface PanelWrapperProps {
 }
 
 const PanelWrapper = React.forwardRef<HTMLDivElement, PanelWrapperProps>(
-  (
-    {
-      children,
-      className,
-      title,
-      bordered = true,
-    },
-    ref
-  ) => {
+  ({ children, className, title, bordered = true }, ref) => {
     return (
       <div
         ref={ref}
@@ -273,9 +262,7 @@ const PanelWrapper = React.forwardRef<HTMLDivElement, PanelWrapperProps>(
         )}
       >
         {title && (
-          <h2 className="text-lg font-semibold text-privacy-text">
-            {title}
-          </h2>
+          <h2 className="text-lg font-semibold text-privacy-text">{title}</h2>
         )}
         {children}
       </div>
@@ -351,9 +338,4 @@ const ResponsiveGrid = React.forwardRef<HTMLDivElement, ResponsiveGridProps>(
 
 ResponsiveGrid.displayName = 'ResponsiveGrid';
 
-export {
-  SocialNetworkLayout,
-  ContentWrapper,
-  PanelWrapper,
-  ResponsiveGrid,
-};
+export { SocialNetworkLayout, ContentWrapper, PanelWrapper, ResponsiveGrid };

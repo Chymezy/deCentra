@@ -28,14 +28,20 @@ export interface AuthError {
  * Parse and classify authentication errors
  */
 export function parseAuthError(error: unknown): AuthError {
-  const errorString = (error as Error)?.toString() || (error as Error)?.message || String(error);
-  
+  const errorString =
+    (error as Error)?.toString() || (error as Error)?.message || String(error);
+
   // Network and connectivity errors
-  if (errorString.includes('fetch') || errorString.includes('network') || errorString.includes('ECONNREFUSED')) {
+  if (
+    errorString.includes('fetch') ||
+    errorString.includes('network') ||
+    errorString.includes('ECONNREFUSED')
+  ) {
     return {
       type: AuthErrorType.NETWORK_ERROR,
       message: errorString,
-      userMessage: 'Network connection failed. Please check your internet connection and try again.',
+      userMessage:
+        'Network connection failed. Please check your internet connection and try again.',
       recoverable: true,
       retryable: true,
       details: error,
@@ -47,7 +53,8 @@ export function parseAuthError(error: unknown): AuthError {
     return {
       type: AuthErrorType.IDENTITY_PROVIDER_ERROR,
       message: errorString,
-      userMessage: 'Login was cancelled. Please try again to access your account.',
+      userMessage:
+        'Login was cancelled. Please try again to access your account.',
       recoverable: true,
       retryable: true,
       details: error,
@@ -67,11 +74,16 @@ export function parseAuthError(error: unknown): AuthError {
   }
 
   // Backend connectivity
-  if (errorString.includes('canister') || errorString.includes('ic0.app') || errorString.includes('replica')) {
+  if (
+    errorString.includes('canister') ||
+    errorString.includes('ic0.app') ||
+    errorString.includes('replica')
+  ) {
     return {
       type: AuthErrorType.BACKEND_UNREACHABLE,
       message: errorString,
-      userMessage: 'deCentra servers are temporarily unavailable. Please try again in a few moments.',
+      userMessage:
+        'deCentra servers are temporarily unavailable. Please try again in a few moments.',
       recoverable: true,
       retryable: true,
       details: error,
@@ -83,7 +95,8 @@ export function parseAuthError(error: unknown): AuthError {
     return {
       type: AuthErrorType.PROFILE_CREATION_FAILED,
       message: errorString,
-      userMessage: 'Failed to create or update your profile. Please check your information and try again.',
+      userMessage:
+        'Failed to create or update your profile. Please check your information and try again.',
       recoverable: true,
       retryable: true,
       details: error,
@@ -91,11 +104,16 @@ export function parseAuthError(error: unknown): AuthError {
   }
 
   // Privacy mode errors
-  if (errorString.includes('privacy') || errorString.includes('anonymous') || errorString.includes('whistleblower')) {
+  if (
+    errorString.includes('privacy') ||
+    errorString.includes('anonymous') ||
+    errorString.includes('whistleblower')
+  ) {
     return {
       type: AuthErrorType.PRIVACY_MODE_ERROR,
       message: errorString,
-      userMessage: 'Privacy mode configuration failed. Please try with normal mode or contact support.',
+      userMessage:
+        'Privacy mode configuration failed. Please try with normal mode or contact support.',
       recoverable: true,
       retryable: false,
       details: error,
@@ -106,7 +124,8 @@ export function parseAuthError(error: unknown): AuthError {
   return {
     type: AuthErrorType.UNKNOWN_ERROR,
     message: errorString,
-    userMessage: 'An unexpected error occurred. Please try again or contact support if the problem persists.',
+    userMessage:
+      'An unexpected error occurred. Please try again or contact support if the problem persists.',
     recoverable: false,
     retryable: true,
     details: error,
@@ -142,7 +161,7 @@ export function shouldRetryAuthOperation(error: unknown): boolean {
  */
 export function getAuthErrorRecoveryActions(error: unknown): string[] {
   const authError = parseAuthError(error);
-  
+
   switch (authError.type) {
     case AuthErrorType.NETWORK_ERROR:
       return [
@@ -151,7 +170,7 @@ export function getAuthErrorRecoveryActions(error: unknown): string[] {
         'Disable VPN if enabled',
         'Try again in a few moments',
       ];
-      
+
     case AuthErrorType.IDENTITY_PROVIDER_ERROR:
       return [
         'Try logging in again',
@@ -159,14 +178,14 @@ export function getAuthErrorRecoveryActions(error: unknown): string[] {
         'Clear browser cache and cookies',
         'Try a different browser',
       ];
-      
+
     case AuthErrorType.SESSION_EXPIRED:
       return [
         'Click "Login" to sign in again',
         'Check if your system clock is correct',
         'Contact support if problem persists',
       ];
-      
+
     case AuthErrorType.BACKEND_UNREACHABLE:
       return [
         'Wait a few minutes and try again',
@@ -174,7 +193,7 @@ export function getAuthErrorRecoveryActions(error: unknown): string[] {
         'Try refreshing the page',
         'Contact support if outage persists',
       ];
-      
+
     case AuthErrorType.PROFILE_CREATION_FAILED:
       return [
         'Check that your username is unique',
@@ -182,14 +201,14 @@ export function getAuthErrorRecoveryActions(error: unknown): string[] {
         'Try a different username',
         'Contact support if problem continues',
       ];
-      
+
     case AuthErrorType.PRIVACY_MODE_ERROR:
       return [
         'Try using normal login mode',
         'Check your browser supports required features',
         'Contact support for privacy mode issues',
       ];
-      
+
     default:
       return [
         'Try refreshing the page',
@@ -205,7 +224,7 @@ export function getAuthErrorRecoveryActions(error: unknown): string[] {
  */
 export function logAuthError(error: unknown, context?: string): void {
   const authError = parseAuthError(error);
-  
+
   console.error('[deCentra Auth Error]', {
     type: authError.type,
     context: context || 'Unknown context',
@@ -216,9 +235,12 @@ export function logAuthError(error: unknown, context?: string): void {
     timestamp: new Date().toISOString(),
     details: authError.details,
   });
-  
+
   // In production, you might want to send this to a logging service
-  if (process.env.NODE_ENV === 'production' && authError.type !== AuthErrorType.IDENTITY_PROVIDER_ERROR) {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    authError.type !== AuthErrorType.IDENTITY_PROVIDER_ERROR
+  ) {
     // TODO: Implement production error reporting
     // Example: sendToErrorReporting(authError, context);
   }
