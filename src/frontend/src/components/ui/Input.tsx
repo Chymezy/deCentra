@@ -382,7 +382,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             } else if (ref) {
               ref.current = node;
             }
-            (textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
+            (
+              textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>
+            ).current = node;
           }}
           id={inputId}
           className={cn(

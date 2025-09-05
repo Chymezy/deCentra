@@ -185,7 +185,10 @@ export default function PostCard({
               </time>
               {post.author.verification_status &&
                 'Verified' in post.author.verification_status && (
-                  <span className="text-blue-400 glow-social" title="Verified user">
+                  <span
+                    className="text-blue-400 glow-social"
+                    title="Verified user"
+                  >
                     <icons.check
                       className="w-4 h-4 inline animate-social-bounce"
                       aria-hidden={true}
@@ -224,7 +227,9 @@ export default function PostCard({
             >
               <icons.like
                 className={`w-5 h-5 transition-transform duration-200 ${
-                  post.is_liked ? 'fill-current scale-110 animate-social-bounce' : 'hover:scale-110'
+                  post.is_liked
+                    ? 'fill-current scale-110 animate-social-bounce'
+                    : 'hover:scale-110'
                 }`}
                 aria-hidden="true"
               />
@@ -239,9 +244,9 @@ export default function PostCard({
               className="glass-button-secondary flex items-center space-x-2 px-3 py-1.5 text-gray-300 hover:text-white rounded-xl transition-all duration-300 ease-out hover:glow-social"
               aria-label="View comments"
             >
-              <icons.messages 
-                className="w-5 h-5 hover:scale-110 transition-transform duration-200" 
-                aria-hidden="true" 
+              <icons.messages
+                className="w-5 h-5 hover:scale-110 transition-transform duration-200"
+                aria-hidden="true"
               />
               <span className="text-sm font-medium">
                 {Number(post.post.comment_count)}
@@ -253,19 +258,28 @@ export default function PostCard({
           <div className="flex items-center text-xs text-gray-400 glass-interactive px-2 py-1 rounded-lg">
             {'Public' in post.post.visibility && (
               <>
-                <icons.public className="w-3 h-3 mr-1 text-indigo-400" aria-hidden="true" />
+                <icons.public
+                  className="w-3 h-3 mr-1 text-indigo-400"
+                  aria-hidden="true"
+                />
                 <span className="text-indigo-300">Public</span>
               </>
             )}
             {'FollowersOnly' in post.post.visibility && (
               <>
-                <icons.followers className="w-3 h-3 mr-1 text-blue-400" aria-hidden="true" />
+                <icons.followers
+                  className="w-3 h-3 mr-1 text-blue-400"
+                  aria-hidden="true"
+                />
                 <span className="text-blue-300">Followers</span>
               </>
             )}
             {'Unlisted' in post.post.visibility && (
               <>
-                <icons.unlisted className="w-3 h-3 mr-1 text-orange-400" aria-hidden="true" />
+                <icons.unlisted
+                  className="w-3 h-3 mr-1 text-orange-400"
+                  aria-hidden="true"
+                />
                 <span className="text-orange-300">Unlisted</span>
               </>
             )}
@@ -317,7 +331,10 @@ export default function PostCard({
                 </div>
               ) : comments.length > 0 ? (
                 comments.map((comment) => (
-                  <div key={comment.id.toString()} className="flex space-x-3 animate-fade-in">
+                  <div
+                    key={comment.id.toString()}
+                    className="flex space-x-3 animate-fade-in"
+                  >
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center shadow-glass-soft">
                       <icons.user
                         className="w-4 h-4 text-gray-300"

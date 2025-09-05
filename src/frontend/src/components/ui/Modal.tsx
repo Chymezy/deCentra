@@ -51,7 +51,8 @@ const contentVariants = cva(
         closed: 'opacity-0 scale-95 pointer-events-none',
       },
       variant: {
-        default: 'bg-privacy-dark shadow-neumorphic-raised border-privacy-border/20',
+        default:
+          'bg-privacy-dark shadow-neumorphic-raised border-privacy-border/20',
         glass: `
           glass-modal backdrop-blur-3xl
           border-glass-border-strong shadow-glass-strong
@@ -305,7 +306,9 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
             } else if (ref) {
               ref.current = node;
             }
-            (modalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            (
+              modalRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = node;
           }}
           className={cn(
             contentVariants({ size, state: open ? 'open' : 'closed' }),

@@ -13,7 +13,10 @@ export const moduleNameMapper = {
   '^next/link$': '<rootDir>/__mocks__/next/link.js',
 };
 export const testPathIgnorePatterns = ['/node_modules/', '/.next/'];
-export const testMatch = ['<rootDir>/src/**/*.test.ts', '<rootDir>/src/**/*.test.tsx'];
+export const testMatch = [
+  '<rootDir>/src/**/*.test.ts',
+  '<rootDir>/src/**/*.test.tsx',
+];
 export const transformIgnorePatterns = ['/node_modules/'];
 export const transform = {
   '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',

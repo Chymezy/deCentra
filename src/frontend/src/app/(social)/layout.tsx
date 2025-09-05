@@ -24,10 +24,7 @@ export default function SocialLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { 
-    isAuthenticated, 
-    isLoading 
-  } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Authentication Guard - Redirect unauthenticated users
   useEffect(() => {
@@ -66,10 +63,26 @@ export default function SocialLayout({
             </h3>
             <div className="space-y-2">
               {[
-                { tag: '#decentralization', posts: '12.5K', href: '/discover?tag=decentralization' },
-                { tag: '#privacy', posts: '8.2K', href: '/discover?tag=privacy' },
-                { tag: '#whistleblower', posts: '3.1K', href: '/discover?tag=whistleblower' },
-                { tag: '#freespeech', posts: '6.7K', href: '/discover?tag=freespeech' },
+                {
+                  tag: '#decentralization',
+                  posts: '12.5K',
+                  href: '/discover?tag=decentralization',
+                },
+                {
+                  tag: '#privacy',
+                  posts: '8.2K',
+                  href: '/discover?tag=privacy',
+                },
+                {
+                  tag: '#whistleblower',
+                  posts: '3.1K',
+                  href: '/discover?tag=whistleblower',
+                },
+                {
+                  tag: '#freespeech',
+                  posts: '6.7K',
+                  href: '/discover?tag=freespeech',
+                },
                 { tag: '#icp', posts: '4.2K', href: '/discover?tag=icp' },
               ].map((topic, index) => (
                 <Link
@@ -95,9 +108,21 @@ export default function SocialLayout({
             </h3>
             <div className="space-y-3">
               {[
-                { name: 'Anonymous Whistleblower', username: '@anon_truth', verified: true },
-                { name: 'Privacy Advocate', username: '@privacy_first', verified: false },
-                { name: 'Decentralized Dev', username: '@decentral_dev', verified: true },
+                {
+                  name: 'Anonymous Whistleblower',
+                  username: '@anon_truth',
+                  verified: true,
+                },
+                {
+                  name: 'Privacy Advocate',
+                  username: '@privacy_first',
+                  verified: false,
+                },
+                {
+                  name: 'Decentralized Dev',
+                  username: '@decentral_dev',
+                  verified: true,
+                },
               ].map((user, index) => (
                 <Link
                   key={user.username}
@@ -106,7 +131,10 @@ export default function SocialLayout({
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-full flex items-center justify-center shadow-glass-soft group-hover:scale-110 transition-transform duration-300">
                     <span className="text-white text-xs font-bold">
-                      {user.name.split(' ').map(n => n[0]).join('')}
+                      {user.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -124,7 +152,7 @@ export default function SocialLayout({
         </div>
       }
     >
-      <main 
+      <main
         className="flex-1 min-h-screen bg-dark-background-primary"
         role="main"
         aria-label="Social network main content"

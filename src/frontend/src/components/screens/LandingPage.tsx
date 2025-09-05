@@ -1,24 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Github, Twitter, ChevronDown, X, AlertCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  Github,
+  Twitter,
+  ChevronDown,
+  X,
+  AlertCircle,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function LandingPage() {
-  const { 
-    isAuthenticated, 
-    isLoading: authLoading, 
-    login, 
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    login,
     logout,
     error: authError,
     clearAuthError,
-    privacyMode 
+    privacyMode,
   } = useAuth();
-  
-  const [selectedPrivacyMode, setSelectedPrivacyMode] = useState<'normal' | 'anonymous' | 'whistleblower'>('normal');
+
+  const [selectedPrivacyMode, setSelectedPrivacyMode] = useState<
+    'normal' | 'anonymous' | 'whistleblower'
+  >('normal');
   const [showPrivacyOptions, setShowPrivacyOptions] = useState(false);
 
   const handleLogin = async () => {
@@ -36,22 +45,22 @@ export default function LandingPage() {
       title: 'Standard Mode',
       description: 'Regular social networking with full features',
       icon: '🌟',
-      recommended: true
+      recommended: true,
     },
     {
       id: 'anonymous' as const,
       title: 'Anonymous Mode',
       description: 'Browse and post without revealing identity',
       icon: '👤',
-      recommended: false
+      recommended: false,
     },
     {
       id: 'whistleblower' as const,
       title: 'Whistleblower Mode',
       description: 'Maximum security for sensitive information',
       icon: '🛡️',
-      recommended: false
-    }
+      recommended: false,
+    },
   ];
 
   if (authLoading) {
@@ -60,9 +69,11 @@ export default function LandingPage() {
         <div className="text-center space-y-4">
           <LoadingSpinner size="lg" variant="glass-primary" />
           <div className="text-gray-300">
-            {privacyMode === 'whistleblower' ? 'Establishing secure connection...' :
-             privacyMode === 'anonymous' ? 'Connecting anonymously...' :
-             'Connecting to deCentra...'}
+            {privacyMode === 'whistleblower'
+              ? 'Establishing secure connection...'
+              : privacyMode === 'anonymous'
+                ? 'Connecting anonymously...'
+                : 'Connecting to deCentra...'}
           </div>
         </div>
       </div>
@@ -137,13 +148,23 @@ export default function LandingPage() {
                       onClick={() => setShowPrivacyOptions(!showPrivacyOptions)}
                       className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 px-3 py-2 rounded-lg text-sm transition-all duration-300"
                     >
-                      <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.icon}</span>
+                      <span>
+                        {
+                          privacyModeOptions.find(
+                            (m) => m.id === selectedPrivacyMode
+                          )?.icon
+                        }
+                      </span>
                       <span className="text-gray-300">
-                        {privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.title}
+                        {
+                          privacyModeOptions.find(
+                            (m) => m.id === selectedPrivacyMode
+                          )?.title
+                        }
                       </span>
                       <ChevronDown className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     {showPrivacyOptions && (
                       <div className="absolute top-full right-0 mt-2 w-80 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl z-50">
                         {privacyModeOptions.map((mode) => (
@@ -154,21 +175,27 @@ export default function LandingPage() {
                               setShowPrivacyOptions(false);
                             }}
                             className={`w-full p-4 text-left hover:bg-gray-800/50 transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
-                              selectedPrivacyMode === mode.id ? 'bg-indigo-900/30 border-l-2 border-indigo-500' : ''
+                              selectedPrivacyMode === mode.id
+                                ? 'bg-indigo-900/30 border-l-2 border-indigo-500'
+                                : ''
                             }`}
                           >
                             <div className="flex items-start space-x-3">
                               <span className="text-xl">{mode.icon}</span>
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2">
-                                  <h4 className="font-medium text-white">{mode.title}</h4>
+                                  <h4 className="font-medium text-white">
+                                    {mode.title}
+                                  </h4>
                                   {mode.recommended && (
                                     <span className="bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">
                                       Recommended
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-400 mt-1">{mode.description}</p>
+                                <p className="text-sm text-gray-400 mt-1">
+                                  {mode.description}
+                                </p>
                               </div>
                             </div>
                           </button>
@@ -176,7 +203,7 @@ export default function LandingPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <button
                     onClick={handleLogin}
                     disabled={authLoading}
@@ -188,16 +215,20 @@ export default function LandingPage() {
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         <span>
-                          {selectedPrivacyMode === 'whistleblower' ? 'Securing connection...' :
-                           selectedPrivacyMode === 'anonymous' ? 'Connecting anonymously...' :
-                           'Connecting...'}
+                          {selectedPrivacyMode === 'whistleblower'
+                            ? 'Securing connection...'
+                            : selectedPrivacyMode === 'anonymous'
+                              ? 'Connecting anonymously...'
+                              : 'Connecting...'}
                         </span>
                       </>
                     ) : (
                       <span>
-                        {selectedPrivacyMode === 'whistleblower' ? 'Secure Login' :
-                         selectedPrivacyMode === 'anonymous' ? 'Anonymous Login' :
-                         'Sign in with Internet Identity'}
+                        {selectedPrivacyMode === 'whistleblower'
+                          ? 'Secure Login'
+                          : selectedPrivacyMode === 'anonymous'
+                            ? 'Anonymous Login'
+                            : 'Sign in with Internet Identity'}
                       </span>
                     )}
                   </button>
@@ -215,8 +246,12 @@ export default function LandingPage() {
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-red-100">Authentication Error</h4>
-                <p className="text-sm text-red-200 mt-1 break-words">{authError}</p>
+                <h4 className="text-sm font-medium text-red-100">
+                  Authentication Error
+                </h4>
+                <p className="text-sm text-red-200 mt-1 break-words">
+                  {authError}
+                </p>
               </div>
               <button
                 onClick={() => clearAuthError?.()}
@@ -273,33 +308,53 @@ export default function LandingPage() {
                     {authLoading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
-                        {selectedPrivacyMode === 'whistleblower' ? 'Securing...' :
-                         selectedPrivacyMode === 'anonymous' ? 'Connecting anonymously...' :
-                         'Connecting...'}
+                        {selectedPrivacyMode === 'whistleblower'
+                          ? 'Securing...'
+                          : selectedPrivacyMode === 'anonymous'
+                            ? 'Connecting anonymously...'
+                            : 'Connecting...'}
                       </>
                     ) : (
                       <>
-                        {selectedPrivacyMode === 'whistleblower' ? 'Join Securely' :
-                         selectedPrivacyMode === 'anonymous' ? 'Join Anonymously' :
-                         'Join deCentra'}
+                        {selectedPrivacyMode === 'whistleblower'
+                          ? 'Join Securely'
+                          : selectedPrivacyMode === 'anonymous'
+                            ? 'Join Anonymously'
+                            : 'Join deCentra'}
                         <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                       </>
                     )}
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
                 </button>
-                
+
                 {/* Privacy Mode Indicator */}
                 <div className="text-center">
                   <div className="flex items-center justify-center space-x-2 text-sm text-gray-400">
-                    <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.icon}</span>
-                    <span>{privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.title}</span>
+                    <span>
+                      {
+                        privacyModeOptions.find(
+                          (m) => m.id === selectedPrivacyMode
+                        )?.icon
+                      }
+                    </span>
+                    <span>
+                      {
+                        privacyModeOptions.find(
+                          (m) => m.id === selectedPrivacyMode
+                        )?.title
+                      }
+                    </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 max-w-xs">
-                    {privacyModeOptions.find(m => m.id === selectedPrivacyMode)?.description}
+                    {
+                      privacyModeOptions.find(
+                        (m) => m.id === selectedPrivacyMode
+                      )?.description
+                    }
                   </p>
                 </div>
-                
+
                 <Link
                   href="/about"
                   className="text-gray-400 hover:text-white transition-all duration-300 text-lg font-light group relative"

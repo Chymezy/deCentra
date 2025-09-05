@@ -46,16 +46,16 @@ export interface SidebarUserProfile {
  */
 export default function Sidebar() {
   const pathname = usePathname();
-  
+
   // Use AuthContext directly like in LandingPage
-  const { 
-    isAuthenticated, 
-    isLoading: authLoading, 
-    login, 
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    login,
     logout,
     clearAuthError,
     user,
-    principal
+    principal,
   } = useAuth();
 
   // Format principal ID for display (privacy-respecting)
@@ -189,7 +189,10 @@ export default function Sidebar() {
       {/* Enhanced Navigation Items */}
       <nav className="flex-1 space-y-2 animate-social-bounce" role="navigation">
         {navigationItems.map((item, index) => (
-          <div key={item.id} className={`animate-social-bounce animation-delay-${300 + index * 100}`}>
+          <div
+            key={item.id}
+            className={`animate-social-bounce animation-delay-${300 + index * 100}`}
+          >
             <NavigationLink item={item} />
           </div>
         ))}
@@ -232,7 +235,9 @@ export default function Sidebar() {
                   <div className="flex flex-col">
                     <span className="text-sm text-gray-300">Principal ID</span>
                     <span className="text-xs text-gray-400 font-mono">
-                      {principal ? formatPrincipalId(principal.toString()) : 'Loading...'}
+                      {principal
+                        ? formatPrincipalId(principal.toString())
+                        : 'Loading...'}
                     </span>
                   </div>
                 </div>

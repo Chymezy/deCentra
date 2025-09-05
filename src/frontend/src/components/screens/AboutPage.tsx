@@ -411,7 +411,8 @@ export default function AboutPage() {
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Traditional platforms control your data, censor your voice, and
-              profit from your content. We&apos;re building something revolutionary.
+              profit from your content. We&apos;re building something
+              revolutionary.
             </p>
           </div>
 
