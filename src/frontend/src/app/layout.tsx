@@ -4,6 +4,7 @@ import { GeistSans } from 'geist/font/sans';
 
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
+import { QueryProvider } from '@/lib/providers/QueryProvider';
 
 export const metadata: Metadata = {
   title: 'deCentra - Decentralized Social Media',
@@ -57,7 +58,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={GeistSans.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

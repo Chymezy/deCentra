@@ -1,12 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import { PostComposer } from './PostComposer';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { icons } from '@/lib/icons';
-import type { Post } from '@/lib/types';
-import { Principal } from '@dfinity/principal';
+import type { FeedPost } from '@/lib/types';
+import {
+  useUserFeed,
+  useSocialFeed,
+  useCreatePost,
+  usePostInteractions,
+} from '@/lib/hooks/useSocial';
+import { Fragment } from 'react';
 
 export enum FeedType {
   HOME = 'home',
@@ -27,102 +32,62 @@ export function FeedContainer({
   className = '',
 }: FeedContainerProps) {
   const { isAuthenticated } = useAuth();
-  const [isLoading] = useState(false);
-  const [optimisticPosts, setOptimisticPosts] = useState<Post[]>([]);
 
-  // Mock data for now - TODO: Replace with actual API calls
-  const mockPosts: Post[] = [
-    {
-      id: BigInt(1),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
-      content:
-        'Just launched my first dApp on the Internet Computer! The future of web3 is truly decentralized. 🚀 #ICP #Web3 #Decentralization',
-      created_at: BigInt(Date.now() - 3600000), // 1 hour ago
-      updated_at: BigInt(Date.now() - 3600000),
-      like_count: BigInt(42),
-      comment_count: BigInt(7),
-      reposts_count: 12,
-      visibility: { Public: null },
-      edited_at: [],
-      tips_received: BigInt(0),
-      comments_count: 7,
-      likes_count: 42,
-    },
-    {
-      id: BigInt(2),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
-      content:
-        "Privacy isn't about hiding something. It's about protecting what makes us human - our thoughts, our relationships, our freedom to be ourselves. That's why we need truly decentralized social networks.",
-      created_at: BigInt(Date.now() - 7200000), // 2 hours ago
-      updated_at: BigInt(Date.now() - 7200000),
-      like_count: BigInt(128),
-      comment_count: BigInt(23),
-      reposts_count: 45,
-      visibility: { Public: null },
-      edited_at: [],
-      tips_received: BigInt(0),
-      comments_count: 23,
-      likes_count: 128,
-    },
-    {
-      id: BigInt(3),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
-      content:
-        "Reminder: Your data is your property. Don't let corporations profit from your thoughts and connections. Choose platforms that respect your digital rights. 💪 #DataRights #Privacy",
-      created_at: BigInt(Date.now() - 10800000), // 3 hours ago
-      updated_at: BigInt(Date.now() - 10800000),
-      like_count: BigInt(89),
-      comment_count: BigInt(15),
-      reposts_count: 31,
-      visibility: { Public: null },
-      edited_at: [],
-      tips_received: BigInt(0),
-      comments_count: 15,
-      likes_count: 89,
-    },
-  ];
+  // Choose the appropriate feed hook based on feed type and authentication
+  const shouldUseUserFeed =
+    isAuthenticated &&
+    (feedType === FeedType.HOME || feedType === FeedType.FOLLOWING);
 
-  const allPosts = [...optimisticPosts, ...mockPosts];
+  const userFeedQuery = useUserFeed();
+  const socialFeedQuery = useSocialFeed();
+
+  // Use the appropriate query based on authentication and feed type
+  const feedQuery = shouldUseUserFeed ? userFeedQuery : socialFeedQuery;
+
+  const createPostMutation = useCreatePost();
+
+  const {
+    data,
+    error,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = feedQuery;
+
+  // Flatten all pages into a single array of posts
+  const allPosts = data?.pages.flatMap((page) => page.data) || [];
 
   const handleCreatePost = async (content: string) => {
-    // Optimistic update
-    const optimisticPost: Post = {
-      id: BigInt(Date.now()),
-      author_id: Principal.fromText('rdmx6-jaaaa-aaaaa-aaadq-cai'),
-      content,
-      created_at: BigInt(Date.now()),
-      updated_at: BigInt(Date.now()),
-      like_count: BigInt(0),
-      comment_count: BigInt(0),
-      reposts_count: 0,
-      visibility: { Public: null },
-      edited_at: [],
-      tips_received: BigInt(0),
-      comments_count: 0,
-      likes_count: 0,
-    };
-
-    setOptimisticPosts((prev) => [optimisticPost, ...prev]);
-
     try {
-      // TODO: Implement actual post creation
-      console.log('Creating post:', content);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Remove optimistic post after successful creation
-      setOptimisticPosts((prev) =>
-        prev.filter((p) => p.id !== optimisticPost.id)
-      );
+      await createPostMutation.mutateAsync({
+        content,
+        visibility: { Public: null },
+      });
     } catch (error) {
-      // Remove optimistic post on error
-      setOptimisticPosts((prev) =>
-        prev.filter((p) => p.id !== optimisticPost.id)
-      );
       console.error('Failed to create post:', error);
+      // Error handling could be enhanced with toast notifications
     }
   };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  if (error) {
+    return (
+      <div className={`max-w-2xl mx-auto ${className}`}>
+        <div className="text-center py-12">
+          <p className="text-red-400 text-lg mb-2">Failed to load feed</p>
+          <p className="text-dark-text-tertiary">
+            {error.message || 'Something went wrong'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -155,26 +120,55 @@ export function FeedContainer({
             </p>
           </div>
         ) : (
-          allPosts.map((post, index) => (
-            <SimplePostCard
-              key={`${post.id}-${index}`}
-              post={post}
-              showBorder={index < allPosts.length - 1}
-            />
-          ))
+          <>
+            {allPosts.map((feedPost, index) => (
+              <FeedPostCard
+                key={`${feedPost.post.id}-${index}`}
+                feedPost={feedPost}
+                showBorder={index < allPosts.length - 1}
+              />
+            ))}
+
+            {/* Load More Button */}
+            {hasNextPage && (
+              <div className="text-center py-6">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isFetchingNextPage}
+                  className="px-6 py-2 bg-electric-blue/20 hover:bg-electric-blue/30 text-electric-blue border border-electric-blue/30 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isFetchingNextPage ? (
+                    <div className="flex items-center space-x-2">
+                      <LoadingSpinner size="sm" />
+                      <span>Loading more...</span>
+                    </div>
+                  ) : (
+                    'Load more posts'
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 }
 
-// Simple PostCard component for now
-interface SimplePostCardProps {
-  post: Post;
+// Enhanced FeedPostCard component with real interactions
+interface FeedPostCardProps {
+  feedPost: FeedPost;
   showBorder?: boolean;
 }
 
-function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
+function FeedPostCard({ feedPost, showBorder = true }: FeedPostCardProps) {
+  const { post, author, is_liked } = feedPost;
+  const { handleLike, isLiking } = usePostInteractions(post.id.toString());
+
+  const handleLikeClick = () => {
+    handleLike(is_liked);
+  };
+
   return (
     <div
       className={`p-4 ${showBorder ? 'border-b border-dark-background-tertiary' : ''}`}
@@ -185,7 +179,9 @@ function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
-            <span className="font-semibold text-dark-text-primary">User</span>
+            <span className="font-semibold text-dark-text-primary">
+              {author?.username || 'User'}
+            </span>
             <span className="text-dark-text-tertiary text-sm">
               {new Date(Number(post.created_at) / 1000000).toLocaleDateString()}
             </span>
@@ -202,8 +198,17 @@ function SimplePostCard({ post, showBorder = true }: SimplePostCardProps) {
               <icons.repost className="w-4 h-4" aria-hidden="true" />
               <span className="text-sm">{post.reposts_count}</span>
             </button>
-            <button className="flex items-center space-x-1 hover:text-red-500 transition-colors">
-              <icons.like className="w-4 h-4" aria-hidden="true" />
+            <button
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              className={`flex items-center space-x-1 transition-colors ${
+                is_liked ? 'text-red-500' : 'hover:text-red-500'
+              }`}
+            >
+              <icons.like
+                className={`w-4 h-4 ${is_liked ? 'fill-current' : ''}`}
+                aria-hidden="true"
+              />
               <span className="text-sm">{Number(post.like_count)}</span>
             </button>
             <button className="hover:text-electric-blue transition-colors">
