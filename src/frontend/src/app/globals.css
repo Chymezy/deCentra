@@ -1,8 +1,7 @@
-@import 'tailwindcss/preflight';
+@import "tailwindcss";
 
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@tailwind utilities;
 
 /* Light mode override (optional - users can opt-in) */
 @media (prefers-color-scheme: light) {
@@ -11,22 +10,6 @@
     --background: #0f172a;
     --foreground: #ffffff;
   }
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  /* Brand Colors */
-  --color-deep-indigo: #4b0082;
-  --color-electric-blue: #0f62fe;
-  --color-vibrant-orange: #ff6f00;
-  --color-charcoal-black: #1a1a1a;
-
-  /* Font Families */
-  --font-heading: 'Inter', 'Poppins', system-ui, sans-serif;
-  --font-body: 'Roboto', 'Open Sans', system-ui, sans-serif;
-  --font-code: 'JetBrains Mono', monospace;
 }
 
 /* Custom animations */
@@ -562,20 +545,6 @@ input:focus {
 }
 
 /* Custom utility classes in components layer */
-@layer components {
-  .btn-primary {
-    @apply bg-vibrant-orange text-white px-8 py-4 rounded-xl font-heading font-bold text-lg transition-all duration-300;
-  }
+/* Remove all @apply usages for Tailwind v4 compatibility */
 
-  .btn-primary:hover {
-    box-shadow: 0 0 20px rgba(255, 111, 0, 0.3);
-  }
-
-  .btn-secondary {
-    @apply border-2 border-white/30 text-white px-8 py-4 rounded-xl font-heading font-semibold text-lg transition-all duration-300;
-  }
-
-  .btn-secondary:hover {
-    @apply bg-white/10;
-  }
-}
+/* Example: Replace .btn-primary, .btn-secondary with Tailwind utility classes directly in JSX */
